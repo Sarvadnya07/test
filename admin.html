@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin CMS - Pathways</title>
+  <meta name="description" content="Admin console to manage roles, stages, tasks, and site content for Pathways." />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="theme-color" content="#0ea5e9" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Admin CMS - Pathways" />
+  <meta property="og:description" content="Admin console to manage roles, stages, tasks, and site content for Pathways." />
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebPage","name":"Admin CMS - Pathways","description":"Admin console to manage roles, stages, tasks, and site content for Pathways."}
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
+    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="/" class="text-2xl font-bold text-blue-600 dark:text-blue-400">Pathways Admin</a>
+      <div class="flex items-center gap-4">
+        <a href="/" class="hover:text-blue-600 dark:hover:text-blue-400">Home</a>
+        <button id="theme-toggle" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">🌙</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold mb-8">Admin CMS</h1>
+    
+    <div id="admin-content" class="hidden">
+      <!-- Tabs -->
+      <div class="flex gap-4 mb-6 border-b">
+        <button data-tab="roles" class="px-4 py-2 font-semibold border-b-2 border-blue-600">Roles</button>
+        <button data-tab="stages" class="px-4 py-2 text-gray-600 dark:text-gray-400">Stages</button>
+        <button data-tab="tasks" class="px-4 py-2 text-gray-600 dark:text-gray-400">Tasks</button>
+        <button data-tab="drafts" class="px-4 py-2 text-gray-600 dark:text-gray-400">Drafts</button>
+      </div>
+      
+      <!-- Roles Tab -->
+      <div id="roles-tab" class="tab-content">
+        <button id="create-role-btn" class="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Create Role</button>
+        <div id="roles-list" class="space-y-4"></div>
+      </div>
+      
+      <!-- Other tabs -->
+      <div id="stages-tab" class="tab-content hidden">
+        <p class="text-gray-600 dark:text-gray-400">Select a role to manage stages</p>
+      </div>
+      
+      <div id="tasks-tab" class="tab-content hidden">
+        <p class="text-gray-600 dark:text-gray-400">Select a role and stage to manage tasks</p>
+      </div>
+      
+      <div id="drafts-tab" class="tab-content hidden">
+        <div id="drafts-list" class="space-y-4"></div>
+      </div>
+    </div>
+    
+    <div id="admin-error" class="text-center py-12">
+      <p class="text-red-600 text-xl">Access Denied. Admin privileges required.</p>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initUI } from '/js/ui.js';
+    import { watchAuthState } from '/js/auth.js';
+    import { db } from '/js/firebase.js';
+    import { collection, getDocs, query, where } from 'firebase/firestore';
+    
+    initUI();
+    
+    watchAuthState(async (user) => {
+      if (!user) {
+        window.location.href = '/auth.html';
+        return;
+      }
+      
+      const { doc, getDoc } = await import('firebase/firestore');
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const userRole = userDoc.exists() ? userDoc.data().role : 'STUDENT';
+      
+      if (userRole !== 'ADMIN' && userRole !== 'MENTOR') {
+        document.getElementById('admin-error').classList.remove('hidden');
+        return;
+      }
+      
+      document.getElementById('admin-content').classList.remove('hidden');
+      document.getElementById('admin-error').classList.add('hidden');
+      
+      // Load roles
+      const rolesSnap = await getDocs(collection(db, 'roles'));
+      const rolesList = document.getElementById('roles-list');
+      rolesSnap.forEach(doc => {
+        const role = doc.data();
+        const div = document.createElement('div');
+        div.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-4';
+        div.innerHTML = `
+          <h3 class="font-bold text-lg">${role.title}</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">${role.summary || ''}</p>
+          <div class="flex gap-2">
+            <span class="px-2 py-1 bg-${role.published ? 'green' : 'yellow'}-100 text-${role.published ? 'green' : 'yellow'}-800 text-xs rounded">${role.published ? 'Published' : 'Draft'}</span>
+            <button class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">Edit</button>
+          </div>
+        `;
+        rolesList.appendChild(div);
+      });
+    });
+    
+    // Tab switching
+    document.querySelectorAll('[data-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('[data-tab]').forEach(b => {
+          b.classList.remove('font-semibold', 'border-b-2', 'border-blue-600');
+          b.classList.add('text-gray-600', 'dark:text-gray-400');
+        });
+        btn.classList.add('font-semibold', 'border-b-2', 'border-blue-600');
+        btn.classList.remove('text-gray-600', 'dark:text-gray-400');
+        
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+        document.getElementById(`${tab}-tab`).classList.remove('hidden');
+      });
+    });
+  </script>
+</body>
+</html>
+

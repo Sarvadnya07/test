@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Mentor - EduRise</title>
+  <meta name="description" content="Ask AI questions about your learning path, get personalized advice and answers." />
+  <link rel="icon" href="/favicon.ico" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <div data-include="header"></div>
+
+  <main id="main-content" class="container mx-auto px-4 py-8 max-w-6xl">
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold mb-2">AI Career Assistant</h1>
+      <p class="text-xl text-gray-600 dark:text-gray-400">Ask Gemini about anything - career paths, skills, learning plans, and more</p>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left Column: Quick Actions & Examples -->
+      <div class="lg:col-span-1">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sticky top-24">
+          <h3 class="font-bold mb-4 text-lg">Quick Actions</h3>
+          <div class="space-y-2 mb-6">
+            <button data-task="qna" data-prompt="Ask me anything about careers, skills, or learning" class="w-full text-left px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 task-btn active bg-blue-600 text-white">
+              💬 General Q&A
+            </button>
+            <button data-task="plan" data-prompt="Generate a 6-week learning plan for..." class="w-full text-left px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 task-btn">
+              📅 6-Week Plan
+            </button>
+            <button data-task="explain" data-prompt="Explain this skill or concept..." class="w-full text-left px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 task-btn">
+              🧠 Skill Explainer
+            </button>
+            <button data-task="recommend" data-prompt="Recommend career paths based on..." class="w-full text-left px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 task-btn">
+              🧭 Career Recommender
+            </button>
+            <button data-task="compare" data-prompt="Compare these careers..." class="w-full text-left px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 task-btn">
+              ⚖️ Compare Careers
+            </button>
+          </div>
+          
+          <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <h4 class="font-semibold mb-2 text-sm">Example Questions</h4>
+            <div class="space-y-2 text-sm">
+              <button class="example-btn w-full text-left px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-xs" data-example="What skills do I need to become a software engineer?">
+                "What skills do I need to become a software engineer?"
+              </button>
+              <button class="example-btn w-full text-left px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-xs" data-example="Generate a 6-week plan to learn web development">
+                "Generate a 6-week plan to learn web development"
+              </button>
+              <button class="example-btn w-full text-left px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-xs" data-example="Explain JavaScript basics">
+                "Explain JavaScript basics"
+              </button>
+              <button class="example-btn w-full text-left px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-xs" data-example="Recommend career paths for someone interested in technology">
+                "Recommend career paths for technology"
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Chat Interface -->
+      <div class="lg:col-span-2">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg flex flex-col" style="height: 600px;">
+          <!-- Chat Messages -->
+          <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-4">
+            <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+              <p class="text-lg mb-2">👋 Welcome to Pathways AI Assistant!</p>
+              <p class="text-sm">Ask me anything about careers, skills, or learning paths</p>
+            </div>
+          </div>
+          
+          <!-- Input Area -->
+          <div class="border-t border-gray-200 dark:border-gray-700 p-4">
+            <div class="flex gap-2">
+              <textarea 
+                id="chat-input" 
+                rows="2" 
+                class="flex-1 px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 resize-none"
+                placeholder="Type your question here..."
+                onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); document.getElementById('send-btn').click(); }"
+              ></textarea>
+              <button 
+                id="send-btn" 
+                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Send
+              </button>
+            </div>
+            <div id="typing-indicator" class="hidden mt-2 text-sm text-gray-500 dark:text-gray-400">
+              <span class="animate-pulse">AI is thinking...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="footer"></div>
+  <script src="/js/include.js" defer></script>
+
+  <script type="module">
+    import { initUI } from '/js/ui.js';
+    initUI();
+
+    const QA_KEY = 'ai_mentor_qa';
+    let currentTask = 'qna';
+    let chatHistory = [];
+    
+    // Task selection
+    document.querySelectorAll('.task-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentTask = btn.dataset.task;
+        document.querySelectorAll('.task-btn').forEach(b => {
+          b.classList.remove('active', 'bg-blue-600', 'text-white');
+          b.classList.add('hover:bg-gray-100', 'dark:hover:bg-gray-700');
+        });
+        btn.classList.add('active', 'bg-blue-600', 'text-white');
+        btn.classList.remove('hover:bg-gray-100', 'dark:hover:bg-gray-700');
+        
+        const prompt = btn.dataset.prompt;
+        document.getElementById('chat-input').placeholder = prompt;
+      });
+    });
+    
+    // Example questions
+    document.querySelectorAll('.example-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const example = btn.dataset.example;
+        document.getElementById('chat-input').value = example;
+        document.getElementById('chat-input').focus();
+      });
+    });
+    
+    // Send message
+    document.getElementById('send-btn').addEventListener('click', sendMessage);
+    
+    function addMessage(role, content, task = null) {
+      const messagesDiv = document.getElementById('chat-messages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+      
+      if (role === 'user') {
+        messageDiv.innerHTML = `
+          <div class="max-w-[80%] bg-blue-600 text-white rounded-lg px-4 py-2">
+            <p class="whitespace-pre-wrap">${escapeHtml(content)}</p>
+          </div>
+        `;
+      } else if (role === 'assistant') {
+        messageDiv.innerHTML = `
+          <div class="max-w-[80%] bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-3">
+            <div class="ai-response-content">${content}</div>
+          </div>
+        `;
+      } else {
+        messageDiv.innerHTML = `
+          <div class="max-w-[80%] bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded-lg px-4 py-2 text-sm">
+            ${escapeHtml(content)}
+          </div>
+        `;
+      }
+      
+      messagesDiv.appendChild(messageDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+    
+    async function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const message = input.value.trim();
+      
+      if (!message) return;
+      
+      // Add user message
+      addMessage('user', message);
+      input.value = '';
+      
+      // Show typing indicator
+      document.getElementById('typing-indicator').classList.remove('hidden');
+      document.getElementById('send-btn').disabled = true;
+      
+      try {
+        // Save to local Q&A
+        const qa = JSON.parse(localStorage.getItem(QA_KEY) || '[]');
+        
+        let response = '';
+        
+        // Generate response based on task
+        if (currentTask === 'plan') {
+          response = generateSixWeekPlan(message);
+        } else if (currentTask === 'explain') {
+          response = generateSkillExplanation(message);
+        } else if (currentTask === 'recommend') {
+          response = generateCareerRecommendation(message);
+        } else if (currentTask === 'compare') {
+          response = generateComparisonResponse(message);
+        } else {
+          response = generateGeneralAnswer(message);
+        }
+        
+        addMessage('assistant', response, currentTask);
+        
+        // Save to history
+        qa.unshift({
+          q: message,
+          a: response,
+          task: currentTask,
+          time: new Date().toISOString()
+        });
+        localStorage.setItem(QA_KEY, JSON.stringify(qa.slice(0, 50))); // Keep last 50
+        
+        chatHistory.push({ role: 'user', content: message, task: currentTask });
+        chatHistory.push({ role: 'assistant', content: response });
+      } catch (error) {
+        addMessage('system', `Error: ${error.message || 'Failed to get response'}`);
+        console.error(error);
+      } finally {
+        document.getElementById('typing-indicator').classList.add('hidden');
+        document.getElementById('send-btn').disabled = false;
+        input.focus();
+      }
+    }
+    
+    function generateGeneralAnswer(question) {
+      const lower = question.toLowerCase();
+      
+      const answers = {
+        'web development': 'To start web development:\n• Learn HTML & CSS for structure and styling\n• Master JavaScript for interactivity\n• Learn React or Vue for modern frameworks\n• Build projects to practice\n• Time: 3-6 months for basics, 1-2 years for proficiency\n\nRecommended path: HTML → CSS → JavaScript → React → Backend (Node.js/Python)',
+        
+        'data science': 'Data Science roadmap:\n• Python fundamentals\n• Statistics & probability\n• Data manipulation (Pandas)\n• Visualization (Matplotlib, Seaborn)\n• Machine Learning libraries (Scikit-learn, TensorFlow)\n• SQL for databases\n• Time: 4-8 months to intermediate level\n\nStart with Python, then statistics, then ML.',
+        
+        'how long': 'Career transition timelines:\n• Career change: 3-12 months\n• Skill mastery: 1-3 years\n• Senior level: 5-7 years experience\n• Expert level: 10,000 hours (10 years at full-time)\n\nConsistent practice: 8-10 hours/week is a good pace for learning.',
+        
+        'stuck': 'When you\'re stuck:\n1. Break the problem into smaller parts\n2. Search for similar solutions online\n3. Read documentation thoroughly\n4. Ask in forums (Stack Overflow, Reddit)\n5. Take a break and come back fresh\n6. Pair program with others\n7. Review fundamentals\n\nRemember: Every expert was once a beginner!',
+        
+        'beginner': 'Starting your learning journey:\n1. Choose a clear goal (not too broad)\n2. Find a structured path/course\n3. Practice consistently (daily)\n4. Build projects to apply knowledge\n5. Join communities for support\n6. Don\'t memorize, understand concepts\n7. Track your progress\n\nTop beginner languages: Python, JavaScript, Java',
+        
+        'project': 'Building your first projects:\n• Start small (to-do app, calculator, weather app)\n• Follow tutorials first\n• Then build from scratch\n• Use version control (Git)\n• Publish on GitHub\n• Get feedback from community\n\nPortfolio projects:\n• Personal website\n• e-Commerce site\n• Chat application\n• Task management app'
+      };
+      
+      for (const [key, answer] of Object.entries(answers)) {
+        if (lower.includes(key)) return answer;
+      }
+      
+      return 'That\'s a great question! Here are some key principles:\n\n1. **Set Clear Goals**: Define what you want to achieve\n2. **Find Structure**: Follow a proven learning path\n3. **Practice Consistently**: 8-10 hours/week is ideal\n4. **Build Projects**: Apply knowledge through real projects\n5. **Join Communities**: Connect with others learning\n6. **Stay Patient**: Mastery takes time\n7. **Review Regularly**: Reinforce fundamentals\n\nWhat specific area would you like help with?';
+    }
+    
+    function generateSixWeekPlan(topic) {
+      return `📅 6-Week Learning Plan for: ${topic}\n\n**Week 1: Foundations**\n• Core concepts and theory\n• Setup environment\n• Learn fundamentals\n\n**Week 2-3: Core Skills**\n• Deep dive into main topics\n• Hands-on practice\n• Small projects\n\n**Week 4: Intermediate Topics**\n• More complex concepts\n• Real-world applications\n• Debugging & problem-solving\n\n**Week 5: Projects & Practice**\n• Build 2-3 projects\n• Apply all learned skills\n• Code review & refactoring\n\n**Week 6: Polish & Mastery**\n• Optimize code\n• Documentation\n• Share work, get feedback\n\n⏱️ Recommended: 8-10 hours/week\n🎯 Outcome: Ready for intermediate level`;
+    }
+    
+    function generateSkillExplanation(skill) {
+      const explanations = {
+        'javascript': '🧠 **JavaScript Explained**\n\nJavaScript is a programming language that runs in browsers and servers.\n\n**Key Concepts:**\n• Variables: Store data\n• Functions: Reusable code blocks\n• Objects: Organize related data\n• Arrays: Lists of items\n• Events: Respond to user actions\n• Async/Await: Handle delays\n\n**Used For:**\n• Web interactions\n• Form validation\n• API calls\n• Building apps (React, Vue)\n\n**Learn Path:**\nBasics → DOM Manipulation → ES6+ → Frameworks',
+        
+        'python': '🧠 **Python Explained**\n\nPython is a beginner-friendly language used for web, data science, and automation.\n\n**Key Concepts:**\n• Variables & Types\n• Loops & Conditions\n• Functions & Modules\n• Lists & Dictionaries\n• Classes & Objects\n• File handling\n\n**Used For:**\n• Data Analysis\n• Web Development\n• Automation\n• Machine Learning\n• Scripting\n\n**Learn Path:**\nBasics → Data Structures → Functions → OOP → Libraries',
+        
+        'react': '🧠 **React Explained**\n\nReact is a JavaScript library for building interactive user interfaces.\n\n**Key Concepts:**\n• Components: Reusable UI pieces\n• JSX: HTML in JavaScript\n• Props: Pass data to components\n• State: Component memory\n• Hooks: useState, useEffect\n• Events: Handle user actions\n\n**Used For:**\n• Single Page Apps\n• Dashboard interfaces\n• Real-time applications\n\n**Learn Path:**\nJavaScript → Components → State & Props → Hooks → Advanced'
+      };
+      
+      for (const [key, explanation] of Object.entries(explanations)) {
+        if (skill.toLowerCase().includes(key)) return explanation;
+      }
+      
+      return `🧠 **Understanding ${skill}**\n\n${skill} is an important skill in modern development.\n\n**Key Topics to Learn:**\n• Core concepts and theory\n• Practical applications\n• Common patterns\n• Best practices\n• Advanced techniques\n\n**Why Learn This?**\n• High demand in job market\n• Builds strong foundation\n• Enables complex projects\n• Career advancement\n\n**Getting Started:**\n1. Learn fundamentals\n2. Practice with exercises\n3. Build small projects\n4. Study real code examples\n5. Join communities`;
+    }
+    
+    function generateCareerRecommendation(interests) {
+      return `🧭 **Career Recommendations for You**\n\nBased on interest in: ${interests}\n\n**Recommended Paths:**\n\n1️⃣ **Software Engineer**\n   - Learn: JavaScript, Python, System Design\n   - Timeline: 6-12 months\n   - Salary: $80k-$200k+\n\n2️⃣ **Data Scientist**\n   - Learn: Python, Statistics, ML\n   - Timeline: 8-12 months\n   - Salary: $90k-$180k+\n\n3️⃣ **Full Stack Developer**\n   - Learn: Frontend + Backend\n   - Timeline: 12-18 months\n   - Salary: $85k-$150k+\n\n4️⃣ **DevOps Engineer**\n   - Learn: Cloud, Docker, Kubernetes\n   - Timeline: 9-15 months\n   - Salary: $100k-$200k+\n\n**Next Steps:**\n• Choose your path\n• Start learning roadmap\n• Build portfolio projects\n• Network with professionals\n• Apply for entry-level roles`;
+    }
+    
+    function generateComparisonResponse(question) {
+      return `⚖️ **Career Comparison**\n\n**Software Engineer vs Data Scientist:**\n\n🔧 **Software Engineer:**\n• Builds applications & systems\n• Focus: Clean code, architecture, scaling\n• Skills: Programming, OOP, System Design\n• Demand: Very high\n• Average Salary: $100k-$150k\n\n📊 **Data Scientist:**\n• Analyzes data for insights\n• Focus: Statistics, ML, visualization\n• Skills: Python, SQL, Statistics, ML\n• Demand: Growing\n• Average Salary: $110k-$160k\n\n**Choose SE if:** You like building things, architecture\n**Choose DS if:** You love data analysis, statistics\n\n**Both are great options with strong job markets!**`;
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
+            <button data-task="qna" data-prompt="Ask me anything about careers, skills, or learning" class="w-full text-left px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 task-btn active">
+              💬 General Q&A
+            </button>
+            <button data-task="plan" data-prompt="Generate a 6-week learning plan for..." class="w-full text-left px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 task-btn">
+              📅 6-Week Plan
+            </button>
+            <button data-task="explain" data-prompt="Explain this skill or concept..." class="w-full text-left px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 task-btn">
+              🧠 Skill Explainer
+            </button>
+            <button data-task="recommend" data-prompt="Recommend career paths based on..." class="w-full text-left px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 task-btn">
+              🧭 Career Recommender
+            </button>
+            <button data-task="compare" data-prompt="Compare these careers..." class="w-full text-left px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 task-btn">
+              ⚖️ Compare Careers
+            </button>
+          </div>
+          
+          <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <h4 class="font-semibold mb-2 text-sm">Example Questions</h4>
+            <div class="space-y-2 text-sm">
+              <button class="example-btn w-full text-left px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-xs" data-example="What skills do I need to become a software engineer?">
+                "What skills do I need to become a software engineer?"
+              </button>
+              <button class="example-btn w-full text-left px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-xs" data-example="Generate a 6-week plan to learn web development">
+                "Generate a 6-week plan to learn web development"
+              </button>
+              <button class="example-btn w-full text-left px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-xs" data-example="Explain JavaScript basics">
+                "Explain JavaScript basics"
+              </button>
+              <button class="example-btn w-full text-left px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-xs" data-example="Recommend career paths for someone interested in technology">
+                "Recommend career paths for technology"
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Chat Interface -->
+      <div class="lg:col-span-2">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg flex flex-col" style="height: 600px;">
+          <!-- Chat Messages -->
+          <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-4">
+            <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+              <p class="text-lg mb-2">👋 Welcome to Pathways AI Assistant!</p>
+              <p class="text-sm">Ask me anything about careers, skills, or learning paths</p>
+            </div>
+          </div>
+          
+          <!-- Input Area -->
+          <div class="border-t border-gray-200 dark:border-gray-700 p-4">
+            <div class="flex gap-2">
+              <textarea 
+                id="chat-input" 
+                rows="2" 
+                class="flex-1 px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 resize-none"
+                placeholder="Type your question here..."
+                onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); document.getElementById('send-btn').click(); }"
+              ></textarea>
+              <button 
+                id="send-btn" 
+                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Send
+              </button>
+            </div>
+            <div id="typing-indicator" class="hidden mt-2 text-sm text-gray-500 dark:text-gray-400">
+              <span class="animate-pulse">Gemini is thinking...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initUI, showToast } from '/js/ui.js';
+    import { watchAuthState } from '/js/auth.js';
+    import { askAI, formatAIResponse } from '/js/ai.js';
+    
+    initUI();
+    
+    let currentTask = 'qna';
+    let chatHistory = [];
+    
+    watchAuthState((user) => {
+      const authStatus = document.getElementById('auth-status');
+      const sendBtn = document.getElementById('send-btn');
+      const chatInput = document.getElementById('chat-input');
+      
+      if (!user) {
+        authStatus.innerHTML = `<a href="/auth.html" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Sign In</a>`;
+        sendBtn.disabled = true;
+        chatInput.disabled = true;
+        chatInput.placeholder = 'Sign in to use AI Assistant';
+        addMessage('system', 'Please sign in to use the AI Assistant.');
+      } else {
+        authStatus.innerHTML = `<a href="/profile.html" class="hover:text-blue-600 dark:hover:text-blue-400">Profile</a>`;
+        sendBtn.disabled = false;
+        chatInput.disabled = false;
+        chatInput.placeholder = 'Type your question here...';
+      }
+    });
+    
+    // Task selection
+    document.querySelectorAll('.task-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentTask = btn.dataset.task;
+        document.querySelectorAll('.task-btn').forEach(b => {
+          b.classList.remove('active', 'bg-blue-600', 'text-white');
+          b.classList.add('hover:bg-gray-100', 'dark:hover:bg-gray-700');
+        });
+        btn.classList.add('active', 'bg-blue-600', 'text-white');
+        btn.classList.remove('hover:bg-gray-100', 'dark:hover:bg-gray-700');
+        
+        const prompt = btn.dataset.prompt;
+        document.getElementById('chat-input').placeholder = prompt;
+      });
+    });
+    
+    // Example questions
+    document.querySelectorAll('.example-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const example = btn.dataset.example;
+        document.getElementById('chat-input').value = example;
+        document.getElementById('chat-input').focus();
+      });
+    });
+    
+    // Send message
+    document.getElementById('send-btn').addEventListener('click', sendMessage);
+    
+    function addMessage(role, content, task = null) {
+      const messagesDiv = document.getElementById('chat-messages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+      
+      if (role === 'user') {
+        messageDiv.innerHTML = `
+          <div class="max-w-[80%] bg-blue-600 text-white rounded-lg px-4 py-2">
+            <p class="whitespace-pre-wrap">${escapeHtml(content)}</p>
+          </div>
+        `;
+      } else if (role === 'assistant') {
+        messageDiv.innerHTML = `
+          <div class="max-w-[80%] bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-3">
+            <div class="ai-response-content">${content}</div>
+          </div>
+        `;
+      } else {
+        messageDiv.innerHTML = `
+          <div class="max-w-[80%] bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded-lg px-4 py-2 text-sm">
+            ${escapeHtml(content)}
+          </div>
+        `;
+      }
+      
+      messagesDiv.appendChild(messageDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+    
+    async function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const message = input.value.trim();
+      
+      if (!message) return;
+      
+      // Add user message
+      addMessage('user', message);
+      input.value = '';
+      
+      // Show typing indicator
+      document.getElementById('typing-indicator').classList.remove('hidden');
+      document.getElementById('send-btn').disabled = true;
+      
+      try {
+        const response = await askAI(currentTask, message);
+        const formatted = formatAIResponse(response, currentTask);
+        
+        addMessage('assistant', formatted, currentTask);
+        chatHistory.push({ role: 'user', content: message, task: currentTask });
+        chatHistory.push({ role: 'assistant', content: formatted });
+      } catch (error) {
+        showToast(error.message || 'Error calling AI', 'error');
+        addMessage('system', `Error: ${error.message || 'Failed to get response'}`);
+        console.error(error);
+      } finally {
+        document.getElementById('typing-indicator').classList.add('hidden');
+        document.getElementById('send-btn').disabled = false;
+        input.focus();
+      }
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
+

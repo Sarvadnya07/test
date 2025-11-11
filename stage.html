@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stage Detail - EduRise</title>
+  <meta name="description" content="Stage details: lessons, projects, resources and progress for a learning stage." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <div data-include="header"></div>
+
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div id="stage-hero" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12 rounded-lg mb-8">
+      <button id="back-to-role" class="mb-4 text-blue-100 hover:text-white transition-colors">← Back to Career Path</button>
+      <h1 id="stage-name" class="text-4xl md:text-5xl font-bold mb-2">Frontend Fundamentals</h1>
+      <p id="stage-desc" class="text-lg text-blue-100">Master the foundations of HTML, CSS, and JavaScript to build beautiful web interfaces.</p>
+    </div>
+
+    <!-- Progress -->
+    <div id="progress-section" class="mb-12">
+      <div class="flex justify-between items-center mb-2">
+        <h2 class="text-xl font-bold text-white">Progress</h2>
+        <span id="progress-percent" class="text-blue-400 font-bold">0%</span>
+      </div>
+      <div class="w-full bg-gray-700 rounded-full h-4">
+        <div id="progress-bar" class="bg-gradient-to-r from-blue-600 to-purple-600 h-4 rounded-full" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2">
+        <section id="lessons-section" class="mb-12">
+          <h2 class="text-2xl font-bold text-white mb-6">Lessons</h2>
+          <div id="lessons-list" class="space-y-4">
+            <!-- lessons injected here -->
+          </div>
+        </section>
+
+        <section id="projects-section">
+          <h2 class="text-2xl font-bold text-white mb-6">Projects</h2>
+          <div id="projects-list" class="space-y-4">
+            <!-- projects -->
+          </div>
+        </section>
+      </div>
+
+      <aside>
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-6">
+          <h3 class="text-lg font-bold text-white mb-4">Stage Info</h3>
+          <div class="space-y-3">
+            <div>
+              <p class="text-gray-400 text-sm mb-1">Duration</p>
+              <p id="stage-duration" class="text-white font-medium">2-3 weeks</p>
+            </div>
+            <div>
+              <p class="text-gray-400 text-sm mb-1">Lessons</p>
+              <p id="stage-lessons-count" class="text-white font-medium">4</p>
+            </div>
+            <div>
+              <p class="text-gray-400 text-sm mb-1">Projects</p>
+              <p id="stage-projects-count" class="text-white font-medium">2</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <h3 class="text-lg font-bold text-white mb-4">Resources</h3>
+          <div id="stage-resources" class="space-y-3">
+            <!-- resource links -->
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <div data-include="footer"></div>
+
+  <script src="/js/include.js" defer></script>
+
+  <script>
+    (function(){
+      // Default static stage data (fallback)
+      const defaultStage = {
+        name: 'Frontend Fundamentals',
+        description: 'Master the foundations of HTML, CSS, and JavaScript to build beautiful web interfaces.',
+        duration: '2-3 weeks',
+        lessons: [
+          { id:1, title:'HTML Basics & Structure', duration:'1 hour', topics:['Semantic HTML','Forms','Accessibility'] },
+          { id:2, title:'CSS Styling & Layouts', duration:'2 hours', topics:['Flexbox','Grid','Responsive Design'] },
+          { id:3, title:'JavaScript Fundamentals', duration:'3 hours', topics:['Variables','Functions','DOM Manipulation'] },
+          { id:4, title:'Interactive Elements', duration:'2 hours', topics:['Event Handling','Animations','Best Practices'] }
+        ],
+        projects: [
+          { id:1, title:'Personal Portfolio', difficulty:'Beginner', description:'Create a responsive portfolio website showcasing your skills.' },
+          { id:2, title:'Interactive Landing Page', difficulty:'Intermediate', description:'Build a landing page with animations and interactive elements.' }
+        ],
+        resources: [
+          { id:1, title:'MDN Web Docs', type:'Documentation', link:'#' },
+          { id:2, title:'CSS Tricks', type:'Blog', link:'#' },
+          { id:3, title:'JavaScript.info', type:'Tutorial', link:'#' }
+        ]
+      };
+
+      // Read URL params: support ?slug=role-slug&stage=1 or ?role=...&stage=...
+      const params = new URLSearchParams(window.location.search);
+      const roleSlug = params.get('slug') || params.get('role') || 'web-development';
+      const stageId = parseInt(params.get('stage')) || 1;
+
+      // Back button: go back to role page
+      document.getElementById('back-to-role').addEventListener('click', ()=>{
+        window.location.href = `/role.html?slug=${roleSlug}`;
+      });
+
+      // Render static fallback
+      function renderFromData(stage){
+        document.getElementById('stage-name').textContent = stage.name;
+        document.getElementById('stage-desc').textContent = stage.description;
+        document.getElementById('stage-duration').textContent = stage.duration;
+        document.getElementById('stage-lessons-count').textContent = stage.lessons.length;
+        document.getElementById('stage-projects-count').textContent = stage.projects.length;
+
+        // lessons
+        const lessonsList = document.getElementById('lessons-list');
+        lessonsList.innerHTML = '';
+        stage.lessons.forEach(lesson => {
+          const div = document.createElement('div');
+          div.className = 'bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-blue-500 transition-all cursor-pointer';
+          div.innerHTML = `
+            <div class="flex items-start">
+              <div class="flex-shrink-0"><input type="checkbox" class="w-6 h-6 rounded border-gray-600 text-blue-600"></div>
+              <div class="ml-4 flex-1">
+                <h3 class="text-lg font-bold mb-2">${lesson.title}</h3>
+                <p class="text-gray-400 text-sm mb-3">${lesson.duration}</p>
+                <div class="flex flex-wrap gap-2">${lesson.topics.map(t=>`<span class="bg-gray-700 text-gray-300 px-2 py-1 rounded text-xs">${t}</span>`).join('')}</div>
+              </div>
+            </div>
+          `;
+          lessonsList.appendChild(div);
+        });
+
+        // projects
+        const projectsList = document.getElementById('projects-list');
+        projectsList.innerHTML = '';
+        stage.projects.forEach(p => {
+          const div = document.createElement('div');
+          div.className = 'bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-purple-500 transition-all';
+          div.innerHTML = `
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-lg font-bold text-white">${p.title}</h3>
+              <span class="px-3 py-1 rounded-full text-xs font-medium ${p.difficulty === 'Beginner' ? 'bg-green-900 text-green-200' : 'bg-yellow-900 text-yellow-200'}">${p.difficulty}</span>
+            </div>
+            <p class="text-gray-400 mb-4">${p.description}</p>
+            <button class="text-purple-400 hover:text-purple-300 font-medium">View Project →</button>
+          `;
+          projectsList.appendChild(div);
+        });
+
+        // resources
+        const resContainer = document.getElementById('stage-resources');
+        resContainer.innerHTML = '';
+        stage.resources.forEach(r => {
+          const a = document.createElement('a');
+          a.href = r.link;
+          a.className = 'block p-3 bg-gray-700 rounded hover:bg-blue-600 transition-colors';
+          a.innerHTML = `<p class="text-white text-sm font-medium">${r.title}</p><p class="text-gray-400 text-xs">${r.type}</p>`;
+          resContainer.appendChild(a);
+        });
+
+        // progress default
+        const percent = 0;
+        document.getElementById('progress-percent').textContent = `${percent}%`;
+        document.getElementById('progress-bar').style.width = `${percent}%`;
+      }
+
+      // Try to load dynamic data via roles.js if available
+      const tryDynamic = async () => {
+        try {
+          if (window.rolesLoaded) return; // prevent double
+          // dynamic modules expect firebase; if firebase is configured this will work
+          const roles = await import('/js/roles.js');
+          const role = await roles.getRole(roleSlug);
+          const stages = await roles.getStages(roleSlug);
+          const stage = stages.find(s => parseInt(s.order || s.id) === stageId) || stages[stageId-1] || null;
+          if (stage) {
+            // stage shape: { title, description, order, resources... }
+            const stageData = {
+              name: stage.title || defaultStage.name,
+              description: stage.description || defaultStage.description,
+              duration: stage.duration || defaultStage.duration || 'varies',
+              lessons: stage.lessons || defaultStage.lessons,
+              projects: stage.projects || defaultStage.projects,
+              resources: stage.resources || defaultStage.resources
+            };
+            renderFromData(stageData);
+            window.rolesLoaded = true;
+            return true;
+          }
+        } catch (e) {
+          console.warn('Dynamic stage load failed or Firebase not available:', e.message || e);
+        }
+        return false;
+      };
+
+      (async ()=>{
+        const ok = await tryDynamic();
+        if (!ok) renderFromData(defaultStage);
+      })();
+
+    })();
+  </script>
+</body>
+</html>

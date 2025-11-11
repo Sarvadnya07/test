@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gamification Hub - Pathways</title>
+  <meta name="description" content="Track levels, XP, streaks, badges, and daily challenges — gamify your learning on Pathways." />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="theme-color" content="#0ea5e9" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Gamification Hub - Pathways" />
+  <meta property="og:description" content="Track levels, XP, streaks, badges, and daily challenges — gamify your learning on Pathways." />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Gamification Hub - Pathways" />
+  <meta name="twitter:description" content="Track levels, XP, streaks, badges, and daily challenges — gamify your learning on Pathways." />
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebPage","name":"Gamification Hub - Pathways","description":"Track levels, XP, streaks, badges, and daily challenges — gamify your learning on Pathways."}
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+  <div data-include="header"></div>
+
+  <main class="container mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold mb-8">Gamification Hub</h1>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left Column: Stats & Challenges -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Level & XP -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 class="text-2xl font-bold mb-4">Level & XP</h2>
+          <div class="flex items-center gap-6 mb-4">
+            <div class="text-center">
+              <div class="text-5xl font-bold text-blue-600" id="user-level">1</div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">Level</div>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between mb-2">
+                <span class="text-sm font-semibold">XP Progress</span>
+                <span class="text-sm" id="xp-text">0 / 100</span>
+              </div>
+              <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
+                <div id="xp-bar" class="bg-blue-600 h-4 rounded-full transition-all" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="text-center text-gray-600 dark:text-gray-400">
+            <p id="xp-remaining">100 XP to next level</p>
+          </div>
+        </div>
+        
+        <!-- Streak Tracker -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 class="text-2xl font-bold mb-4">🔥 Streak Tracker</h2>
+          <div class="text-center">
+            <div class="text-6xl font-bold text-orange-600 mb-2" id="streak-days">0</div>
+            <div class="text-lg text-gray-600 dark:text-gray-400">Days Active</div>
+            <p class="text-sm text-gray-500 dark:text-gray-500 mt-2" id="streak-message">Keep it going!</p>
+          </div>
+        </div>
+        
+        <!-- Daily Challenge -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 class="text-2xl font-bold mb-4">🎯 Daily Challenge</h2>
+          <div id="daily-challenge-content" class="space-y-3">
+            <div class="flex justify-between mb-2">
+              <span class="font-semibold">Complete 3 tasks today</span>
+              <span class="text-sm text-gray-600 dark:text-gray-400" id="challenge-progress">0 / 3</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+              <div id="challenge-bar" class="bg-green-600 h-3 rounded-full transition-all" style="width: 0%"></div>
+            </div>
+            <p id="challenge-message" class="text-center text-sm text-gray-600 dark:text-gray-400">Complete tasks to progress</p>
+          </div>
+        </div>
+        
+        <!-- Pomodoro Timer -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 class="text-2xl font-bold mb-4">⏰ Focus Timer</h2>
+          <div class="text-center">
+            <div class="text-6xl font-mono font-bold mb-4" id="pomodoro-time">25:00</div>
+            <div class="flex gap-4 justify-center mb-4">
+              <button id="pomodoro-start" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">Start</button>
+              <button id="pomodoro-pause" class="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700" disabled>Pause</button>
+              <button id="pomodoro-reset" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Reset</button>
+            </div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">
+              Sessions completed: <span id="pomodoro-sessions">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Column: Badges & Achievements -->
+      <div class="space-y-6">
+        <!-- Motivational Quote -->
+        <div class="bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg shadow p-6 text-white">
+          <h3 class="font-bold mb-2">🪄 Daily Quote</h3>
+          <p id="daily-quote" class="text-sm italic">Click to get a new quote!</p>
+          <button id="refresh-quote" class="mt-3 text-xs underline hover:no-underline">Get New Quote</button>
+        </div>
+        
+        <!-- Stats Summary -->
+        <div class="bg-gradient-to-br from-green-500 to-teal-600 rounded-lg shadow p-6 text-white">
+          <h3 class="font-bold mb-3">� Your Stats</h3>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+              <span>Total XP:</span>
+              <span id="total-xp">0</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Tasks Completed:</span>
+              <span id="tasks-completed">0</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Current Streak:</span>
+              <span id="streak-stat">0 days</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Badges -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 class="text-2xl font-bold mb-4">🏅 Your Badges</h2>
+          <div id="badges-grid" class="grid grid-cols-2 gap-3">
+            <p class="text-sm text-gray-600 dark:text-gray-400 col-span-2">Complete tasks to earn badges!</p>
+          </div>
+        </div>
+        
+        <!-- Achievements -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 class="text-2xl font-bold mb-4">🎖️ Achievements</h2>
+          <div id="achievements-list" class="space-y-2 text-sm">
+            <p class="text-gray-600 dark:text-gray-400">- 🌟 First Steps: Complete 1 task</p>
+            <p class="text-gray-600 dark:text-gray-400">- 🔥 On Fire: Build a 7-day streak</p>
+            <p class="text-gray-600 dark:text-gray-400">- 🚀 Momentum: Complete 10 tasks</p>
+            <p class="text-gray-600 dark:text-gray-400">- 💎 Dedication: Reach Level 5</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+
+  <div data-include="footer"></div>
+  <script src="/js/include.js" defer></script>
+
+  <script type="module">
+    import { initUI } from '/js/ui.js';
+    initUI();
+
+    const STATS_KEY = 'gamification_stats';
+    const POMODORO_KEY = 'pomodoro_state';
+    const QUOTES = [
+      "The only way to do great work is to love what you do.",
+      "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+      "Your limitation—it's only your imagination.",
+      "Push yourself, because no one else is going to do it for you.",
+      "Sometimes we're tested not to show our weaknesses, but to discover our strengths.",
+      "The key to success is to focus on goals, not obstacles.",
+      "Dream it. Wish it. Do it.",
+      "Success doesn't just find you. You have to go out and get it.",
+      "Great things never come from comfort zones.",
+      "Dream bigger. Do bigger.",
+      "Don't stop when you're tired. Stop when you're done."
+    ];
+
+    // Initialize stats if not exists
+    function getStats() {
+      const stats = JSON.parse(localStorage.getItem(STATS_KEY)) || {
+        level: 1,
+        xp: 0,
+        totalXP: 0,
+        streak: 0,
+        tasksCompleted: 0,
+        lastLoginDate: new Date().toISOString().split('T')[0],
+        badges: [],
+        pomodoroSessions: 0
+      };
+      return stats;
+    }
+
+    function saveStats(stats) {
+      localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+    }
+
+    function getXPForNextLevel(level) {
+      return 100 * level;
+    }
+
+    function checkStreakContinuity(stats) {
+      const today = new Date().toISOString().split('T')[0];
+      const lastLogin = stats.lastLoginDate;
+      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+      
+      if (lastLogin === today) {
+        // Already logged in today, no change
+        return stats.streak;
+      } else if (lastLogin === yesterday) {
+        // Streak continues
+        stats.lastLoginDate = today;
+        return stats.streak + 1;
+      } else {
+        // Streak broken, reset
+        stats.lastLoginDate = today;
+        return 1;
+      }
+    }
+
+    function renderStats() {
+      const stats = getStats();
+      
+      // Update level & XP
+      document.getElementById('user-level').textContent = stats.level;
+      document.getElementById('xp-text').textContent = `${stats.xp} / ${getXPForNextLevel(stats.level)}`;
+      document.getElementById('xp-remaining').textContent = `${getXPForNextLevel(stats.level) - stats.xp} XP to next level`;
+      
+      const xpProgress = (stats.xp / getXPForNextLevel(stats.level)) * 100;
+      document.getElementById('xp-bar').style.width = `${Math.min(xpProgress, 100)}%`;
+      
+      // Update streak
+      document.getElementById('streak-days').textContent = stats.streak;
+      document.getElementById('streak-stat').textContent = stats.streak + ' days';
+      
+      if (stats.streak > 0) {
+        document.getElementById('streak-message').textContent = `🔥 ${stats.streak} day streak! Keep it going!`;
+      } else {
+        document.getElementById('streak-message').textContent = 'Start a new streak today!';
+      }
+      
+      // Update total stats
+      document.getElementById('total-xp').textContent = stats.totalXP;
+      document.getElementById('tasks-completed').textContent = stats.tasksCompleted;
+      document.getElementById('pomodoro-sessions').textContent = stats.pomodoroSessions;
+      
+      // Update challenge progress
+      const today = new Date().toISOString().split('T')[0];
+      const tasksToday = stats.tasksToday || {};
+      const tasksCompleted = (tasksToday[today] || 0);
+      const target = 3;
+      
+      document.getElementById('challenge-progress').textContent = `${tasksCompleted} / ${target}`;
+      const progress = (tasksCompleted / target) * 100;
+      document.getElementById('challenge-bar').style.width = `${Math.min(progress, 100)}%`;
+      
+      if (tasksCompleted >= target) {
+        document.getElementById('challenge-message').textContent = '✓ Challenge Complete! +30 XP';
+      } else {
+        document.getElementById('challenge-message').textContent = `${target - tasksCompleted} tasks remaining`;
+      }
+      
+      // Update badges
+      const badgesGrid = document.getElementById('badges-grid');
+      badgesGrid.innerHTML = '';
+      
+      if (stats.tasksCompleted >= 1) {
+        const badge1 = document.createElement('div');
+        badge1.className = 'bg-gray-100 dark:bg-gray-700 rounded-lg p-3 text-center';
+        badge1.innerHTML = '<div class="text-3xl mb-1">🌟</div><div class="font-semibold text-xs">First Steps</div>';
+        badgesGrid.appendChild(badge1);
+      }
+      
+      if (stats.streak >= 7) {
+        const badge2 = document.createElement('div');
+        badge2.className = 'bg-gray-100 dark:bg-gray-700 rounded-lg p-3 text-center';
+        badge2.innerHTML = '<div class="text-3xl mb-1">🔥</div><div class="font-semibold text-xs">On Fire</div>';
+        badgesGrid.appendChild(badge2);
+      }
+      
+      if (stats.tasksCompleted >= 10) {
+        const badge3 = document.createElement('div');
+        badge3.className = 'bg-gray-100 dark:bg-gray-700 rounded-lg p-3 text-center';
+        badge3.innerHTML = '<div class="text-3xl mb-1">🚀</div><div class="font-semibold text-xs">Momentum</div>';
+        badgesGrid.appendChild(badge3);
+      }
+      
+      if (stats.level >= 5) {
+        const badge4 = document.createElement('div');
+        badge4.className = 'bg-gray-100 dark:bg-gray-700 rounded-lg p-3 text-center';
+        badge4.innerHTML = '<div class="text-3xl mb-1">💎</div><div class="font-semibold text-xs">Dedication</div>';
+        badgesGrid.appendChild(badge4);
+      }
+      
+      if (badgesGrid.children.length === 0) {
+        badgesGrid.innerHTML = '<p class="text-gray-600 dark:text-gray-400 text-sm col-span-2">Complete tasks to earn badges!</p>';
+      }
+    }
+
+    function addXP(amount) {
+      const stats = getStats();
+      stats.xp += amount;
+      stats.totalXP += amount;
+      
+      // Check for level up
+      while (stats.xp >= getXPForNextLevel(stats.level)) {
+        stats.xp -= getXPForNextLevel(stats.level);
+        stats.level += 1;
+      }
+      
+      saveStats(stats);
+      renderStats();
+    }
+
+    function completeTask() {
+      const stats = getStats();
+      const today = new Date().toISOString().split('T')[0];
+      
+      if (!stats.tasksToday) stats.tasksToday = {};
+      stats.tasksToday[today] = (stats.tasksToday[today] || 0) + 1;
+      stats.tasksCompleted += 1;
+      
+      // Update streak
+      stats.streak = checkStreakContinuity(stats);
+      
+      // Add XP
+      addXP(10);
+      
+      saveStats(stats);
+      renderStats();
+    }
+
+    // Pomodoro timer
+    let pomodoroInterval = null;
+    let pomodoroTime = 25 * 60;
+    let isRunning = false;
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    document.getElementById('pomodoro-start').addEventListener('click', () => {
+      if (!isRunning) {
+        isRunning = true;
+        document.getElementById('pomodoro-start').disabled = true;
+        document.getElementById('pomodoro-pause').disabled = false;
+        
+        pomodoroInterval = setInterval(() => {
+          pomodoroTime--;
+          document.getElementById('pomodoro-time').textContent = formatTime(pomodoroTime);
+          
+          if (pomodoroTime <= 0) {
+            clearInterval(pomodoroInterval);
+            isRunning = false;
+            
+            // Complete session
+            const stats = getStats();
+            stats.pomodoroSessions = (stats.pomodoroSessions || 0) + 1;
+            addXP(25);
+            saveStats(stats);
+            
+            pomodoroTime = 25 * 60;
+            document.getElementById('pomodoro-time').textContent = formatTime(pomodoroTime);
+            document.getElementById('pomodoro-start').disabled = false;
+            document.getElementById('pomodoro-pause').disabled = true;
+            
+            alert('Pomodoro session complete! 🎉 Take a 5-minute break.');
+          }
+        }, 1000);
+      }
+    });
+
+    document.getElementById('pomodoro-pause').addEventListener('click', () => {
+      isRunning = false;
+      clearInterval(pomodoroInterval);
+      document.getElementById('pomodoro-start').disabled = false;
+      document.getElementById('pomodoro-pause').disabled = true;
+    });
+
+    document.getElementById('pomodoro-reset').addEventListener('click', () => {
+      isRunning = false;
+      clearInterval(pomodoroInterval);
+      pomodoroTime = 25 * 60;
+      document.getElementById('pomodoro-time').textContent = formatTime(pomodoroTime);
+      document.getElementById('pomodoro-start').disabled = false;
+      document.getElementById('pomodoro-pause').disabled = true;
+    });
+
+    // Quote functionality
+    function getRandomQuote() {
+      return QUOTES[Math.floor(Math.random() * QUOTES.length)];
+    }
+
+    document.getElementById('refresh-quote').addEventListener('click', () => {
+      const quote = getRandomQuote();
+      document.getElementById('daily-quote').textContent = `"${quote}"`;
+    });
+
+    // Initial quote
+    document.getElementById('daily-quote').textContent = `"${getRandomQuote()}"`;
+
+    // Initial render
+    renderStats();
+    
+    // Add some example buttons to simulate task completion
+    const challengeDiv = document.getElementById('daily-challenge-content');
+    const testBtn = document.createElement('button');
+    testBtn.textContent = 'Simulate Task Completion';
+    testBtn.className = 'mt-3 w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700';
+    testBtn.addEventListener('click', () => {
+      completeTask();
+      alert('Task logged! +10 XP');
+    });
+    challengeDiv.appendChild(testBtn);
+  </script>
+

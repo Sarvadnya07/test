@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Q&A Forum - Pathways</title>
+  <meta name="description" content="Ask the community, share knowledge, and get help on career roadmaps and learning resources in the Pathways forum." />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="theme-color" content="#0ea5e9" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Q&A Forum - Pathways" />
+  <meta property="og:description" content="Ask the community, share knowledge, and get help on career roadmaps and learning resources in the Pathways forum." />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Q&A Forum - Pathways" />
+  <meta name="twitter:description" content="Ask the community, share knowledge, and get help on career roadmaps and learning resources in the Pathways forum." />
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"DiscussionForumPosting","name":"Q&A Forum - Pathways","description":"Ask the community, share knowledge, and get help on career roadmaps and learning resources in the Pathways forum."}
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <div data-include="header"></div>
+
+  <main class="container mx-auto px-4 py-8 max-w-5xl">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-4xl font-bold mb-2">Q&A Forum</h1>
+        <p class="text-gray-600 dark:text-gray-400">Ask the community, share knowledge, get help</p>
+      </div>
+      <button id="new-question-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+        + Ask Question
+      </button>
+    </div>
+    
+    <!-- Filter Tabs -->
+    <div class="flex gap-4 mb-6 border-b">
+      <button data-filter="all" class="px-4 py-2 font-semibold border-b-2 border-blue-600 filter-tab">All Questions</button>
+      <button data-filter="unanswered" class="px-4 py-2 text-gray-600 dark:text-gray-400 filter-tab">Unanswered</button>
+      <button data-filter="popular" class="px-4 py-2 text-gray-600 dark:text-gray-400 filter-tab">Popular</button>
+    </div>
+    
+    <!-- Questions List -->
+    <div id="questions-list" class="space-y-4">
+      <!-- Questions loaded here -->
+    </div>
+    
+    <!-- New Question Modal -->
+    <div id="question-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 p-6">
+        <h3 class="text-2xl font-bold mb-4">Ask a Question</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block mb-2 font-semibold">Title</label>
+            <input type="text" id="question-title" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700" placeholder="What's your question?">
+          </div>
+          <div>
+            <label class="block mb-2 font-semibold">Category</label>
+            <select id="question-category" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
+              <option value="">General</option>
+              <option value="career">Career Advice</option>
+              <option value="skills">Skills & Learning</option>
+              <option value="roadmap">Roadmap Help</option>
+              <option value="resources">Resources</option>
+            </select>
+          </div>
+          <div>
+            <label class="block mb-2 font-semibold">Question</label>
+            <textarea id="question-content" rows="6" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700" placeholder="Describe your question in detail..."></textarea>
+          </div>
+          <div class="flex gap-4">
+            <button id="submit-question" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+              Post Question
+            </button>
+            <button id="cancel-question" class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Question Detail Modal -->
+    <div id="question-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-4">
+            <h3 id="detail-title" class="text-2xl font-bold"></h3>
+            <button id="close-detail" class="text-gray-500 hover:text-gray-700">✕</button>
+          </div>
+          <div id="detail-content" class="mb-6"></div>
+          <div id="detail-replies" class="space-y-4 mb-6">
+            <h4 class="font-bold">Replies</h4>
+            <div id="replies-list"></div>
+          </div>
+          <div>
+            <textarea id="reply-content" rows="3" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 mb-2" placeholder="Write your reply..."></textarea>
+            <button id="submit-reply" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              Post Reply
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initUI, showToast } from '/js/ui.js';
+    import { watchAuthState, getCurrentUser } from '/js/auth.js';
+    import { db, auth } from '/js/firebase.js';
+    import { collection, addDoc, query, orderBy, getDocs, onSnapshot, serverTimestamp, doc, getDoc, updateDoc, increment } from 'firebase/firestore';
+    
+    initUI();
+    
+    let currentFilter = 'all';
+    let currentQuestionId = null;
+    
+    watchAuthState((user) => {
+      const authStatus = document.getElementById('auth-status');
+      if (!user) {
+        authStatus.innerHTML = `<a href="/auth.html" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Sign In</a>`;
+        document.getElementById('new-question-btn').style.display = 'none';
+      } else {
+        authStatus.innerHTML = `<a href="/dashboard.html" class="hover:text-blue-600 dark:hover:text-blue-400">Dashboard</a>`;
+        document.getElementById('new-question-btn').style.display = 'block';
+      }
+      loadQuestions();
+    });
+    
+    // Filter tabs
+    document.querySelectorAll('.filter-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentFilter = btn.dataset.filter;
+        document.querySelectorAll('.filter-tab').forEach(b => {
+          b.classList.remove('font-semibold', 'border-b-2', 'border-blue-600');
+          b.classList.add('text-gray-600', 'dark:text-gray-400');
+        });
+        btn.classList.add('font-semibold', 'border-b-2', 'border-blue-600');
+        btn.classList.remove('text-gray-600', 'dark:text-gray-400');
+        loadQuestions();
+      });
+    });
+    
+    async function loadQuestions() {
+      const list = document.getElementById('questions-list');
+      list.innerHTML = '<div class="text-center py-8"><div class="spinner"></div></div>';
+      
+      let q = query(collection(db, 'forumQuestions'), orderBy('createdAt', 'desc'));
+      
+      if (currentFilter === 'popular') {
+        q = query(collection(db, 'forumQuestions'), orderBy('upvotes', 'desc'));
+      }
+      
+      const snapshot = await getDocs(q);
+      const questions = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        if (currentFilter === 'unanswered' && (data.replyCount || 0) > 0) return;
+        questions.push({ id: doc.id, ...data });
+      });
+      
+      list.innerHTML = '';
+      if (questions.length === 0) {
+        list.innerHTML = '<p class="text-center text-gray-600 dark:text-gray-400 py-8">No questions yet. Be the first to ask!</p>';
+        return;
+      }
+      
+      questions.forEach(question => {
+        const div = document.createElement('div');
+        div.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg transition cursor-pointer';
+        div.innerHTML = `
+          <div class="flex items-start gap-4">
+            <div class="text-center">
+              <div class="text-2xl font-bold text-blue-600">${question.upvotes || 0}</div>
+              <div class="text-xs text-gray-600 dark:text-gray-400">votes</div>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-xl font-bold mb-2">${question.title}</h3>
+              <p class="text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">${question.content || ''}</p>
+              <div class="flex items-center gap-4 text-sm text-gray-500">
+                <span>${question.authorName || 'Anonymous'}</span>
+                <span>•</span>
+                <span>${question.replyCount || 0} replies</span>
+                ${question.category ? `<span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-xs">${question.category}</span>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+        div.addEventListener('click', () => showQuestionDetail(question.id));
+        list.appendChild(div);
+      });
+    }
+    
+    // New question modal
+    document.getElementById('new-question-btn').addEventListener('click', () => {
+      document.getElementById('question-modal').classList.remove('hidden');
+      document.getElementById('question-modal').classList.add('flex');
+    });
+    
+    document.getElementById('cancel-question').addEventListener('click', () => {
+      document.getElementById('question-modal').classList.add('hidden');
+      document.getElementById('question-modal').classList.remove('flex');
+      document.getElementById('question-title').value = '';
+      document.getElementById('question-content').value = '';
+    });
+    
+    document.getElementById('submit-question').addEventListener('click', async () => {
+      const title = document.getElementById('question-title').value.trim();
+      const content = document.getElementById('question-content').value.trim();
+      const category = document.getElementById('question-category').value;
+      
+      if (!title || !content) {
+        showToast('Please fill in all fields', 'error');
+        return;
+      }
+      
+      const user = getCurrentUser();
+      if (!user) {
+        showToast('Please sign in', 'error');
+        return;
+      }
+      
+      try {
+        await addDoc(collection(db, 'forumQuestions'), {
+          title,
+          content,
+          category: category || 'general',
+          authorId: user.uid,
+          authorName: user.displayName || 'Anonymous',
+          upvotes: 0,
+          replyCount: 0,
+          createdAt: serverTimestamp()
+        });
+        
+        showToast('Question posted!', 'success');
+        document.getElementById('cancel-question').click();
+        loadQuestions();
+      } catch (error) {
+        showToast(error.message, 'error');
+      }
+    });
+    
+    async function showQuestionDetail(questionId) {
+      currentQuestionId = questionId;
+      const questionDoc = await getDoc(doc(db, 'forumQuestions', questionId));
+      if (!questionDoc.exists()) return;
+      
+      const question = { id: questionDoc.id, ...questionDoc.data() };
+      document.getElementById('detail-title').textContent = question.title;
+      document.getElementById('detail-content').innerHTML = `
+        <div class="mb-4">
+          <p class="text-gray-700 dark:text-gray-300">${question.content}</p>
+        </div>
+        <div class="text-sm text-gray-500">
+          Asked by ${question.authorName} • ${question.replyCount || 0} replies
+        </div>
+      `;
+      
+      // Load replies
+      const repliesSnap = await getDocs(query(collection(db, 'forumReplies'), where('questionId', '==', questionId), orderBy('createdAt', 'asc')));
+      const repliesList = document.getElementById('replies-list');
+      repliesList.innerHTML = '';
+      
+      if (repliesSnap.size === 0) {
+        repliesList.innerHTML = '<p class="text-gray-600 dark:text-gray-400">No replies yet. Be the first to answer!</p>';
+      } else {
+        repliesSnap.forEach(doc => {
+          const reply = doc.data();
+          const div = document.createElement('div');
+          div.className = 'border-l-4 border-blue-600 pl-4 py-2';
+          div.innerHTML = `
+            <p class="mb-2">${reply.content}</p>
+            <div class="text-sm text-gray-500">— ${reply.authorName || 'Anonymous'}</div>
+          `;
+          repliesList.appendChild(div);
+        });
+      }
+      
+      document.getElementById('question-detail-modal').classList.remove('hidden');
+      document.getElementById('question-detail-modal').classList.add('flex');
+    }
+    
+    document.getElementById('close-detail').addEventListener('click', () => {
+      document.getElementById('question-detail-modal').classList.add('hidden');
+      document.getElementById('question-detail-modal').classList.remove('flex');
+    });
+    
+    document.getElementById('submit-reply').addEventListener('click', async () => {
+      const content = document.getElementById('reply-content').value.trim();
+      if (!content) {
+        showToast('Please enter a reply', 'error');
+        return;
+      }
+      
+      const user = getCurrentUser();
+      if (!user) {
+        showToast('Please sign in', 'error');
+        return;
+      }
+      
+      try {
+        await addDoc(collection(db, 'forumReplies'), {
+          questionId: currentQuestionId,
+          content,
+          authorId: user.uid,
+          authorName: user.displayName || 'Anonymous',
+          createdAt: serverTimestamp()
+        });
+        
+        // Update reply count
+        await updateDoc(doc(db, 'forumQuestions', currentQuestionId), {
+          replyCount: increment(1)
+        });
+        
+        showToast('Reply posted!', 'success');
+        document.getElementById('reply-content').value = '';
+        showQuestionDetail(currentQuestionId);
+      } catch (error) {
+        showToast(error.message, 'error');
+      }
+    });
+    
+    loadQuestions();
+  </script>
+</body>
+</html>
+

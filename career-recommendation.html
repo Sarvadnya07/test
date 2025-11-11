@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Career Recommendation — EduRise</title>
+  <meta name="description" content="Quick career recommendation based on interests and time availability." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <div data-include="header"></div>
+
+  <main id="main-content" class="container mx-auto px-4 py-12 max-w-3xl">
+    <h1 class="text-3xl font-bold mb-4">Career Recommendation</h1>
+    <p class="text-gray-600 mb-6">Answer a few quick questions and get a recommended role and next steps.</p>
+
+    <div class="mb-4">
+      <label class="block mb-2 font-semibold">Your main interest</label>
+      <select id="interest" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-800">
+        <option value="web">Building websites/apps</option>
+        <option value="data">Data & analysis</option>
+        <option value="design">Design & UX</option>
+        <option value="cloud">Cloud & DevOps</option>
+      </select>
+    </div>
+    <div class="mb-4">
+      <label class="block mb-2 font-semibold">Available hours per week</label>
+      <input id="hours" type="number" min="1" max="80" value="8" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-800">
+    </div>
+
+    <div class="flex gap-3">
+      <button id="recommend-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg">Recommend</button>
+      <button id="save-recommendation" class="px-6 py-2 border rounded-lg">Save</button>
+    </div>
+
+    <div id="recommendation" class="mt-8"></div>
+  </main>
+
+  <div data-include="footer"></div>
+
+  <script type="module">
+    import { rolesAPI } from '/js/roles-wrapper.js';
+    async function init(){
+      const roles = await rolesAPI.getAllRoles();
+      document.getElementById('recommend-btn').addEventListener('click', ()=>{
+        const interest = document.getElementById('interest').value;
+        const hours = parseInt(document.getElementById('hours').value||'8',10);
+        const rec = recommend(interest, hours, roles);
+        renderRecommendation(rec);
+      });
+    }
+
+    function recommend(interest, hours, roles){
+      // simple heuristic mapping
+      let candidates = roles;
+      if (interest === 'web') candidates = roles.filter(r=> r.slug.includes('web') || r.domain==='Technology');
+      if (interest === 'data') candidates = roles.filter(r=> r.slug.includes('data') || r.domain==='Technology');
+      if (interest === 'design') candidates = roles.filter(r=> r.domain==='Design' || r.slug.includes('ui'));
+      if (interest === 'cloud') candidates = roles.filter(r=> r.slug.includes('cloud') || r.domain==='Technology');
+      const pick = candidates[0] || roles[0] || null;
+      return { pick, hours };
+    }
+
+    function renderRecommendation(res){
+      const container = document.getElementById('recommendation');
+      if (!res.pick) { container.innerHTML = '<p>No recommendation found</p>'; return; }
+      container.innerHTML = `
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg">
+          <h2 class="text-2xl font-bold mb-2">Recommended Role: ${res.pick.title}</h2>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Estimated time: ~${res.pick.estMonths || 'Varies'} months • Level: ${res.pick.difficulty || 'Intermediate'}</p>
+          <h3 class="font-semibold mb-2">Suggested 6-week focus</h3>
+          <ul class="list-disc list-inside text-sm mb-4">
+            <li>Week 1-2: Foundations & core concepts</li>
+            <li>Week 3-4: Hands-on modules and small projects</li>
+            <li>Week 5: Build a mini-project</li>
+            <li>Week 6: Review and polish portfolio</li>
+          </ul>
+          <a href="/role.html?slug=${res.pick.slug}" class="px-4 py-2 bg-blue-600 text-white rounded-lg">View Full Roadmap</a>
+        </div>
+      `;
+    }
+
+    init();
+  </script>
+</body>
+</html>

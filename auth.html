@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - Pathways</title>
+  <meta name="description" content="Sign in or create an account to track your progress, access personalized roadmaps, and join the Pathways community." />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="theme-color" content="#0ea5e9" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Sign In - Pathways" />
+  <meta property="og:description" content="Sign in or create an account to track your progress, access personalized roadmaps, and join the Pathways community." />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Sign In - Pathways" />
+  <meta name="twitter:description" content="Sign in or create an account to track your progress, access personalized roadmaps, and join the Pathways community." />
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebPage","name":"Sign In - Pathways","description":"Sign in or create an account to track your progress, access personalized roadmaps, and join the Pathways community."}
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  
+  <!-- Split Layout: Left side benefits, Right side form -->
+  <div class="flex min-h-screen">
+    <!-- Left Side: Benefits -->
+    <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 to-purple-600 text-white p-12 flex-col justify-center">
+      <div class="max-w-md">
+        <h2 class="text-4xl font-bold mb-8">Welcome to Pathways</h2>
+        <div class="space-y-6">
+          <div class="flex gap-3">
+            <div class="text-2xl flex-shrink-0">🎯</div>
+            <div>
+              <h3 class="font-bold mb-1">Structured Career Paths</h3>
+              <p class="text-sm text-blue-100">Follow proven roadmaps for your dream career with clear milestones and goals.</p>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <div class="text-2xl flex-shrink-0">📚</div>
+            <div>
+              <h3 class="font-bold mb-1">Curated Resources</h3>
+              <p class="text-sm text-blue-100">Access handpicked courses, articles, videos, and tools from industry experts.</p>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <div class="text-2xl flex-shrink-0">🤖</div>
+            <div>
+              <h3 class="font-bold mb-1">AI Guidance</h3>
+              <p class="text-sm text-blue-100">Get personalized learning plans and career advice powered by AI.</p>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <div class="text-2xl flex-shrink-0">📊</div>
+            <div>
+              <h3 class="font-bold mb-1">Track Progress</h3>
+              <p class="text-sm text-blue-100">Monitor your learning journey with stats, badges, and achievement milestones.</p>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <div class="text-2xl flex-shrink-0">💬</div>
+            <div>
+              <h3 class="font-bold mb-1">Community Support</h3>
+              <p class="text-sm text-blue-100">Connect with peers, ask questions in the forum, and share experiences.</p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-12 pt-8 border-t border-blue-400">
+          <p class="text-sm text-blue-100">Join 10,000+ learners on their career journeys</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side: Auth Form -->
+    <main id="main-content" class="w-full lg:w-1/2 p-8 flex items-center justify-center">
+      <div class="w-full max-w-md">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+      <h1 class="text-3xl font-bold mb-2 text-center">Welcome to Pathways</h1>
+      <p class="text-gray-600 dark:text-gray-400 text-center mb-8">Sign in to track your progress</p>
+      
+      <!-- Tabs -->
+      <div class="flex gap-4 mb-6 border-b">
+        <button id="signin-tab" class="px-4 py-2 font-semibold border-b-2 border-blue-600">Sign In</button>
+        <button id="signup-tab" class="px-4 py-2 text-gray-600 dark:text-gray-400">Sign Up</button>
+      </div>
+      
+      <!-- Sign In Form -->
+      <form id="signin-form" class="space-y-4">
+        <div>
+          <label for="signin-email" class="block mb-2 font-semibold">Email</label>
+          <input type="email" id="signin-email" required 
+            class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
+        </div>
+        <div>
+          <label for="signin-password" class="block mb-2 font-semibold">Password</label>
+          <input type="password" id="signin-password" required 
+            class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
+        </div>
+        <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+          Sign In
+        </button>
+      </form>
+      
+      <!-- Sign Up Form -->
+      <form id="signup-form" class="space-y-4 hidden">
+        <div>
+          <label for="signup-name" class="block mb-2 font-semibold">Name</label>
+          <input type="text" id="signup-name" required 
+            class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
+        </div>
+        <div>
+          <label for="signup-email" class="block mb-2 font-semibold">Email</label>
+          <input type="email" id="signup-email" required 
+            class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
+        </div>
+        <div>
+          <label for="signup-password" class="block mb-2 font-semibold">Password</label>
+          <input type="password" id="signup-password" required minlength="6"
+            class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
+        </div>
+        <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+          Sign Up
+        </button>
+      </form>
+      
+      <div class="mt-6 text-center">
+        <p class="text-gray-600 dark:text-gray-400 mb-4">or</p>
+        <button id="google-signin" class="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold flex items-center justify-center gap-2">
+          <span>🔍</span>
+          Continue with Google
+        </button>
+      </div>
+      
+      <div id="auth-error" class="mt-4 p-3 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded hidden"></div>
+      
+      <p class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+        <a href="/" class="text-blue-600 dark:text-blue-400 hover:underline">Back to home</a>
+      </p>
+    </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initUI } from '/js/ui.js';
+    import authWrapper from '/js/auth-wrapper.js';
+    
+    initUI();
+    
+    const signinTab = document.getElementById('signin-tab');
+    const signupTab = document.getElementById('signup-tab');
+    const signinForm = document.getElementById('signin-form');
+    const signupForm = document.getElementById('signup-form');
+    const errorDiv = document.getElementById('auth-error');
+    
+    signinTab.addEventListener('click', () => {
+      signinTab.classList.add('border-b-2', 'border-blue-600');
+      signinTab.classList.remove('text-gray-600', 'dark:text-gray-400');
+      signupTab.classList.remove('border-b-2', 'border-blue-600');
+      signupTab.classList.add('text-gray-600', 'dark:text-gray-400');
+      signinForm.classList.remove('hidden');
+      signupForm.classList.add('hidden');
+    });
+    
+    signupTab.addEventListener('click', () => {
+      signupTab.classList.add('border-b-2', 'border-blue-600');
+      signupTab.classList.remove('text-gray-600', 'dark:text-gray-400');
+      signinTab.classList.remove('border-b-2', 'border-blue-600');
+      signinTab.classList.add('text-gray-600', 'dark:text-gray-400');
+      signupForm.classList.remove('hidden');
+      signinForm.classList.add('hidden');
+    });
+    
+    signinForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorDiv.classList.add('hidden');
+      const email = document.getElementById('signin-email').value.trim();
+      const password = document.getElementById('signin-password').value;
+      
+      if (!email || !password) {
+        errorDiv.textContent = 'Please enter email and password';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+      
+      try {
+        const user = await authWrapper.signInEmail(email, password);
+        alert('Signed in successfully!');
+        window.location.href = '/profile.html';
+      } catch (error) {
+        errorDiv.textContent = error.message || 'Sign in failed';
+        errorDiv.classList.remove('hidden');
+      }
+    });
+    
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorDiv.classList.add('hidden');
+      const name = document.getElementById('signup-name').value.trim();
+      const email = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value;
+      
+      if (!name || !email || !password) {
+        errorDiv.textContent = 'Please fill in all fields';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+      
+      if (password.length < 6) {
+        errorDiv.textContent = 'Password must be at least 6 characters';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+      
+      try {
+        const user = await authWrapper.signUpEmail(email, password, name);
+        alert('Account created! Welcome to Pathways!');
+        window.location.href = '/profile.html';
+      } catch (error) {
+        errorDiv.textContent = error.message || 'Sign up failed';
+        errorDiv.classList.remove('hidden');
+      }
+    });
+    
+    document.getElementById('google-signin').addEventListener('click', () => {
+      errorDiv.textContent = 'Google Sign-In is not available in offline mode. Please use email signup.';
+      errorDiv.classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>
+

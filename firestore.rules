@@ -1,0 +1,101 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+    
+    function isAdmin() {
+      return isSignedIn() && 
+        (request.auth.token.role == 'admin' || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+    }
+    
+    function isMentor() {
+      return isSignedIn() && 
+        (request.auth.token.role == 'mentor' || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'mentor');
+    }
+
+    // Users: read own or admin, write own or admin
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow write: if isOwner(uid) || isAdmin();
+    }
+
+    // Goals: user-owned
+    match /goals/{uid}/items/{goalId} {
+      allow read, write: if isOwner(uid) || isAdmin();
+    }
+
+    // Pledges: user-owned
+    match /pledges/{uid} {
+      allow read, write: if isOwner(uid) || isAdmin();
+    }
+
+    // Feedback: anyone can create, admin can read
+    match /feedback/{feedbackId} {
+      allow create: if isSignedIn();
+      allow read: if isAdmin();
+    }
+
+    // Career Roles: public read, admin write
+    match /careerRoles/{roleId} {
+      allow read: if true;
+      allow write: if isAdmin();
+      
+      // Stages
+      match /stages/{stageId} {
+        allow read: if true;
+        allow write: if isAdmin();
+        
+        // Skills
+        match /skills/{skillId} {
+          allow read: if true;
+          allow write: if isAdmin();
+        }
+        
+        // Tasks
+        match /tasks/{taskId} {
+          allow read: if true;
+          allow write: if isAdmin();
+        }
+      }
+    }
+
+    // Resources: read if approved, create if signed in, update/delete if admin
+    match /resources/{resourceId} {
+      allow read: if resource.data.approved == true || isAdmin();
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
+    }
+
+    // Progress: user-owned
+    match /progress/{uid}/{roleSlug}/{coll=**}/{id} {
+      allow read, write: if isOwner(uid) || isAdmin();
+    }
+
+    // Badges: public read, admin write
+    match /badges/{badgeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // User Badges: user-owned
+    match /userBadges/{uid}/{badgeId} {
+      allow read, write: if isOwner(uid) || isAdmin();
+    }
+
+    // Gallery: public read, admin write
+    match /gallery/{galleryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

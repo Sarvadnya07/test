@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gallery — EduRise</title>
+  <meta name="description" content="Gallery — snapshots from courses, events and community highlights.">
+  <link rel="icon" href="/favicon.ico">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
+    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="/index.html" class="text-2xl font-bold text-blue-600 dark:text-blue-400">EduRise</a>
+      <div class="flex items-center gap-4">
+        <a href="/learn.html" class="hover:text-blue-600 dark:hover:text-blue-400">Learn</a>
+        <a href="/pathways.html" class="hover:text-blue-600 dark:hover:text-blue-400">Pathways</a>
+        <a href="/ai.html" class="hover:text-blue-600 dark:hover:text-blue-400">AI Mentor</a>
+        <a href="/forum.html" class="hover:text-blue-600 dark:hover:text-blue-400">Forum</a>
+        <a href="/profile.html" class="hover:text-blue-600 dark:hover:text-blue-400">Profile</a>
+        <a href="/auth.html" class="btn-primary">Sign Up</a>
+        <button id="theme-toggle" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700" aria-label="Toggle theme">🌙</button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content" class="container mx-auto px-4 py-12">
+    <h1 class="text-3xl font-bold mb-6">Gallery</h1>
+    <p class="text-gray-600 dark:text-gray-300 mb-8">Moments from our community — workshops, student projects, and events.</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <!-- Placeholder images -->
+      <div class="rounded overflow-hidden shadow bg-white dark:bg-gray-800">
+        <img src="/public/robots.txt" alt="Placeholder image" class="w-full h-48 object-cover opacity-0"> <!-- small invisible placeholder so layout holds if no images -->
+        <div class="p-4">
+          <h3 class="font-semibold">Student Project Showcase</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-300">Highlights from recent capstone projects.</p>
+        </div>
+      </div>
+
+      <div class="rounded overflow-hidden shadow bg-white dark:bg-gray-800">
+        <div class="p-4">
+          <h3 class="font-semibold">Career Workshop</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-300">Snapshots from guest speaker sessions.</p>
+        </div>
+      </div>
+
+      <div class="rounded overflow-hidden shadow bg-white dark:bg-gray-800">
+        <div class="p-4">
+          <h3 class="font-semibold">Community Meetup</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-300">Students and mentors connecting.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="mt-8 text-sm text-gray-600 dark:text-gray-300">Want to contribute photos? Email <a href="mailto:hello@edurise.example" class="text-blue-600">hello@edurise.example</a></p>
+  </main>
+
+  <footer class="bg-gray-800 dark:bg-gray-900 text-gray-300 py-8 mt-16">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h3 class="text-white font-bold mb-4">EduRise</h3>
+          <p class="text-sm">Education Awareness & Career Pathways Platform</p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4">Education</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="/study-habits.html" class="hover:text-white">Study Habits</a></li>
+            <li><a href="/motivation.html" class="hover:text-white">Motivation</a></li>
+            <li><a href="/resources.html" class="hover:text-white">Resources</a></li>
+            <li><a href="/pledge.html" class="hover:text-white">Pledge</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4">Pathways</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="/pathways.html" class="hover:text-white">Explore Careers</a></li>
+            <li><a href="/ai.html" class="hover:text-white">AI Mentor</a></li>
+            <li><a href="/dashboard.html" class="hover:text-white">Dashboard</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4">Support</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="/contact.html" class="hover:text-white">Contact</a></li>
+            <li><a href="/feedback.html" class="hover:text-white">Feedback</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-8 pt-8 border-t border-gray-700 text-center text-sm">
+        <p>© 2025 EduRise. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const btn = document.getElementById('theme-toggle');
+    btn?.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    });
+    (function(){ const saved = localStorage.getItem('theme'); if (saved) document.documentElement.setAttribute('data-theme', saved); })();
+  </script>
+</body>
+</html>

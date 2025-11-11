@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Pathways</title>
+  <meta name="description" content="Your personalized dashboard: progress, recommendations, badges, and activity on Pathways." />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="theme-color" content="#0ea5e9" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Dashboard - Pathways" />
+  <meta property="og:description" content="Your personalized dashboard: progress, recommendations, badges, and activity on Pathways." />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Dashboard - Pathways" />
+  <meta name="twitter:description" content="Your personalized dashboard: progress, recommendations, badges, and activity on Pathways." />
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebPage","name":"Dashboard - Pathways","description":"Your personalized dashboard: progress, recommendations, badges, and activity on Pathways."}
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
+    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="/" class="text-2xl font-bold text-blue-600 dark:text-blue-400">Pathways</a>
+      <div class="flex items-center gap-4">
+        <a href="/roles.html" class="hover:text-blue-600 dark:hover:text-blue-400">Roles</a>
+        <a href="/ai.html" class="hover:text-blue-600 dark:hover:text-blue-400">AI Assistant</a>
+        <a href="/forum.html" class="hover:text-blue-600 dark:hover:text-blue-400">Forum</a>
+        <a href="/gamification.html" class="hover:text-blue-600 dark:hover:text-blue-400">Gamification</a>
+        <span id="notification-container"></span>
+        <a href="/profile.html" class="hover:text-blue-600 dark:hover:text-blue-400">Profile</a>
+        <button id="sign-out" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700">Sign Out</button>
+        <button id="theme-toggle" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">🌙</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold mb-8">Your Dashboard</h1>
+    
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 class="text-gray-600 dark:text-gray-400 mb-2">Level</h3>
+        <p id="user-level" class="text-3xl font-bold text-blue-600">1</p>
+        <p class="text-xs text-gray-500 mt-1" id="xp-progress">0 XP</p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 class="text-gray-600 dark:text-gray-400 mb-2">Active Roles</h3>
+        <p id="active-roles" class="text-3xl font-bold">0</p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 class="text-gray-600 dark:text-gray-400 mb-2">Completed Tasks</h3>
+        <p id="completed-tasks" class="text-3xl font-bold">0</p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 class="text-gray-600 dark:text-gray-400 mb-2">🔥 Streak</h3>
+        <p id="streak" class="text-3xl font-bold text-orange-600">0 days</p>
+      </div>
+    </div>
+    
+    <!-- Badges -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Your Badges</h2>
+      <div id="badges-container" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <!-- Badges loaded here -->
+      </div>
+    </section>
+    
+    <!-- Progress Timeline -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Progress Timeline</h2>
+      <div id="timeline-container" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div id="timeline-chart" class="flex items-end gap-1 h-32">
+          <!-- Timeline bars loaded here -->
+        </div>
+      </div>
+    </section>
+    
+    <!-- Recommendations -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Recommended for You</h2>
+      <div id="recommendations-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Recommendations loaded here -->
+      </div>
+    </section>
+    
+    <!-- Progress -->
+    <section>
+      <h2 class="text-2xl font-bold mb-4">Your Progress</h2>
+      <div id="progress-container" class="space-y-4">
+        <!-- Progress loaded here -->
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initUI } from '/js/ui.js';
+    import { watchAuthState, signOutUser } from '/js/auth.js';
+    import { db } from '/js/firebase.js';
+    import { collection, query, where, getDocs } from 'firebase/firestore';
+    import { getRoleProgress, calculateStreak, getProgressTimeline } from '/js/progress.js';
+    import { getRecommendedRoles } from '/js/recommendations.js';
+    import { getUserStats } from '/js/gamification.js';
+    import { watchNotifications } from '/js/notifications.js';
+    
+    initUI();
+    
+    // Setup notifications
+    function setupNotifications(user) {
+      if (!user) return;
+      
+      const container = document.getElementById('notification-container');
+      container.innerHTML = `
+        <div class="relative">
+          <button id="notification-bell" class="relative p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
+            <span class="text-2xl">🔔</span>
+            <span id="notification-badge" class="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+          </button>
+          <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 class="font-bold">Notifications</h3>
+            </div>
+            <div id="notification-list" class="divide-y divide-gray-200 dark:divide-gray-700"></div>
+          </div>
+        </div>
+      `;
+      
+      watchNotifications((notifications) => {
+        const badge = document.getElementById('notification-badge');
+        const list = document.getElementById('notification-list');
+        
+        if (notifications.length > 0) {
+          badge.classList.remove('hidden');
+          badge.textContent = notifications.length > 9 ? '9+' : notifications.length;
+        } else {
+          badge.classList.add('hidden');
+        }
+        
+        list.innerHTML = '';
+        notifications.forEach(notif => {
+          const div = document.createElement('div');
+          div.className = 'p-4 hover:bg-gray-50 dark:hover:bg-gray-700';
+          div.innerHTML = `
+            <div class="font-semibold mb-1">${notif.title}</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">${notif.message}</div>
+          `;
+          list.appendChild(div);
+        });
+        
+        if (notifications.length === 0) {
+          list.innerHTML = '<div class="p-4 text-center text-gray-600 dark:text-gray-400">No notifications</div>';
+        }
+      });
+      
+      document.getElementById('notification-bell')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('notification-dropdown').classList.toggle('hidden');
+      });
+      
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#notification-container')) {
+          document.getElementById('notification-dropdown')?.classList.add('hidden');
+        }
+      });
+    }
+    
+    document.getElementById('sign-out').addEventListener('click', async () => {
+      await signOutUser();
+      window.location.href = '/';
+    });
+    
+    watchAuthState(async (user) => {
+      if (!user) {
+        window.location.href = '/auth.html';
+        return;
+      }
+      
+      setupNotifications(user);
+      
+      // Load progress
+      const progressSnap = await getDocs(query(collection(db, 'progress'), where('uid', '==', user.uid)));
+      const allProgress = [];
+      progressSnap.forEach(doc => allProgress.push(doc.data()));
+      
+      const completed = allProgress.filter(p => p.completed).length;
+      document.getElementById('completed-tasks').textContent = completed;
+      
+      // Get unique roles
+      const roles = [...new Set(allProgress.map(p => p.roleSlug))];
+      document.getElementById('active-roles').textContent = roles.length;
+      
+      // Load gamification stats
+      const stats = await getUserStats();
+      document.getElementById('user-level').textContent = stats.level;
+      document.getElementById('xp-progress').textContent = `${stats.xp} XP`;
+      document.getElementById('streak').textContent = `${stats.streak} ${stats.streak === 1 ? 'day' : 'days'}`;
+      
+      // Load progress timeline
+      const timeline = await getProgressTimeline(30);
+      renderTimeline(timeline);
+      
+      // Load recommendations
+      const recommendations = await getRecommendedRoles();
+      renderRecommendations(recommendations);
+      
+      // Load badges
+      const badgesSnap = await getDocs(query(collection(db, 'userBadges'), where('uid', '==', user.uid)));
+      const badgeIds = [];
+      badgesSnap.forEach(doc => badgeIds.push(doc.data().badgeId));
+      
+      if (badgeIds.length > 0) {
+        const { doc, getDoc } = await import('firebase/firestore');
+        const badgeDocs = await Promise.all(badgeIds.map(id => getDoc(doc(db, 'badges', id))));
+        const container = document.getElementById('badges-container');
+        badgeDocs.forEach(badgeDoc => {
+          if (badgeDoc.exists()) {
+            const badge = badgeDoc.data();
+            const div = document.createElement('div');
+            div.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-4 text-center';
+            div.innerHTML = `<div class="text-4xl mb-2">🏆</div><p class="font-semibold">${badge.title}</p>`;
+            container.appendChild(div);
+          }
+        });
+      } else {
+        document.getElementById('badges-container').innerHTML = '<p class="text-gray-600 dark:text-gray-400">No badges yet. Complete tasks to earn badges!</p>';
+      }
+      
+      // Load role progress
+      const { doc, getDoc } = await import('firebase/firestore');
+      const progressContainer = document.getElementById('progress-container');
+      for (const roleSlug of roles.slice(0, 5)) {
+        const progress = await getRoleProgress(roleSlug);
+        const roleDoc = await getDoc(doc(db, 'roles', roleSlug));
+        const roleTitle = roleDoc.exists() ? roleDoc.data().title : roleSlug;
+        
+        const div = document.createElement('div');
+        div.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-6';
+        const completedCount = progress.filter(p => p.completed).length;
+        const percentage = progress.length > 0 ? (completedCount / progress.length) * 100 : 0;
+        div.innerHTML = `
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-xl font-bold">${roleTitle}</h3>
+            <a href="/role.html?slug=${roleSlug}" class="text-blue-600 dark:text-blue-400 hover:underline text-sm">View →</a>
+          </div>
+          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
+            <div class="bg-blue-600 h-2 rounded-full transition-all" style="width: ${percentage}%"></div>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400">${completedCount} of ${progress.length} tasks completed</p>
+        `;
+        progressContainer.appendChild(div);
+      }
+    });
+    
+    function renderTimeline(timeline) {
+      const container = document.getElementById('timeline-chart');
+      container.innerHTML = '';
+      
+      // Generate last 30 days
+      const days = [];
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        days.push(date.toDateString());
+      }
+      
+      const maxTasks = Math.max(...Object.values(timeline), 1);
+      
+      days.forEach(day => {
+        const count = timeline[day] || 0;
+        const height = maxTasks > 0 ? (count / maxTasks) * 100 : 0;
+        const date = new Date(day);
+        const dayLabel = date.getDate();
+        
+        const bar = document.createElement('div');
+        bar.className = 'flex-1 flex flex-col items-center';
+        bar.innerHTML = `
+          <div class="w-full bg-blue-600 rounded-t hover:bg-blue-700 transition cursor-pointer" 
+               style="height: ${height}%" 
+               title="${day}: ${count} task${count !== 1 ? 's' : ''}">
+          </div>
+          <span class="text-xs text-gray-600 dark:text-gray-400 mt-1">${dayLabel}</span>
+        `;
+        container.appendChild(bar);
+      });
+    }
+    
+    function renderRecommendations(recommendations) {
+      const container = document.getElementById('recommendations-container');
+      container.innerHTML = '';
+      
+      if (recommendations.length === 0) {
+        container.innerHTML = '<p class="text-gray-600 dark:text-gray-400">Complete some tasks to get personalized recommendations!</p>';
+        return;
+      }
+      
+      recommendations.forEach(role => {
+        const card = document.createElement('div');
+        card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition';
+        card.innerHTML = `
+          <a href="/role.html?slug=${role.slug}" class="block">
+            ${role.coverImage ? `<img src="${role.coverImage}" alt="${role.title}" class="w-full h-32 object-cover" loading="lazy">` : '<div class="w-full h-32 bg-gradient-to-br from-blue-400 to-purple-500"></div>'}
+            <div class="p-4">
+              <h3 class="font-bold text-lg mb-1">${role.title}</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">${role.summary || ''}</p>
+              <div class="flex gap-2 flex-wrap">
+                <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">${role.domain || 'General'}</span>
+                <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">${role.difficulty || 'Intermediate'}</span>
+              </div>
+            </div>
+          </a>
+        `;
+        container.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>
+

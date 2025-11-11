@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skill Explainer — EduRise</title>
+  <meta name="description" content="Understand the core skills required for a role, learning resources and how to practice them." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <div data-include="header"></div>
+
+  <main id="main-content" class="container mx-auto px-4 py-12 max-w-4xl">
+    <h1 class="text-3xl font-bold mb-4">Skill Explainer</h1>
+    <p class="text-gray-600 mb-6">Pick a role and explore its core skills, why they matter, and how to practice them.</p>
+
+    <div class="mb-6">
+      <label class="block font-semibold mb-2">Choose role</label>
+      <select id="skill-role" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-800"></select>
+    </div>
+
+    <div id="skill-details" class="bg-white dark:bg-gray-800 p-6 rounded-lg">
+      <h2 id="skill-title" class="text-xl font-bold mb-2">Select a role</h2>
+      <div id="skill-list" class="space-y-3 text-sm text-gray-700 dark:text-gray-300"></div>
+    </div>
+  </main>
+
+  <div data-include="footer"></div>
+
+  <script type="module">
+    import { rolesAPI } from '/js/roles-wrapper.js';
+
+    async function init(){
+      const roles = await rolesAPI.getAllRoles();
+      const sel = document.getElementById('skill-role');
+      roles.forEach(r => { const o=document.createElement('option'); o.value=r.slug; o.textContent=r.title; sel.appendChild(o); });
+      sel.addEventListener('change', () => renderRole(roles.find(x=>x.slug===sel.value)));
+      if (roles.length) { sel.value = roles[0].slug; renderRole(roles[0]); }
+    }
+
+    function renderRole(role){
+      document.getElementById('skill-title').textContent = role.title + ' — Core Skills';
+      const list = document.getElementById('skill-list');
+      list.innerHTML = '';
+      // Use stages as proxy for skills in fallback
+      (role.stages || []).forEach(s => {
+        const div = document.createElement('div');
+        div.innerHTML = `<h4 class="font-semibold">${s.title}</h4><p class="text-sm text-gray-600 dark:text-gray-300">${s.description || ''}</p><p class="text-xs text-gray-500">Practice: 2-4 exercises, 1 mini project</p>`;
+        list.appendChild(div);
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pathways - EduRise</title>
+  <meta name="description" content="Browse learning pathways and career tracks on EduRise." />
+  <link rel="icon" href="/favicon.ico" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <div data-include="header"></div>
+
+  <main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12 rounded-lg mb-8">
+      <h1 class="text-4xl md:text-5xl font-bold mb-2">Learning Pathways</h1>
+      <p class="text-lg text-blue-100">Choose your career path and master in-demand skills</p>
+    </div>
+
+    <div class="mb-8">
+      <div id="filters" class="flex flex-wrap gap-2 mb-8"></div>
+
+      <div id="pathways-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+  </main>
+
+  <div data-include="footer"></div>
+
+  <script src="/js/include.js" defer></script>
+
+  <script>
+    (function(){
+      const pathways = [
+        { id: 1, name: 'Web Development', description: 'Learn to build modern web applications', icon: '🌐', stages: 5, duration: '6-12 months', difficulty: 'Intermediate' },
+        { id: 2, name: 'Data Science', description: 'Master data analysis and machine learning', icon: '📊', stages: 6, duration: '9-15 months', difficulty: 'Advanced' },
+        { id: 3, name: 'Mobile Development', description: 'Create apps for iOS and Android', icon: '📱', stages: 4, duration: '6-10 months', difficulty: 'Intermediate' },
+        { id: 4, name: 'Cloud Computing', description: 'Deploy and manage applications in the cloud', icon: '☁️', stages: 4, duration: '4-8 months', difficulty: 'Advanced' },
+        { id: 5, name: 'DevOps Engineering', description: 'Automate and optimize deployment pipelines', icon: '⚙️', stages: 5, duration: '6-9 months', difficulty: 'Advanced' },
+        { id: 6, name: 'UI/UX Design', description: 'Design beautiful and intuitive user interfaces', icon: '🎨', stages: 4, duration: '3-6 months', difficulty: 'Beginner' }
+      ];
+
+      const difficulties = ['all', 'Beginner', 'Intermediate', 'Advanced'];
+      let filter = 'all';
+
+      const filtersEl = document.getElementById('filters');
+      const gridEl = document.getElementById('pathways-grid');
+
+      function renderFilters(){
+        filtersEl.innerHTML = '';
+        difficulties.forEach(diff => {
+          const btn = document.createElement('button');
+          btn.textContent = diff === 'all' ? 'All Levels' : diff;
+          btn.className = `px-4 py-2 rounded-lg font-medium transition-all ${filter === diff ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`;
+          btn.addEventListener('click', ()=>{ filter = diff; renderFilters(); renderGrid(); });
+          filtersEl.appendChild(btn);
+        });
+      }
+
+      function renderGrid(){
+        const filtered = filter === 'all' ? pathways : pathways.filter(p => p.difficulty === filter);
+        gridEl.innerHTML = '';
+        filtered.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'bg-gray-800 rounded-lg p-6 hover:shadow-lg transition-all hover:scale-105 cursor-pointer border border-gray-700';
+          card.innerHTML = `
+            <div class="text-4xl mb-3">${p.icon}</div>
+            <h3 class="text-xl font-bold text-white mb-2">${p.name}</h3>
+            <p class="text-gray-400 mb-4">${p.description}</p>
+            <div class="space-y-2 mb-4 text-sm text-gray-300">
+              <div class="flex justify-between"><span>Stages:</span><span class="text-blue-400">${p.stages}</span></div>
+              <div class="flex justify-between"><span>Duration:</span><span class="text-blue-400">${p.duration}</span></div>
+              <div class="flex justify-between"><span>Level:</span><span class="px-2 py-1 rounded text-xs font-medium ${p.difficulty === 'Beginner' ? 'bg-green-900 text-green-200' : p.difficulty === 'Intermediate' ? 'bg-yellow-900 text-yellow-200' : 'bg-red-900 text-red-200'}">${p.difficulty}</span></div>
+            </div>
+            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors">Explore Path</button>
+          `;
+          card.addEventListener('click', ()=>{ window.location.href = `/role.html?slug=${p.name.toLowerCase().replace(/\s+/g,'-')}`; });
+          gridEl.appendChild(card);
+        });
+      }
+
+      renderFilters();
+      renderGrid();
+    })();
+  </script>
+</body>
+</html>

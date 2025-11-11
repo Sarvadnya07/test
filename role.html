@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Role Details - Pathways</title>
+  <meta name="description" content="Detailed learning roadmap, skills, and tasks for a selected career role. Personalize your learning journey on Pathways." />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="theme-color" content="#0ea5e9" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Role Details - Pathways" />
+  <meta property="og:description" content="Detailed learning roadmap, skills, and tasks for a selected career role. Personalize your learning journey on Pathways." />
+  <meta property="og:image" content="/public/og-role.png" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Role Details - Pathways" />
+  <meta name="twitter:description" content="Detailed learning roadmap, skills, and tasks for a selected career role. Personalize your learning journey on Pathways." />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "name": "Role Details",
+    "description": "Detailed learning roadmap, skills, and tasks for a selected career role.",
+    "publisher": {"@type": "Organization", "name": "Pathways"}
+  }
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <div data-include="header"></div>
+
+  <main id="main-content" class="container mx-auto px-4 py-8">
+    <div id="role-loading" class="text-center py-12">
+      <div class="spinner"></div>
+      <p class="mt-4">Loading role details...</p>
+    </div>
+    
+    <div id="role-content" class="hidden">
+      <!-- Role header -->
+      <div class="mb-8">
+        <a href="/roles.html" class="text-blue-600 dark:text-blue-400 hover:underline mb-4 inline-block">← Back to Roles</a>
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <h1 id="role-title" class="text-4xl font-bold mb-4"></h1>
+            <p id="role-summary" class="text-xl text-gray-600 dark:text-gray-400 mb-4"></p>
+            <div id="role-meta" class="flex gap-4 flex-wrap"></div>
+          </div>
+          <div class="flex-shrink-0 flex flex-col gap-2">
+            <button id="export-roadmap" class="px-4 py-2 bg-white text-blue-600 rounded-lg hover:bg-gray-100">Export Roadmap (PDF)</button>
+            <button id="save-plan" class="px-4 py-2 border border-gray-300 rounded-lg text-sm">Save Plan</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stages/Roadmap -->
+      <section class="mb-12">
+        <h2 class="text-3xl font-bold mb-6">Learning Roadmap</h2>
+        <div id="stages-container" class="space-y-4">
+          <!-- Stages loaded here -->
+        </div>
+      </section>
+
+      <!-- Resources -->
+      <section id="resources-section" class="mb-12 hidden">
+        <h2 class="text-3xl font-bold mb-6">Resources</h2>
+        <div id="resources-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Resources loaded here -->
+        </div>
+      </section>
+      
+      <!-- Discussion Board Link -->
+      <section class="mb-12" id="discussion-section">
+        <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-6">
+          <h2 class="text-2xl font-bold mb-2">💬 Discussion Board</h2>
+          <p class="text-gray-700 dark:text-gray-300 mb-4">Join the conversation! Ask questions, share experiences, and connect with others pursuing this career path.</p>
+          <a id="discussion-link" href="#" class="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+            View Discussions →
+          </a>
+        </div>
+      </section>
+
+      <!-- AI Help Button -->
+      <div class="fixed bottom-8 right-8 z-40">
+        <button id="ask-ai-float" class="px-6 py-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 flex items-center gap-2">
+          <span>💬</span>
+          <span>Ask Gemini about this role</span>
+        </button>
+      </div>
+      
+      <!-- AI Quick Chat Modal -->
+      <div id="ai-quick-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 flex flex-col" style="height: 500px;">
+          <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <h3 class="text-xl font-bold">Ask Gemini about this role</h3>
+            <button id="close-ai-modal" class="text-gray-500 hover:text-gray-700">✕</button>
+          </div>
+          <div id="ai-quick-messages" class="flex-1 overflow-y-auto p-4 space-y-3">
+            <div class="text-sm text-gray-600 dark:text-gray-400">
+              Ask me anything about <strong id="modal-role-name"></strong>
+            </div>
+          </div>
+          <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+            <div class="flex gap-2">
+              <input 
+                type="text" 
+                id="ai-quick-input" 
+                class="flex-1 px-4 py-2 border rounded-lg bg-white dark:bg-gray-700"
+                placeholder="E.g., What skills do I need? What's the career path?"
+                onkeydown="if(event.key === 'Enter') { document.getElementById('ai-quick-send').click(); }"
+              >
+              <button id="ai-quick-send" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+        <script>
+          // wire export button to export the roadmap section
+          (function(){
+            try{
+              const btn = document.getElementById('export-roadmap');
+              if(!btn) return;
+              btn.addEventListener('click', () => {
+                import('/js/export.js').then(mod => {
+                  mod.exportElementToPDF('#main-content', document.getElementById('role-title')?.textContent || 'Roadmap');
+                }).catch(e => {
+                  alert('Export not available: '+(e.message||e));
+                });
+              });
+            }catch(e){console.warn(e)}
+          })();
+        </script>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initUI, showToast } from '/js/ui.js';
+    import { watchAuthState } from '/js/auth.js';
+    import { getRole, getStages, getSkills, getTasks, getResources, renderTaskList } from '/js/roles.js';
+    import { getStageProgress } from '/js/progress.js';
+    import { askAI, formatAIResponse } from '/js/ai.js';
+    
+    initUI();
+    
+    let currentRoleSlug = null;
+    let currentRoleTitle = null;
+    
+    watchAuthState((user) => {
+      const authStatus = document.getElementById('auth-status');
+      if (user) {
+        authStatus.innerHTML = `<a href="/dashboard.html" class="hover:text-blue-600 dark:hover:text-blue-400">Dashboard</a>`;
+      } else {
+        authStatus.innerHTML = `<a href="/auth.html" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Sign In</a>`;
+      }
+    });
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const slug = urlParams.get('slug');
+    
+    if (!slug) {
+      window.location.href = '/roles.html';
+      return;
+    }
+    
+    async function loadRole() {
+      const role = await getRole(slug);
+      if (!role) {
+        document.getElementById('role-loading').innerHTML = '<p class="text-red-600">Role not found</p>';
+        return;
+      }
+      
+      currentRoleSlug = slug;
+      currentRoleTitle = role.title;
+      document.getElementById('role-title').textContent = role.title;
+      document.getElementById('role-summary').textContent = role.summary || '';
+      document.getElementById('modal-role-name').textContent = role.title;
+      document.getElementById('discussion-link').href = `/discussion.html?role=${slug}`;
+      
+      const meta = document.getElementById('role-meta');
+      meta.innerHTML = `
+        ${role.domain ? `<span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">${role.domain}</span>` : ''}
+        ${role.difficulty ? `<span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded">${role.difficulty}</span>` : ''}
+        ${role.estMonths ? `<span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded">~${role.estMonths} months</span>` : ''}
+      `;
+      
+      const stages = await getStages(slug);
+      const container = document.getElementById('stages-container');
+      
+      for (const stage of stages) {
+        const stageDiv = document.createElement('div');
+        stageDiv.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-md p-6';
+        
+        const header = document.createElement('div');
+        header.className = 'flex items-center justify-between mb-4 cursor-pointer';
+        header.innerHTML = `
+          <h3 class="text-2xl font-bold">${stage.order}. ${stage.title}</h3>
+          <button class="toggle-stage text-2xl">▼</button>
+        `;
+        
+        const content = document.createElement('div');
+        content.className = 'stage-content hidden';
+        content.innerHTML = `<p class="text-gray-600 dark:text-gray-400 mb-4">${stage.description || ''}</p>`;
+        
+        const skills = await getSkills(slug, stage.id);
+        if (skills.length > 0) {
+          const skillsDiv = document.createElement('div');
+          skillsDiv.className = 'mb-4';
+          skillsDiv.innerHTML = `
+            <h4 class="font-semibold mb-2">Skills:</h4>
+            <ul class="list-disc list-inside space-y-1">
+              ${skills.map(s => `<li>${s.name}${s.summary ? ` - ${s.summary}` : ''}</li>`).join('')}
+            </ul>
+          `;
+          content.appendChild(skillsDiv);
+        }
+        
+        const tasksDiv = document.createElement('div');
+        tasksDiv.className = 'mb-4';
+        tasksDiv.innerHTML = '<h4 class="font-semibold mb-2">Tasks:</h4>';
+        await renderTaskList(slug, stage.id, tasksDiv);
+        content.appendChild(tasksDiv);
+        
+        header.addEventListener('click', () => {
+          content.classList.toggle('hidden');
+          const btn = header.querySelector('.toggle-stage');
+          btn.textContent = content.classList.contains('hidden') ? '▼' : '▲';
+        });
+        
+        stageDiv.appendChild(header);
+        stageDiv.appendChild(content);
+        container.appendChild(stageDiv);
+      }
+      
+      const resources = await getResources(slug);
+      if (resources.length > 0) {
+        document.getElementById('resources-section').classList.remove('hidden');
+        const resContainer = document.getElementById('resources-container');
+        resources.forEach(res => {
+          const card = document.createElement('a');
+          card.href = res.url;
+          card.target = '_blank';
+          card.rel = 'noopener noreferrer';
+          card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-4 hover:shadow-lg transition';
+          card.innerHTML = `
+            <h4 class="font-semibold mb-2">${res.title}</h4>
+            <p class="text-sm text-gray-600 dark:text-gray-400">${res.kind || 'Resource'}</p>
+          `;
+          resContainer.appendChild(card);
+        });
+      }
+      
+      document.getElementById('role-loading').classList.add('hidden');
+      document.getElementById('role-content').classList.remove('hidden');
+    }
+    
+    // AI Quick Chat
+    document.getElementById('ask-ai-float').addEventListener('click', () => {
+      document.getElementById('ai-quick-modal').classList.remove('hidden');
+      document.getElementById('ai-quick-modal').classList.add('flex');
+      document.getElementById('ai-quick-input').focus();
+    });
+    
+    document.getElementById('close-ai-modal').addEventListener('click', () => {
+      document.getElementById('ai-quick-modal').classList.add('hidden');
+      document.getElementById('ai-quick-modal').classList.remove('flex');
+    });
+    
+    function addQuickMessage(role, content) {
+      const messagesDiv = document.getElementById('ai-quick-messages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+      
+      if (role === 'user') {
+        messageDiv.innerHTML = `
+          <div class="max-w-[80%] bg-blue-600 text-white rounded-lg px-3 py-2 text-sm">
+            ${escapeHtml(content)}
+          </div>
+        `;
+      } else {
+        messageDiv.innerHTML = `
+          <div class="max-w-[80%] bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm">
+            <div>${content}</div>
+          </div>
+        `;
+      }
+      
+      messagesDiv.appendChild(messageDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+    
+    document.getElementById('ai-quick-send').addEventListener('click', async () => {
+      const input = document.getElementById('ai-quick-input');
+      const message = input.value.trim();
+      if (!message) return;
+      
+      addQuickMessage('user', message);
+      input.value = '';
+      
+      const sendBtn = document.getElementById('ai-quick-send');
+      sendBtn.disabled = true;
+      sendBtn.textContent = '...';
+      
+      try {
+        const contextMessage = `About the role "${currentRoleTitle}": ${message}`;
+        const response = await askAI('qna', contextMessage);
+        const formatted = formatAIResponse(response, 'qna');
+        addQuickMessage('assistant', formatted);
+      } catch (error) {
+        showToast(error.message || 'Error', 'error');
+        addQuickMessage('assistant', `Error: ${error.message || 'Failed to get response'}`);
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send';
+        input.focus();
+      }
+    });
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    loadRole();
+  </script>
+
+  <div data-include="footer"></div>
+  <script src="/js/include.js" defer></script>
+</body>
+</html>
+
