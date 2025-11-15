@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Pathways</title>
+  <meta name="description" content="Manage your Pathways account settings, preferences, privacy, and security." />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="theme-color" content="#0ea5e9" />
+
+  <link rel="stylesheet" href="/css/tailwind-input.css">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <div data-include="header"></div>
+
+  <main id="main-content" class="container mx-auto px-4 py-8">
+    <!-- Page Header -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold mb-2">⚙️ Settings & Preferences</h1>
+      <p class="text-lg text-gray-600 dark:text-gray-400">Manage your account, security, and learning preferences</p>
+    </div>
+
+    <!-- Two Column Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-6xl">
+      <!-- Sidebar Navigation -->
+      <aside class="lg:col-span-1">
+        <nav class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sticky top-24">
+          <div class="space-y-2">
+            <button class="settings-nav-btn active w-full text-left px-4 py-2 rounded-lg bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-semibold" data-section="account">
+              👤 Account
+            </button>
+            <button class="settings-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold" data-section="appearance">
+              🎨 Appearance
+            </button>
+            <button class="settings-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold" data-section="learning">
+              📚 Learning
+            </button>
+            <button class="settings-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold" data-section="notifications">
+              🔔 Notifications
+            </button>
+            <button class="settings-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold" data-section="privacy">
+              🔒 Privacy
+            </button>
+            <button class="settings-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold" data-section="accessibility">
+              ♿ Accessibility
+            </button>
+            <button class="settings-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold" data-section="data">
+              💾 Data
+            </button>
+            <button class="settings-nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold" data-section="danger">
+              ⚠️ Danger Zone
+            </button>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Settings Sections -->
+      <div class="lg:col-span-3 space-y-6">
+        <!-- Account Settings Section -->
+        <section id="account-section" class="settings-section">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 class="text-2xl font-bold mb-6">Account Settings</h2>
+            <div class="space-y-6">
+              <!-- User Info -->
+              <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div class="flex items-start gap-4">
+                  <img id="account-avatar" src="" alt="Avatar" class="w-16 h-16 rounded-full object-cover border-2 border-blue-300">
+                  <div class="flex-1">
+                    <h3 id="account-name" class="text-xl font-bold"></h3>
+                    <p id="account-email" class="text-sm text-gray-600 dark:text-gray-400"></p>
+                    <p id="account-status" class="text-sm font-semibold text-green-600 dark:text-green-400 mt-1">✓ Active</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Account Details -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-semibold mb-1">Account Type</label>
+                  <p class="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded">Student</p>
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold mb-1">Member Since</label>
+                  <p id="account-created" class="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded"></p>
+                </div>
+              </div>
+
+              <!-- Edit Profile Fields -->
+              <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <h3 class="font-bold text-lg mb-4">Edit Profile</h3>
+                <div class="space-y-4">
+                  <div>
+                    <label for="edit-name" class="block text-sm font-semibold mb-2">Full Name</label>
+                    <input type="text" id="edit-name" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600" placeholder="Your full name">
+                  </div>
+                  <div>
+                    <label for="edit-bio" class="block text-sm font-semibold mb-2">Bio</label>
+                    <textarea id="edit-bio" rows="3" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600" placeholder="Tell us about yourself..."></textarea>
+                  </div>
+                  <div>
+                    <label for="edit-field" class="block text-sm font-semibold mb-2">Preferred Career Field</label>
+                    <select id="edit-field" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600">
+                      <option value="">Select a field...</option>
+                      <option value="Healthcare">🏥 Healthcare</option>
+                      <option value="Technology">💻 Technology</option>
+                      <option value="Law">⚖️ Law</option>
+                      <option value="Education">🎓 Education</option>
+                      <option value="Business">💼 Business</option>
+                      <option value="Engineering">🔧 Engineering</option>
+                      <option value="Creative">🎨 Creative</option>
+                    </select>
+                  </div>
+                  <button id="save-account" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition">
+                    💾 Save Changes
+                  </button>
+                  <div id="account-status-msg" class="text-sm"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Appearance Section -->
+        <section id="appearance-section" class="settings-section hidden">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 class="text-2xl font-bold mb-6">Appearance & Theme</h2>
+            <div class="space-y-6">
+              <div>
+                <label class="block font-semibold mb-4">Theme Preference</label>
+                <div class="grid grid-cols-3 gap-4">
+                  <label class="p-4 border-2 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition theme-option" data-theme="light">
+                    <input type="radio" name="theme" value="light" class="sr-only">
+                    <div class="text-3xl mb-2">☀️</div>
+                    <div class="font-semibold">Light Mode</div>
+                    <div class="text-sm text-gray-500">Bright and clean</div>
+                  </label>
+                  <label class="p-4 border-2 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition theme-option" data-theme="dark">
+                    <input type="radio" name="theme" value="dark" class="sr-only">
+                    <div class="text-3xl mb-2">🌙</div>
+                    <div class="font-semibold">Dark Mode</div>
+                    <div class="text-sm text-gray-500">Easy on eyes</div>
+                  </label>
+                  <label class="p-4 border-2 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition theme-option" data-theme="auto">
+                    <input type="radio" name="theme" value="auto" class="sr-only" checked>
+                    <div class="text-3xl mb-2">🔄</div>
+                    <div class="font-semibold">Auto</div>
+                    <div class="text-sm text-gray-500">System default</div>
+                  </label>
+                </div>
+              </div>
+              <div id="appearance-status" class="text-sm text-green-600 hidden">✓ Theme preference saved</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Learning Section -->
+        <section id="learning-section" class="settings-section hidden">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 class="text-2xl font-bold mb-6">Learning Preferences</h2>
+            <div class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label for="pomodoro-duration" class="block text-sm font-semibold mb-2">Pomodoro Duration</label>
+                  <div class="flex items-center gap-2">
+                    <input type="range" id="pomodoro-duration" min="15" max="60" value="25" class="flex-1" step="5">
+                    <span id="pomodoro-value" class="w-12 text-center font-bold bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">25</span>
+                    <span class="text-sm">min</span>
+                  </div>
+                </div>
+                <div>
+                  <label for="break-duration" class="block text-sm font-semibold mb-2">Break Duration</label>
+                  <div class="flex items-center gap-2">
+                    <input type="range" id="break-duration" min="1" max="30" value="5" class="flex-1" step="1">
+                    <span id="break-value" class="w-12 text-center font-bold bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">5</span>
+                    <span class="text-sm">min</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-3 border-t border-gray-200 dark:border-gray-700 pt-4">
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" id="auto-start-break" class="rounded w-4 h-4">
+                  <span>Auto-start break after Pomodoro session</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" id="sound-enabled" class="rounded w-4 h-4" checked>
+                  <span>Enable sound notifications</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" id="daily-goal-enabled" class="rounded w-4 h-4" checked>
+                  <span>Set daily learning goal reminder</span>
+                </label>
+              </div>
+
+              <button id="save-learning" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition">
+                💾 Save Learning Preferences
+              </button>
+              <div id="learning-status" class="text-sm"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Notifications Section -->
+        <section id="notifications-section" class="settings-section hidden">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 class="text-2xl font-bold mb-6">Notification Preferences</h2>
+            <div class="space-y-4">
+              <div class="space-y-3">
+                <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition">
+                  <input type="checkbox" id="notif-email-activity" class="rounded w-4 h-4" checked>
+                  <div class="flex-1">
+                    <div class="font-semibold">📧 Email Notifications</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Receive email for important updates</div>
+                  </div>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition">
+                  <input type="checkbox" id="notif-daily-reminder" class="rounded w-4 h-4" checked>
+                  <div class="flex-1">
+                    <div class="font-semibold">📅 Daily Learning Reminder</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Get reminded to continue your learning</div>
+                  </div>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition">
+                  <input type="checkbox" id="notif-weekly-summary" class="rounded w-4 h-4" checked>
+                  <div class="flex-1">
+                    <div class="font-semibold">📊 Weekly Progress Summary</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Weekly report of your achievements</div>
+                  </div>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition">
+                  <input type="checkbox" id="notif-goals-deadline" class="rounded w-4 h-4" checked>
+                  <div class="flex-1">
+                    <div class="font-semibold">🎯 Goal Deadline Reminders</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Get notified before goals expire</div>
+                  </div>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition">
+                  <input type="checkbox" id="notif-forum-reply" class="rounded w-4 h-4" checked>
+                  <div class="flex-1">
+                    <div class="font-semibold">💬 Forum Reply Notifications</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Get notified on forum responses</div>
+                  </div>
+                </label>
+              </div>
+              <button id="save-notif" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition">
+                💾 Save Notification Settings
+              </button>
+              <div id="notif-status" class="text-sm"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Privacy Section -->
+        <section id="privacy-section" class="settings-section hidden">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 class="text-2xl font-bold mb-6">Privacy & Security</h2>
+            <div class="space-y-6">
+              <div>
+                <h3 class="font-semibold text-lg mb-4">Profile Visibility</h3>
+                <div class="space-y-3">
+                  <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition">
+                    <input type="checkbox" id="privacy-profile-public" class="rounded w-4 h-4">
+                    <div class="flex-1">
+                      <div class="font-semibold">Public Profile</div>
+                      <div class="text-sm text-gray-600 dark:text-gray-400">Make your profile visible to other users</div>
+                    </div>
+                  </label>
+                  <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition">
+                    <input type="checkbox" id="privacy-stats-public" class="rounded w-4 h-4">
+                    <div class="flex-1">
+                      <div class="font-semibold">Public Statistics</div>
+                      <div class="text-sm text-gray-600 dark:text-gray-400">Show your learning stats publicly</div>
+                    </div>
+                  </label>
+                  <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition">
+                    <input type="checkbox" id="privacy-forum-activity" class="rounded w-4 h-4" checked>
+                    <div class="flex-1">
+                      <div class="font-semibold">Forum Activity Visible</div>
+                      <div class="text-sm text-gray-600 dark:text-gray-400">Allow others to see your forum activity</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <h3 class="font-semibold text-lg mb-4">Security Settings</h3>
+                <div class="space-y-3">
+                  <button id="change-password" class="w-full px-4 py-2 border border-orange-300 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/40 font-semibold transition">
+                    🔐 Change Password
+                  </button>
+                  <button id="view-sessions" class="w-full px-4 py-2 border border-blue-300 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 font-semibold transition">
+                    📱 View Active Sessions
+                  </button>
+                </div>
+              </div>
+
+              <button id="save-privacy" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition">
+                💾 Save Privacy Settings
+              </button>
+              <div id="privacy-status" class="text-sm"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Data Section -->
+        <section id="data-section" class="settings-section hidden">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 class="text-2xl font-bold mb-6">Data & Privacy</h2>
+            <div class="space-y-6">
+              <div>
+                <h3 class="font-semibold text-lg mb-4">Data Export & Backup</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Download or backup your learning data</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <button id="export-json" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition">
+                    📥 Export as JSON
+                  </button>
+                  <button id="export-csv" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition">
+                    � Export as CSV
+                  </button>
+                  <button id="backup-local" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold transition">
+                    💾 Local Backup
+                  </button>
+                  <button id="restore-backup" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 font-semibold transition">
+                    📤 Restore Backup
+                  </button>
+                </div>
+              </div>
+
+              <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <h3 class="font-semibold text-lg mb-4">Data Management</h3>
+                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg mb-4">
+                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                    <strong>Your data includes:</strong> Profile information, learning progress, goals, forum posts, and achievement statistics.
+                  </p>
+                </div>
+                <button id="request-data" class="w-full px-4 py-2 border border-blue-300 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 font-semibold transition">
+                  📋 Request My Data (GDPR)
+                </button>
+              </div>
+
+              <div id="data-status" class="text-sm"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Accessibility Section -->
+        <section id="accessibility-section" class="settings-section hidden">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 class="text-2xl font-bold mb-6">Accessibility</h2>
+            <div class="space-y-4">
+              <div class="space-y-3">
+                <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition">
+                  <input type="checkbox" id="access-reduce-motion" class="rounded w-4 h-4">
+                  <div class="flex-1">
+                    <div class="font-semibold">Reduce Motion</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Minimize animations and transitions</div>
+                  </div>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition">
+                  <input type="checkbox" id="access-high-contrast" class="rounded w-4 h-4">
+                  <div class="flex-1">
+                    <div class="font-semibold">High Contrast</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Increase text and UI contrast</div>
+                  </div>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition">
+                  <input type="checkbox" id="access-large-text" class="rounded w-4 h-4">
+                  <div class="flex-1">
+                    <div class="font-semibold">Larger Text</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Increase font size across the site</div>
+                  </div>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition">
+                  <input type="checkbox" id="access-dyslexia-font" class="rounded w-4 h-4">
+                  <div class="flex-1">
+                    <div class="font-semibold">Dyslexia-Friendly Font</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Use fonts optimized for dyslexia</div>
+                  </div>
+                </label>
+              </div>
+              <button id="save-accessibility" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition">
+                💾 Save Accessibility Settings
+              </button>
+              <div id="accessibility-status" class="text-sm"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Danger Zone Section -->
+        <section id="danger-section" class="settings-section hidden">
+          <div class="bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-lg p-6">
+            <h2 class="text-2xl font-bold text-red-700 dark:text-red-300 mb-6 flex items-center gap-2">
+              <span>⚠️</span> Danger Zone
+            </h2>
+            <p class="text-red-600 dark:text-red-300 mb-6 font-semibold">These actions are permanent and cannot be undone</p>
+            <div class="space-y-3">
+              <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border-l-4 border-yellow-500">
+                <h3 class="font-bold text-yellow-700 dark:text-yellow-300 mb-2">⚠️ Clear Session Data</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Remove all data from this session. You will remain logged in.</p>
+                <button id="clear-session" class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-semibold transition">
+                  🗑️ Clear Session Data
+                </button>
+              </div>
+
+              <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border-l-4 border-orange-500">
+                <h3 class="font-bold text-orange-700 dark:text-orange-300 mb-2">🔓 Delete All Account Data</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Permanently delete all your learning data, progress, and goals. This cannot be recovered.</p>
+                <button id="delete-all-data" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 font-semibold transition">
+                  � Delete All My Data
+                </button>
+              </div>
+
+              <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border-l-4 border-red-500">
+                <h3 class="font-bold text-red-700 dark:text-red-300 mb-2">🚪 Sign Out & Close Account</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Sign out from this device and optionally close your account permanently.</p>
+                <button id="sign-out" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold transition">
+                  🚪 Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="footer"></div>
+  <script src="/js/include.js" defer></script>
+  <script src="/js/session.js" defer></script>
+
+  <script defer>
+    let currentUser = null;
+
+    function initPage() {
+      // Check session
+      const user = localStorage.getItem('currentUser');
+      if (!user) {
+        window.location.href = '/auth.html';
+        return;
+      }
+
+      currentUser = JSON.parse(user);
+      loadSettings();
+      setupNavigation();
+      setupEventListeners();
+    }
+
+    // ==================== HELPER FUNCTIONS ====================
+    function getProfile() {
+      const profiles = JSON.parse(localStorage.getItem('user_profile') || '{}');
+      return profiles[currentUser.uid] || {};
+    }
+
+    function saveProfile(data) {
+      const profiles = JSON.parse(localStorage.getItem('user_profile') || '{}');
+      profiles[currentUser.uid] = { ...profiles[currentUser.uid], ...data };
+      localStorage.setItem('user_profile', JSON.stringify(profiles));
+    }
+
+    function showStatus(elementId, message, isSuccess = true) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      el.textContent = message;
+      el.className = `text-sm ${isSuccess ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`;
+      el.classList.remove('hidden');
+      setTimeout(() => {
+        el.classList.add('hidden');
+      }, 3000);
+    }
+
+    function downloadFile(data, filename, type = 'application/json') {
+      const blob = new Blob([typeof data === 'string' ? data : JSON.stringify(data, null, 2)], { type });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+
+    // ==================== LOAD SETTINGS ====================
+    function loadSettings() {
+      const profile = getProfile();
+      
+      // Account info
+      document.getElementById('account-name').textContent = profile.name || currentUser.name || currentUser.email.split('@')[0];
+      document.getElementById('account-email').textContent = currentUser.email;
+      document.getElementById('account-avatar').src = profile.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || currentUser.name || 'User')}&background=0D8ABC&color=fff`;
+      
+      const created = new Date(currentUser.createdAt || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      document.getElementById('account-created').textContent = created;
+
+      document.getElementById('edit-name').value = profile.name || '';
+      document.getElementById('edit-bio').value = profile.bio || '';
+      document.getElementById('edit-field').value = profile.field || '';
+
+      // Theme
+      const theme = localStorage.getItem('app_theme') || 'auto';
+      document.querySelector(`input[name="theme"][value="${theme}"]`)?.click();
+
+      // Learning
+      const pom = JSON.parse(localStorage.getItem('pomodoro_state') || '{}');
+      document.getElementById('pomodoro-duration').value = pom.duration || 25;
+      document.getElementById('pomodoro-value').textContent = pom.duration || 25;
+      document.getElementById('break-duration').value = pom.breakDuration || 5;
+      document.getElementById('break-value').textContent = pom.breakDuration || 5;
+      document.getElementById('auto-start-break').checked = pom.autoStart || false;
+
+      // Notifications
+      const notifs = profile.notifications || {};
+      document.getElementById('notif-email-activity').checked = notifs.email !== false;
+      document.getElementById('notif-daily-reminder').checked = notifs.dailyReminder !== false;
+      document.getElementById('notif-weekly-summary').checked = notifs.weeklySummary !== false;
+      document.getElementById('notif-goals-deadline').checked = notifs.goalsDeadline !== false;
+      document.getElementById('notif-forum-reply').checked = notifs.forumReply !== false;
+
+      // Privacy
+      const privacy = profile.privacy || {};
+      document.getElementById('privacy-profile-public').checked = privacy.profilePublic || false;
+      document.getElementById('privacy-stats-public').checked = privacy.statsPublic || false;
+      document.getElementById('privacy-forum-activity').checked = privacy.forumActivity !== false;
+
+      // Accessibility
+      const access = profile.accessibility || {};
+      document.getElementById('access-reduce-motion').checked = access.reduceMotion || false;
+      document.getElementById('access-high-contrast').checked = access.highContrast || false;
+      document.getElementById('access-large-text').checked = access.largeText || false;
+      document.getElementById('access-dyslexia-font').checked = access.dyslexiaFont || false;
+    }
+
+    // ==================== NAVIGATION ====================
+    function setupNavigation() {
+      document.querySelectorAll('.settings-nav-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const section = e.target.dataset.section;
+          showSection(section);
+          
+          // Update active button
+          document.querySelectorAll('.settings-nav-btn').forEach(b => {
+            b.classList.remove('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300', 'font-semibold');
+            b.classList.add('hover:bg-gray-100', 'dark:hover:bg-gray-700');
+          });
+          e.target.classList.add('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300', 'font-semibold');
+          e.target.classList.remove('hover:bg-gray-100', 'dark:hover:bg-gray-700');
+        });
+      });
+    }
+
+    function showSection(sectionName) {
+      document.querySelectorAll('.settings-section').forEach(s => s.classList.add('hidden'));
+      document.getElementById(sectionName + '-section')?.classList.remove('hidden');
+      window.scrollTo(0, 0);
+    }
+
+    // ==================== EVENT LISTENERS ====================
+    function setupEventListeners() {
+      // Theme
+      document.querySelectorAll('.theme-option').forEach(option => {
+        option.addEventListener('click', (e) => {
+          const theme = e.currentTarget.dataset.theme;
+          document.querySelector(`input[name="theme"][value="${theme}"]`).checked = true;
+          localStorage.setItem('app_theme', theme);
+          showStatus('appearance-status', '✓ Theme preference saved');
+          document.getElementById('appearance-status').classList.remove('hidden');
+        });
+      });
+
+      // Pomodoro sliders
+      document.getElementById('pomodoro-duration').addEventListener('input', (e) => {
+        document.getElementById('pomodoro-value').textContent = e.target.value;
+      });
+      document.getElementById('break-duration').addEventListener('input', (e) => {
+        document.getElementById('break-value').textContent = e.target.value;
+      });
+
+      // Save account
+      document.getElementById('save-account')?.addEventListener('click', () => {
+        saveProfile({
+          name: document.getElementById('edit-name').value,
+          bio: document.getElementById('edit-bio').value,
+          field: document.getElementById('edit-field').value
+        });
+        showStatus('account-status-msg', '✓ Account settings saved');
+      });
+
+      // Save learning
+      document.getElementById('save-learning')?.addEventListener('click', () => {
+        localStorage.setItem('pomodoro_state', JSON.stringify({
+          duration: parseInt(document.getElementById('pomodoro-duration').value),
+          breakDuration: parseInt(document.getElementById('break-duration').value),
+          autoStart: document.getElementById('auto-start-break').checked,
+          soundEnabled: document.getElementById('sound-enabled').checked
+        }));
+        showStatus('learning-status', '✓ Learning preferences saved');
+      });
+
+      // Save notifications
+      document.getElementById('save-notif')?.addEventListener('click', () => {
+        const profile = getProfile();
+        profile.notifications = {
+          email: document.getElementById('notif-email-activity').checked,
+          dailyReminder: document.getElementById('notif-daily-reminder').checked,
+          weeklySummary: document.getElementById('notif-weekly-summary').checked,
+          goalsDeadline: document.getElementById('notif-goals-deadline').checked,
+          forumReply: document.getElementById('notif-forum-reply').checked
+        };
+        saveProfile(profile);
+        showStatus('notif-status', '✓ Notification preferences saved');
+      });
+
+      // Save privacy
+      document.getElementById('save-privacy')?.addEventListener('click', () => {
+        const profile = getProfile();
+        profile.privacy = {
+          profilePublic: document.getElementById('privacy-profile-public').checked,
+          statsPublic: document.getElementById('privacy-stats-public').checked,
+          forumActivity: document.getElementById('privacy-forum-activity').checked
+        };
+        saveProfile(profile);
+        showStatus('privacy-status', '✓ Privacy settings saved');
+      });
+
+      // Save accessibility
+      document.getElementById('save-accessibility')?.addEventListener('click', () => {
+        const profile = getProfile();
+        profile.accessibility = {
+          reduceMotion: document.getElementById('access-reduce-motion').checked,
+          highContrast: document.getElementById('access-high-contrast').checked,
+          largeText: document.getElementById('access-large-text').checked,
+          dyslexiaFont: document.getElementById('access-dyslexia-font').checked
+        };
+        saveProfile(profile);
+        showStatus('accessibility-status', '✓ Accessibility settings saved');
+      });
+
+      // Data export
+      document.getElementById('export-json')?.addEventListener('click', () => {
+        const data = {
+          user: currentUser,
+          profile: getProfile(),
+          stats: JSON.parse(localStorage.getItem('gamification_stats') || '{}'),
+          goals: JSON.parse(localStorage.getItem('user_goals') || '{}'),
+          timestamp: new Date().toISOString()
+        };
+        downloadFile(data, `pathways-export-${new Date().toISOString().split('T')[0]}.json`);
+        showStatus('data-status', '✓ Data exported as JSON');
+      });
+
+      document.getElementById('export-csv')?.addEventListener('click', () => {
+        const profile = getProfile();
+        const stats = JSON.parse(localStorage.getItem('gamification_stats') || '{}');
+        let csv = 'Pathways User Export\n';
+        csv += `Name,${profile.name || 'N/A'}\n`;
+        csv += `Email,${currentUser.email}\n`;
+        csv += `Field,${profile.field || 'N/A'}\n\n`;
+        csv += 'Statistics\n';
+        csv += `Level,${stats.level || 1}\n`;
+        csv += `XP,${stats.totalXP || 0}\n`;
+        csv += `Streak,${stats.streak || 0}\n`;
+        downloadFile(csv, `pathways-export-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+        showStatus('data-status', '✓ Data exported as CSV');
+      });
+
+      document.getElementById('backup-local')?.addEventListener('click', () => {
+        const backup = {
+          user: currentUser,
+          profile: getProfile(),
+          stats: JSON.parse(localStorage.getItem('gamification_stats') || '{}'),
+          goals: JSON.parse(localStorage.getItem('user_goals') || '{}'),
+          timestamp: new Date().toISOString()
+        };
+        localStorage.setItem(`backup_${currentUser.uid}`, JSON.stringify(backup));
+        showStatus('data-status', '✓ Local backup created');
+      });
+
+      document.getElementById('restore-backup')?.addEventListener('click', () => {
+        const backup = localStorage.getItem(`backup_${currentUser.uid}`);
+        if (!backup) {
+          showStatus('data-status', '❌ No backup found', false);
+          return;
+        }
+        if (confirm('Restore from backup? This will overwrite current data.')) {
+          const data = JSON.parse(backup);
+          localStorage.setItem('gamification_stats', JSON.stringify(data.stats || {}));
+          localStorage.setItem('user_goals', JSON.stringify(data.goals || {}));
+          showStatus('data-status', '✓ Backup restored');
+          setTimeout(() => location.reload(), 1500);
+        }
+      });
+
+      // Danger zone
+      document.getElementById('clear-session')?.addEventListener('click', () => {
+        if (confirm('Clear session data? You will remain logged in.')) {
+          localStorage.removeItem('user_profile');
+          localStorage.removeItem('gamification_stats');
+          localStorage.removeItem('user_goals');
+          showStatus('data-status', '✓ Session data cleared');
+          setTimeout(() => location.reload(), 1500);
+        }
+      });
+
+      document.getElementById('delete-all-data')?.addEventListener('click', () => {
+        if (confirm('⚠️ Permanently delete ALL your data? This cannot be undone!')) {
+          if (prompt('Type your email to confirm:') === currentUser.email) {
+            localStorage.removeItem('user_profile');
+            localStorage.removeItem('gamification_stats');
+            localStorage.removeItem('user_goals');
+            localStorage.removeItem('forum_qa');
+            showStatus('data-status', '✓ All data deleted');
+            setTimeout(() => {
+              localStorage.removeItem('currentUser');
+              window.location.href = '/auth.html';
+            }, 1500);
+          }
+        }
+      });
+
+      document.getElementById('sign-out')?.addEventListener('click', () => {
+        if (confirm('Sign out?')) {
+          localStorage.removeItem('currentUser');
+          window.location.href = '/auth.html';
+        }
+      });
+
+      document.getElementById('change-password')?.addEventListener('click', () => {
+        alert('🔐 Password changes require Firebase authentication.\n\nYou can create a new account with different credentials if needed.');
+      });
+
+      document.getElementById('view-sessions')?.addEventListener('click', () => {
+        alert('📱 Active Sessions:\n\nCurrent Device\n' + new Date().toLocaleString() + '\n\n(Session management requires Firebase integration)');
+      });
+
+      document.getElementById('request-data')?.addEventListener('click', () => {
+        alert('📋 GDPR Data Request\n\nYour data is stored locally in this browser. To export all data:\n\n1. Use the "Export as JSON" button\n2. Check the download folder for your data');
+      });
+    }
+
+    // Initialize
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initPage);
+    } else {
+      initPage();
+    }
+  </script>
+</body>
+</html>

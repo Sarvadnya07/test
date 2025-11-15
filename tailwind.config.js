@@ -2,7 +2,22 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./auth.html",
+    "./dashboard.html",
+    "./learn.html",
+    "./pathways.html",
+    "./profile.html",
+    "./settings.html",
+    "./discussion.html",
+    "./forum.html",
+    "./gamification.html",
+    "./help.html",
+    "./ai.html",
+    "./admin.html",
+    "./roles.html",
+    "./role.html",
+    "./components/**/*.html",
+    "./js/**/*.js"
   ],
   darkMode: 'class',
   theme: {

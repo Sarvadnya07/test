@@ -20,7 +20,7 @@
   {"@context":"https://schema.org","@type":"Person","name":"User profile","description":"Profile page for Pathways users to manage account and preferences."}
   </script>
 
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/tailwind-input.css">
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
@@ -125,6 +125,7 @@
             <button id="save-notifications" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
               Save Preferences
             </button>
+            <div id="notif-save-status" class="text-sm"></div>
           </div>
         </div>
         
@@ -183,32 +184,35 @@
   <div data-include="footer"></div>
   <script src="/js/include.js" defer></script>
 
-  <script type="module">
-    import { initUI } from '/js/ui.js';
-    import authWrapper from '/js/auth-wrapper.js';
-    
-    initUI();
-    
+  <script>
+    // Use localStorage-based auth without ES modules
     const PROFILE_KEY = 'user_profile';
     const GOALS_KEY = 'user_goals';
     
     let currentUser = null;
     let currentGoals = [];
     
-    // Watch auth state
-    authWrapper.watchAuthState(async (user) => {
-      if (!user) {
+    // Initialize on page load
+    function initPage() {
+      const userStr = localStorage.getItem('currentUser');
+      if (!userStr) {
         window.location.href = '/auth.html';
         return;
       }
       
-      currentUser = user;
-      await loadProfile();
-      await loadGoals();
-      
-      document.getElementById('profile-loading').classList.add('hidden');
-      document.getElementById('profile-info').classList.remove('hidden');
-    });
+      try {
+        currentUser = JSON.parse(userStr);
+        loadProfile();
+        loadGoals();
+        setupEventListeners();
+        
+        document.getElementById('profile-loading').classList.add('hidden');
+        document.getElementById('profile-info').classList.remove('hidden');
+      } catch (error) {
+        console.error('Error loading profile:', error);
+        document.getElementById('profile-loading').innerHTML = '<p class="text-red-600">Error loading profile. Please refresh.</p>';
+      }
+    }
     
     function getProfile() {
       const profiles = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
@@ -220,6 +224,250 @@
       profiles[currentUser.uid] = { ...profiles[currentUser.uid], ...profile };
       localStorage.setItem(PROFILE_KEY, JSON.stringify(profiles));
     }
+    
+    function getGoals() {
+      const allGoals = JSON.parse(localStorage.getItem(GOALS_KEY) || '{}');
+      return allGoals[currentUser.uid] || [];
+    }
+    
+    function saveGoals(goals) {
+      const allGoals = JSON.parse(localStorage.getItem(GOALS_KEY) || '{}');
+      allGoals[currentUser.uid] = goals;
+      localStorage.setItem(GOALS_KEY, JSON.stringify(allGoals));
+    }
+    
+    function generateAvatarUrl(name) {
+      return 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name || 'User') + '&background=0D8ABC&color=fff&size=128';
+    }
+    
+    function loadProfile() {
+      const userData = getProfile();
+      
+      // Display info
+      document.getElementById('user-name-display').textContent = userData.name || currentUser.name || currentUser.email.split('@')[0];
+      document.getElementById('user-email').textContent = currentUser.email;
+      document.getElementById('user-role').textContent = userData.role || 'Student';
+      
+      // Profile photo with generated avatar
+      const photoUrl = userData.photoURL || generateAvatarUrl(userData.name || currentUser.name || currentUser.email);
+      document.getElementById('profile-photo').src = photoUrl;
+      
+      // Editable fields
+      document.getElementById('edit-name').value = userData.name || currentUser.name || '';
+      document.getElementById('edit-bio').value = userData.bio || '';
+      document.getElementById('edit-preferred-field').value = userData.preferredField || '';
+      
+      // Notification preferences
+      const notifs = userData.notifications || {};
+      document.getElementById('notif-email').checked = notifs.email !== false;
+      document.getElementById('notif-daily-reminder').checked = notifs.dailyReminder !== false;
+      document.getElementById('notif-weekly-reminder').checked = notifs.weeklyReminder || false;
+      document.getElementById('notif-goal-reminder').checked = notifs.goalReminder !== false;
+    }
+    
+    function loadGoals() {
+      currentGoals = getGoals();
+      const container = document.getElementById('goals-list');
+      container.innerHTML = '';
+      
+      if (currentGoals.length === 0) {
+        container.innerHTML = '<p class="text-gray-600 dark:text-gray-400">No goals yet. Add one to get started!</p>';
+        return;
+      }
+      
+      currentGoals.forEach((goal, idx) => {
+        const div = document.createElement('div');
+        div.className = `p-4 border rounded-lg ${goal.completed ? 'bg-gray-100 dark:bg-gray-700 opacity-75' : 'bg-white dark:bg-gray-700'}`;
+        div.innerHTML = `
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                <input type="checkbox" ${goal.completed ? 'checked' : ''} data-goal-index="${idx}" class="goal-checkbox rounded">
+                <h4 class="font-bold ${goal.completed ? 'line-through' : ''}">${goal.title}</h4>
+                <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">${goal.type === 'long' ? 'Long Term' : 'Short Term'}</span>
+              </div>
+              ${goal.description ? `<p class="text-sm text-gray-600 dark:text-gray-400 mb-2">${goal.description}</p>` : ''}
+              ${goal.targetDate ? `<p class="text-xs text-gray-500">Target: ${new Date(goal.targetDate).toLocaleDateString()}</p>` : ''}
+            </div>
+            <button data-goal-index="${idx}" class="goal-delete text-red-600 hover:text-red-800 ml-2">🗑️</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+      
+      // Add event listeners
+      document.querySelectorAll('.goal-checkbox').forEach(cb => {
+        cb.addEventListener('change', (e) => {
+          const idx = parseInt(e.target.dataset.goalIndex);
+          currentGoals[idx].completed = e.target.checked;
+          saveGoals(currentGoals);
+          loadGoals();
+        });
+      });
+      
+      document.querySelectorAll('.goal-delete').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          if (confirm('Delete this goal?')) {
+            const idx = parseInt(e.target.dataset.goalIndex);
+            currentGoals.splice(idx, 1);
+            saveGoals(currentGoals);
+            loadGoals();
+          }
+        });
+      });
+    }
+    
+    function setupEventListeners() {
+      // Photo upload
+      document.getElementById('photo-upload').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const photoUrl = event.target.result;
+          const profile = getProfile();
+          profile.photoURL = photoUrl;
+          saveProfile(profile);
+          document.getElementById('profile-photo').src = photoUrl;
+          alert('✓ Photo updated!');
+        };
+        reader.readAsDataURL(file);
+      });
+      
+      // Save profile
+      document.getElementById('save-profile').addEventListener('click', () => {
+        const profile = {
+          name: document.getElementById('edit-name').value,
+          bio: document.getElementById('edit-bio').value,
+          preferredField: document.getElementById('edit-preferred-field').value
+        };
+        
+        saveProfile(profile);
+        const statusDiv = document.getElementById('profile-save-status');
+        statusDiv.textContent = '✓ Saved successfully!';
+        statusDiv.className = 'text-sm text-green-600';
+        setTimeout(() => {
+          statusDiv.textContent = '';
+          statusDiv.className = '';
+        }, 2000);
+      });
+      
+      // Export CSV
+      document.getElementById('export-csv').addEventListener('click', () => {
+        const profile = getProfile();
+        const stats = JSON.parse(localStorage.getItem('gamification_stats') || '{}');
+        
+        let csv = 'User Profile Export\n';
+        csv += 'Name,' + (profile.name || 'N/A') + '\n';
+        csv += 'Email,' + (currentUser.email || 'N/A') + '\n';
+        csv += 'Role,' + (profile.role || 'Student') + '\n';
+        csv += 'Bio,' + (profile.bio || 'N/A') + '\n';
+        csv += '\n\nGamification Stats\n';
+        csv += 'Level,' + (stats.level || 1) + '\n';
+        csv += 'Total XP,' + (stats.totalXP || 0) + '\n';
+        csv += 'Streak,' + (stats.streak || 0) + '\n';
+        csv += 'Tasks Completed,' + (stats.tasksCompleted || 0) + '\n';
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'pathways_profile_' + new Date().toISOString().split('T')[0] + '.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+      
+      // Export PDF
+      document.getElementById('export-pdf').addEventListener('click', () => {
+        const profile = getProfile();
+        const stats = JSON.parse(localStorage.getItem('gamification_stats') || '{}');
+        
+        const win = window.open('', '', 'height=600,width=800');
+        win.document.write('<html><head><title>Profile Export</title><style>body{font-family:Arial;margin:20px;color:#333;} h1{color:#0ea5e9;} h2{margin-top:20px;color:#0ea5e9;border-bottom:2px solid #0ea5e9;padding-bottom:10px;} p{margin:5px 0;} strong{color:#1e40af;}</style></head><body>');
+        win.document.write('<h1>🎓 Pathways - Profile & Progress Report</h1>');
+        win.document.write('<p><em>Generated: ' + new Date().toLocaleString() + '</em></p>');
+        win.document.write('<h2>📋 User Profile</h2>');
+        win.document.write('<p><strong>Name:</strong> ' + (profile.name || 'N/A') + '</p>');
+        win.document.write('<p><strong>Email:</strong> ' + (currentUser.email || 'N/A') + '</p>');
+        win.document.write('<p><strong>Bio:</strong> ' + (profile.bio || 'N/A') + '</p>');
+        win.document.write('<p><strong>Preferred Field:</strong> ' + (profile.preferredField || 'Not specified') + '</p>');
+        win.document.write('<h2>📊 Learning Statistics</h2>');
+        win.document.write('<p><strong>Level:</strong> ' + (stats.level || 1) + '</p>');
+        win.document.write('<p><strong>Total XP:</strong> ' + (stats.totalXP || 0) + '</p>');
+        win.document.write('<p><strong>Current Streak:</strong> ' + (stats.streak || 0) + ' days</p>');
+        win.document.write('<p><strong>Tasks Completed:</strong> ' + (stats.tasksCompleted || 0) + '</p>');
+        win.document.write('<p><strong>Pomodoro Sessions:</strong> ' + (stats.pomodoroSessions || 0) + '</p>');
+        win.document.write('</body></html>');
+        win.document.close();
+        setTimeout(() => win.print(), 500);
+      });
+      
+      // Save notifications
+      document.getElementById('save-notifications').addEventListener('click', () => {
+        const profile = getProfile();
+        profile.notifications = {
+          email: document.getElementById('notif-email').checked,
+          dailyReminder: document.getElementById('notif-daily-reminder').checked,
+          weeklyReminder: document.getElementById('notif-weekly-reminder').checked,
+          goalReminder: document.getElementById('notif-goal-reminder').checked
+        };
+        saveProfile(profile);
+        const statusDiv = document.getElementById('notif-save-status');
+        statusDiv.textContent = '✓ Preferences saved!';
+        statusDiv.className = 'text-sm text-green-600';
+        setTimeout(() => {
+          statusDiv.textContent = '';
+          statusDiv.className = '';
+        }, 2000);
+      });
+      
+      // Goal modal
+      document.getElementById('add-goal-btn').addEventListener('click', () => {
+        document.getElementById('goal-modal').classList.remove('hidden');
+        document.getElementById('goal-modal').classList.add('flex');
+      });
+      
+      document.getElementById('cancel-goal').addEventListener('click', () => {
+        document.getElementById('goal-modal').classList.add('hidden');
+        document.getElementById('goal-modal').classList.remove('flex');
+        document.getElementById('goal-title').value = '';
+        document.getElementById('goal-description').value = '';
+        document.getElementById('goal-type').value = 'short';
+        document.getElementById('goal-date').value = '';
+      });
+      
+      document.getElementById('save-goal').addEventListener('click', () => {
+        const title = document.getElementById('goal-title').value.trim();
+        if (!title) {
+          alert('Please enter a goal title');
+          return;
+        }
+        
+        const targetDate = document.getElementById('goal-date').value;
+        currentGoals.push({
+          id: Date.now(),
+          title,
+          description: document.getElementById('goal-description').value,
+          type: document.getElementById('goal-type').value,
+          targetDate: targetDate ? new Date(targetDate).toISOString() : null,
+          completed: false,
+          createdAt: new Date().toISOString()
+        });
+        
+        saveGoals(currentGoals);
+        document.getElementById('cancel-goal').click();
+        loadGoals();
+      });
+    }
+    
+    // Start initialization when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initPage);
+    } else {
+      initPage();
+    }
+  </script>
     
     function getGoals() {
       const allGoals = JSON.parse(localStorage.getItem(GOALS_KEY) || '{}');

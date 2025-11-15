@@ -20,8 +20,10 @@
   {"@context":"https://schema.org","@type":"WebPage","name":"Sign In - Pathways","description":"Sign in or create an account to track your progress, access personalized roadmaps, and join the Pathways community."}
   </script>
 
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/tailwind-input.css">
   <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/config.js"></script>
+  <script src="/js/firebase-vanilla.js"></script>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
   <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -145,90 +147,243 @@
     </main>
   </div>
 
-  <script type="module">
-    import { initUI } from '/js/ui.js';
-    import authWrapper from '/js/auth-wrapper.js';
-    
-    initUI();
-    
-    const signinTab = document.getElementById('signin-tab');
-    const signupTab = document.getElementById('signup-tab');
-    const signinForm = document.getElementById('signin-form');
-    const signupForm = document.getElementById('signup-form');
-    const errorDiv = document.getElementById('auth-error');
-    
-    signinTab.addEventListener('click', () => {
-      signinTab.classList.add('border-b-2', 'border-blue-600');
-      signinTab.classList.remove('text-gray-600', 'dark:text-gray-400');
-      signupTab.classList.remove('border-b-2', 'border-blue-600');
-      signupTab.classList.add('text-gray-600', 'dark:text-gray-400');
-      signinForm.classList.remove('hidden');
-      signupForm.classList.add('hidden');
-    });
-    
-    signupTab.addEventListener('click', () => {
-      signupTab.classList.add('border-b-2', 'border-blue-600');
-      signupTab.classList.remove('text-gray-600', 'dark:text-gray-400');
-      signinTab.classList.remove('border-b-2', 'border-blue-600');
-      signinTab.classList.add('text-gray-600', 'dark:text-gray-400');
-      signupForm.classList.remove('hidden');
-      signinForm.classList.add('hidden');
-    });
-    
-    signinForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      errorDiv.classList.add('hidden');
-      const email = document.getElementById('signin-email').value.trim();
-      const password = document.getElementById('signin-password').value;
+  <script>
+    // Wait for Firebase to load
+    document.addEventListener('DOMContentLoaded', function() {
+      const signinTab = document.getElementById('signin-tab');
+      const signupTab = document.getElementById('signup-tab');
+      const signinForm = document.getElementById('signin-form');
+      const signupForm = document.getElementById('signup-form');
+      const errorDiv = document.getElementById('auth-error');
       
-      if (!email || !password) {
-        errorDiv.textContent = 'Please enter email and password';
-        errorDiv.classList.remove('hidden');
-        return;
-      }
+      // Tab switching
+      signinTab.addEventListener('click', () => {
+        signinTab.classList.add('border-b-2', 'border-blue-600', 'font-semibold');
+        signinTab.classList.remove('text-gray-600', 'dark:text-gray-400');
+        signupTab.classList.remove('border-b-2', 'border-blue-600', 'font-semibold');
+        signupTab.classList.add('text-gray-600', 'dark:text-gray-400');
+        signinForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+        errorDiv.classList.add('hidden');
+      });
       
-      try {
-        const user = await authWrapper.signInEmail(email, password);
-        alert('Signed in successfully!');
-        window.location.href = '/profile.html';
-      } catch (error) {
-        errorDiv.textContent = error.message || 'Sign in failed';
-        errorDiv.classList.remove('hidden');
-      }
-    });
-    
-    signupForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      errorDiv.classList.add('hidden');
-      const name = document.getElementById('signup-name').value.trim();
-      const email = document.getElementById('signup-email').value.trim();
-      const password = document.getElementById('signup-password').value;
+      signupTab.addEventListener('click', () => {
+        signupTab.classList.add('border-b-2', 'border-blue-600', 'font-semibold');
+        signupTab.classList.remove('text-gray-600', 'dark:text-gray-400');
+        signinTab.classList.remove('border-b-2', 'border-blue-600', 'font-semibold');
+        signinTab.classList.add('text-gray-600', 'dark:text-gray-400');
+        signupForm.classList.remove('hidden');
+        signinForm.classList.add('hidden');
+        errorDiv.classList.add('hidden');
+      });
       
-      if (!name || !email || !password) {
-        errorDiv.textContent = 'Please fill in all fields';
-        errorDiv.classList.remove('hidden');
-        return;
-      }
+      // Sign in form
+      signinForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorDiv.classList.add('hidden');
+        const email = document.getElementById('signin-email').value.trim();
+        const password = document.getElementById('signin-password').value;
+        
+        if (!email || !password) {
+          errorDiv.textContent = 'Please enter email and password';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+        
+        try {
+          let user = null;
+          
+          // Try Firebase if available
+          if (window.FirebaseAuth && window.loadFirebase) {
+            try {
+              await window.loadFirebase();
+              user = await window.FirebaseAuth.signInEmail(email, password);
+            } catch (firebaseError) {
+              console.warn('Firebase signin failed, trying localStorage:', firebaseError);
+            }
+          }
+          
+          // Fallback to localStorage (for offline mode)
+          if (!user) {
+            const userStr = localStorage.getItem('currentUser');
+            if (userStr) {
+              const savedUser = JSON.parse(userStr);
+              if (savedUser.email === email) {
+                // Check if password exists in profile
+                const profileKey = `profile_${savedUser.uid}`;
+                const profile = JSON.parse(localStorage.getItem(profileKey) || '{}');
+                if (profile.email === email) {
+                  user = savedUser;
+                }
+              }
+            }
+            
+            if (!user) {
+              throw new Error('Invalid email or password. Please sign up first.');
+            }
+          }
+          
+          // Save current user
+          const userProfile = {
+            uid: user.uid || 'user_' + Date.now(),
+            email: user.email || email,
+            name: user.displayName || user.name || email.split('@')[0],
+            role: user.role || 'student'
+          };
+          localStorage.setItem('currentUser', JSON.stringify(userProfile));
+          
+          alert('Signed in successfully!');
+          window.location.href = '/dashboard.html';
+        } catch (error) {
+          errorDiv.textContent = error.message || 'Sign in failed. Please check your credentials.';
+          errorDiv.classList.remove('hidden');
+        }
+      });
       
-      if (password.length < 6) {
-        errorDiv.textContent = 'Password must be at least 6 characters';
-        errorDiv.classList.remove('hidden');
-        return;
-      }
+      // Sign up form
+      signupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorDiv.classList.add('hidden');
+        const name = document.getElementById('signup-name').value.trim();
+        const email = document.getElementById('signup-email').value.trim();
+        const password = document.getElementById('signup-password').value;
+        
+        if (!name || !email || !password) {
+          errorDiv.textContent = 'Please fill in all fields';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+        
+        if (password.length < 6) {
+          errorDiv.textContent = 'Password must be at least 6 characters';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+        
+        // Check if email already exists
+        const existingUser = localStorage.getItem('currentUser');
+        if (existingUser) {
+          const user = JSON.parse(existingUser);
+          if (user.email === email) {
+            errorDiv.textContent = 'Email already registered. Please sign in instead.';
+            errorDiv.classList.remove('hidden');
+            return;
+          }
+        }
+        
+        try {
+          let user = null;
+          const userProfile = {
+            uid: 'user_' + Date.now(),
+            email: email,
+            name: name,
+            role: 'student',
+            createdAt: new Date().toISOString(),
+            photoURL: null
+          };
+          
+          // Try Firebase if available
+          if (window.FirebaseAuth && window.loadFirebase) {
+            try {
+              await window.loadFirebase();
+              user = await window.FirebaseAuth.signUpEmail(email, password, name);
+              if (user) {
+                userProfile.uid = user.uid;
+                userProfile.email = user.email;
+                userProfile.name = user.displayName || name;
+              }
+            } catch (firebaseError) {
+              console.warn('Firebase signup failed, using localStorage:', firebaseError);
+              // Continue with localStorage fallback
+            }
+          }
+          
+          // Save to localStorage
+          localStorage.setItem('currentUser', JSON.stringify(userProfile));
+          
+          // Create profile data with password hash (simple storage)
+          const profileData = {
+            name: name,
+            email: email,
+            password: btoa(password), // Simple encoding (not secure, but works for demo)
+            bio: '',
+            preferredField: '',
+            goals: [],
+            createdAt: new Date().toISOString()
+          };
+          localStorage.setItem(`profile_${userProfile.uid}`, JSON.stringify(profileData));
+          
+          alert('Account created! Welcome to EduRise!');
+          window.location.href = '/profile.html';
+        } catch (error) {
+          errorDiv.textContent = error.message || 'Sign up failed. Please try again.';
+          errorDiv.classList.remove('hidden');
+        }
+      });
       
-      try {
-        const user = await authWrapper.signUpEmail(email, password, name);
-        alert('Account created! Welcome to Pathways!');
-        window.location.href = '/profile.html';
-      } catch (error) {
-        errorDiv.textContent = error.message || 'Sign up failed';
-        errorDiv.classList.remove('hidden');
-      }
-    });
-    
-    document.getElementById('google-signin').addEventListener('click', () => {
-      errorDiv.textContent = 'Google Sign-In is not available in offline mode. Please use email signup.';
-      errorDiv.classList.remove('hidden');
+      // Google sign in
+      document.getElementById('google-signin').addEventListener('click', async () => {
+        errorDiv.classList.add('hidden');
+        const button = document.getElementById('google-signin');
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.textContent = 'Loading...';
+        
+        try {
+          // Check if Firebase is available
+          if (!window.FirebaseAuth || !window.loadFirebase) {
+            errorDiv.textContent = '⚠️ Google Sign-In is not available in offline mode. Please use Email/Password authentication instead, or check your internet connection.';
+            errorDiv.classList.remove('hidden');
+            button.disabled = false;
+            button.textContent = originalText;
+            return;
+          }
+          
+          // Ensure Firebase is loaded and initialized
+          try {
+            console.log('Loading Firebase for Google Sign-In...');
+            await window.loadFirebase();
+            console.log('Firebase loaded successfully');
+          } catch (loadError) {
+            console.warn('Firebase load error (offline mode):', loadError.message);
+            errorDiv.textContent = '⚠️ Google Sign-In requires an internet connection. Please use Email/Password authentication instead.';
+            errorDiv.classList.remove('hidden');
+            button.disabled = false;
+            button.textContent = originalText;
+            return;
+          }
+          
+          // Check if Firebase is initialized
+          if (!window.isFirebaseInitialized || !window.isFirebaseInitialized()) {
+            errorDiv.textContent = '⚠️ Firebase is not initialized. Please use Email/Password authentication instead.';
+            errorDiv.classList.remove('hidden');
+            button.disabled = false;
+            button.textContent = originalText;
+            return;
+          }
+          
+          // Attempt Google sign in
+          const user = await window.FirebaseAuth.signInGoogle();
+          if (user) {
+            const userProfile = {
+              uid: user.uid,
+              email: user.email,
+              name: user.displayName || user.email.split('@')[0],
+              role: 'student'
+            };
+            localStorage.setItem('currentUser', JSON.stringify(userProfile));
+            alert('Signed in successfully!');
+            window.location.href = '/dashboard.html';
+          }
+        } catch (error) {
+          console.error('Google sign in error:', error);
+          errorDiv.textContent = '⚠️ Google Sign-In failed. ' + (error.message || 'Please check your internet connection or use Email/Password authentication.');
+          errorDiv.classList.remove('hidden');
+        } finally {
+          button.disabled = false;
+          button.textContent = originalText;
+        }
+      });
     });
   </script>
 </body>

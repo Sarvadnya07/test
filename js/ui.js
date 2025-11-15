@@ -13,7 +13,16 @@ export function initTheme() {
     localStorage.setItem('theme', theme);
   }
   
-  document.documentElement.setAttribute('data-theme', theme);
+  // Apply theme both as a data attribute (legacy CSS) and as the 'dark' class
+  if (theme === 'dark') {
+    document.documentElement.classList.add('dark');
+    document.documentElement.setAttribute('data-theme', 'dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+  // Keep compatibility with other scripts that read 'app_theme'
+  localStorage.setItem('app_theme', theme);
   updateThemeToggle(theme);
   
   // Watch for system theme changes
@@ -22,7 +31,14 @@ export function initTheme() {
       // Only auto-switch if user hasn't manually set a preference
       if (!localStorage.getItem('theme')) {
         const newTheme = e.matches ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', newTheme);
+        if (newTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+        localStorage.setItem('app_theme', newTheme);
         updateThemeToggle(newTheme);
       }
     });
@@ -30,17 +46,36 @@ export function initTheme() {
 }
 
 export function toggleTheme() {
-  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const currentTheme = document.documentElement.classList.contains('dark') || document.documentElement.getAttribute('data-theme') === 'dark'
+    ? 'dark' : 'light';
   const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme); // Save manual preference
+
+  // Apply as class for Tailwind (darkMode: 'class') and as data-theme for legacy styles
+  if (newTheme === 'dark') {
+    document.documentElement.classList.add('dark');
+    document.documentElement.setAttribute('data-theme', 'dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+
+  // Save preference in both keys for compatibility
+  localStorage.setItem('theme', newTheme); // primary
+  localStorage.setItem('app_theme', newTheme); // compatibility
   updateThemeToggle(newTheme);
 }
 
 function updateThemeToggle(theme) {
   const toggle = document.getElementById('theme-toggle');
   if (toggle) {
-    toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+    // Prefer updating a material icon inside the button if present
+    const icon = toggle.querySelector('.material-symbols-outlined');
+    if (icon) {
+      icon.textContent = theme === 'dark' ? 'dark_mode' : 'light_mode';
+    } else {
+      // Fallback to emoji if no icon element exists
+      toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+    }
     toggle.setAttribute('aria-label', `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`);
   }
 }

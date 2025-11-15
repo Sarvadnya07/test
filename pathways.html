@@ -6,10 +6,10 @@
   <title>Pathways - EduRise</title>
   <meta name="description" content="Browse learning pathways and career tracks on EduRise." />
   <link rel="icon" href="/favicon.ico" />
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/tailwind-input.css">
   <link rel="stylesheet" href="/css/styles.css">
 </head>
-<body class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
+<body class="min-h-screen bg-gray-50 text-gray-900 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 dark:text-white">
   <a href="#main-content" class="skip-link">Skip to main content</a>
   <div data-include="header"></div>
 
@@ -75,7 +75,12 @@
             </div>
             <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors">Explore Path</button>
           `;
-          card.addEventListener('click', ()=>{ window.location.href = `/role.html?slug=${p.name.toLowerCase().replace(/\s+/g,'-')}`; });
+          card.addEventListener('click', ()=>{
+            // Try to open a matching role by slug, but if not present on the site we'll redirect to the Roles listing with a search param
+            const slug = p.name.toLowerCase().replace(/\s+/g,'-');
+            // conservative redirect to roles listing to avoid "role not found"
+            window.location.href = `/roles.html?search=${encodeURIComponent(p.name)}&suggest=${encodeURIComponent(slug)}`;
+          });
           gridEl.appendChild(card);
         });
       }

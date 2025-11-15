@@ -1,10 +1,32 @@
+# API Keys and Config
+js/config.js
+
+# Dependencies
 node_modules/
+package-lock.json
+
+# Build outputs
 dist/
-.firebase/
+build/
+
+# Environment
 .env
 .env.local
-*.log
-.DS_Store
+
+# IDE
 .vscode/
 .idea/
+*.swp
+*.swo
 
+# OS
+.DS_Store
+Thumbs.db
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# Logs
+*.log

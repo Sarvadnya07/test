@@ -16,22 +16,16 @@
     }
   }
 
-  function initThemeToggle(){
-    // Initialize theme from storage
-    const saved = localStorage.getItem('theme');
-    if (saved) document.documentElement.setAttribute('data-theme', saved);
-
-    // Delegate click for theme toggle (works with injected header)
-    document.addEventListener('click', function(e){
-      const el = e.target;
-      if(!el) return;
-      if(el.id === 'theme-toggle' || el.closest && el.closest('#theme-toggle')){
-        const current = document.documentElement.getAttribute('data-theme') || 'light';
-        const next = current === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
+  // Initialize UI (theme, keyboard nav, etc) from centralized module
+  async function initSharedUI(){
+    try{
+      const ui = await import('/js/ui.js');
+      if (ui && typeof ui.initUI === 'function') {
+        ui.initUI();
       }
-    });
+    }catch(e){
+      console.warn('Failed to initialize shared UI module', e);
+    }
   }
 
   document.addEventListener('DOMContentLoaded', async function(){
@@ -39,7 +33,8 @@
       loadPartial('header','/components/header.html'),
       loadPartial('footer','/components/footer.html')
     ]);
-    initThemeToggle();
+  // Initialize shared UI after header/footer have been injected
+  initSharedUI();
 
     // Populate auth-status using auth-wrapper (works with Firebase or fallback)
     try{

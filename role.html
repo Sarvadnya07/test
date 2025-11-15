@@ -27,8 +27,9 @@
   }
   </script>
 
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/tailwind-input.css">
   <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/config.js"></script>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
   <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -121,56 +122,40 @@
         </div>
       </div>
       
+        <script src="/js/export-pdf.js"></script>
         <script>
           // wire export button to export the roadmap section
           (function(){
-            try{
-              const btn = document.getElementById('export-roadmap');
-              if(!btn) return;
-              btn.addEventListener('click', () => {
-                import('/js/export.js').then(mod => {
-                  mod.exportElementToPDF('#main-content', document.getElementById('role-title')?.textContent || 'Roadmap');
-                }).catch(e => {
-                  alert('Export not available: '+(e.message||e));
-                });
-              });
-            }catch(e){console.warn(e)}
+            const btn = document.getElementById('export-roadmap');
+            if(!btn) return;
+            btn.addEventListener('click', () => {
+              const title = document.getElementById('role-title')?.textContent || 'Roadmap';
+              if (window.exportToPDF) {
+                window.exportToPDF('#role-content', title);
+              } else {
+                alert('Export functionality loading...');
+              }
+            });
           })();
         </script>
     </div>
   </main>
 
-  <script type="module">
-    import { initUI, showToast } from '/js/ui.js';
-    import { watchAuthState } from '/js/auth.js';
-    import { getRole, getStages, getSkills, getTasks, getResources, renderTaskList } from '/js/roles.js';
-    import { getStageProgress } from '/js/progress.js';
-    import { askAI, formatAIResponse } from '/js/ai.js';
-    
-    initUI();
-    
+  <script src="/js/roles-data-vanilla.js"></script>
+  <script>
     let currentRoleSlug = null;
     let currentRoleTitle = null;
-    
-    watchAuthState((user) => {
-      const authStatus = document.getElementById('auth-status');
-      if (user) {
-        authStatus.innerHTML = `<a href="/dashboard.html" class="hover:text-blue-600 dark:hover:text-blue-400">Dashboard</a>`;
-      } else {
-        authStatus.innerHTML = `<a href="/auth.html" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Sign In</a>`;
-      }
-    });
+    const roles = window.ROLES_DATA || [];
     
     const urlParams = new URLSearchParams(window.location.search);
     const slug = urlParams.get('slug');
     
     if (!slug) {
       window.location.href = '/roles.html';
-      return;
     }
     
-    async function loadRole() {
-      const role = await getRole(slug);
+    function loadRole() {
+      const role = roles.find(r => r.slug === slug);
       if (!role) {
         document.getElementById('role-loading').innerHTML = '<p class="text-red-600">Role not found</p>';
         return;
@@ -185,47 +170,103 @@
       
       const meta = document.getElementById('role-meta');
       meta.innerHTML = `
-        ${role.domain ? `<span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">${role.domain}</span>` : ''}
-        ${role.difficulty ? `<span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded">${role.difficulty}</span>` : ''}
+        ${role.domain ? `<span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">${escapeHtml(role.domain)}</span>` : ''}
+        ${role.difficulty ? `<span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded">${escapeHtml(role.difficulty)}</span>` : ''}
         ${role.estMonths ? `<span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded">~${role.estMonths} months</span>` : ''}
       `;
       
-      const stages = await getStages(slug);
       const container = document.getElementById('stages-container');
+      container.innerHTML = '';
       
-      for (const stage of stages) {
+      role.stages.forEach(stage => {
         const stageDiv = document.createElement('div');
         stageDiv.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-md p-6';
         
         const header = document.createElement('div');
         header.className = 'flex items-center justify-between mb-4 cursor-pointer';
         header.innerHTML = `
-          <h3 class="text-2xl font-bold">${stage.order}. ${stage.title}</h3>
+          <h3 class="text-2xl font-bold">${stage.order}. ${escapeHtml(stage.title)}</h3>
           <button class="toggle-stage text-2xl">▼</button>
         `;
         
         const content = document.createElement('div');
-        content.className = 'stage-content hidden';
-        content.innerHTML = `<p class="text-gray-600 dark:text-gray-400 mb-4">${stage.description || ''}</p>`;
+        content.className = 'stage-content';
+        content.innerHTML = `<p class="text-gray-600 dark:text-gray-400 mb-4">${escapeHtml(stage.description || '')}</p>`;
         
-        const skills = await getSkills(slug, stage.id);
-        if (skills.length > 0) {
+        if (stage.skills && stage.skills.length > 0) {
           const skillsDiv = document.createElement('div');
           skillsDiv.className = 'mb-4';
           skillsDiv.innerHTML = `
             <h4 class="font-semibold mb-2">Skills:</h4>
             <ul class="list-disc list-inside space-y-1">
-              ${skills.map(s => `<li>${s.name}${s.summary ? ` - ${s.summary}` : ''}</li>`).join('')}
+              ${stage.skills.map(s => `<li>${escapeHtml(s.name)}${s.summary ? ` - ${escapeHtml(s.summary)}` : ''}</li>`).join('')}
             </ul>
           `;
           content.appendChild(skillsDiv);
         }
         
-        const tasksDiv = document.createElement('div');
-        tasksDiv.className = 'mb-4';
-        tasksDiv.innerHTML = '<h4 class="font-semibold mb-2">Tasks:</h4>';
-        await renderTaskList(slug, stage.id, tasksDiv);
-        content.appendChild(tasksDiv);
+        if (stage.tasks && stage.tasks.length > 0) {
+          const tasksDiv = document.createElement('div');
+          tasksDiv.className = 'mb-4';
+          tasksDiv.innerHTML = '<h4 class="font-semibold mb-2">Tasks:</h4><ul class="space-y-2">';
+          stage.tasks.forEach(task => {
+            const taskItem = document.createElement('li');
+            taskItem.className = 'task-item flex items-center gap-2';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `task-${task.id}`;
+            checkbox.className = 'task-checkbox';
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.className = 'flex-1';
+            label.innerHTML = `
+              <span>${escapeHtml(task.title)}</span>
+              ${task.type ? `<span class="ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-xs">${escapeHtml(task.type)}</span>` : ''}
+              ${task.minutes ? `<span class="ml-2 text-sm text-gray-500">${task.minutes} min</span>` : ''}
+            `;
+            taskItem.appendChild(checkbox);
+            taskItem.appendChild(label);
+            
+            // Add event listener for task completion
+            checkbox.addEventListener('change', () => {
+              // Save task completion
+              const taskKey = `task_progress_${role.slug}_${stage.id}_${task.id}`;
+              const progressData = {
+                completed: checkbox.checked,
+                completedAt: new Date().toISOString(),
+                roleSlug: role.slug,
+                stageId: stage.id,
+                taskId: task.id
+              };
+              localStorage.setItem(taskKey, JSON.stringify(progressData));
+              
+              // Fire event for gamification
+              window.dispatchEvent(new CustomEvent('taskCompleted', { detail: progressData }));
+              
+              // Update UI
+              if (checkbox.checked) {
+                taskItem.classList.add('completed');
+              } else {
+                taskItem.classList.remove('completed');
+              }
+            });
+            
+            // Load saved progress
+            const taskKey = `task_progress_${role.slug}_${stage.id}_${task.id}`;
+            const savedProgress = localStorage.getItem(taskKey);
+            if (savedProgress) {
+              const progress = JSON.parse(savedProgress);
+              if (progress.completed) {
+                checkbox.checked = true;
+                taskItem.classList.add('completed');
+              }
+            }
+            
+            tasksDiv.querySelector('ul').appendChild(taskItem);
+          });
+          tasksDiv.innerHTML += '</ul>';
+          content.appendChild(tasksDiv);
+        }
         
         header.addEventListener('click', () => {
           content.classList.toggle('hidden');
@@ -236,21 +277,21 @@
         stageDiv.appendChild(header);
         stageDiv.appendChild(content);
         container.appendChild(stageDiv);
-      }
+      });
       
-      const resources = await getResources(slug);
-      if (resources.length > 0) {
+      if (role.resources && role.resources.length > 0) {
         document.getElementById('resources-section').classList.remove('hidden');
         const resContainer = document.getElementById('resources-container');
-        resources.forEach(res => {
+        resContainer.innerHTML = '';
+        role.resources.forEach(res => {
           const card = document.createElement('a');
           card.href = res.url;
           card.target = '_blank';
           card.rel = 'noopener noreferrer';
           card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-4 hover:shadow-lg transition';
           card.innerHTML = `
-            <h4 class="font-semibold mb-2">${res.title}</h4>
-            <p class="text-sm text-gray-600 dark:text-gray-400">${res.kind || 'Resource'}</p>
+            <h4 class="font-semibold mb-2">${escapeHtml(res.title)}</h4>
+            <p class="text-sm text-gray-600 dark:text-gray-400">${escapeHtml(res.kind || 'Resource')}</p>
           `;
           resContainer.appendChild(card);
         });
@@ -258,6 +299,17 @@
       
       document.getElementById('role-loading').classList.add('hidden');
       document.getElementById('role-content').classList.remove('hidden');
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    // Load role on page load
+    if (slug) {
+      loadRole();
     }
     
     // AI Quick Chat
@@ -309,11 +361,22 @@
       
       try {
         const contextMessage = `About the role "${currentRoleTitle}": ${message}`;
-        const response = await askAI('qna', contextMessage);
-        const formatted = formatAIResponse(response, 'qna');
-        addQuickMessage('assistant', formatted);
+        let response = '';
+        
+        // Try Gemini API if available
+        if (window.GeminiAPI && window.GeminiAPI.isConfigured()) {
+          try {
+            response = await window.GeminiAPI.generateCareerAdvice(contextMessage);
+          } catch (apiError) {
+            console.error('Gemini API error:', apiError);
+            response = `About ${currentRoleTitle}: ${message}\n\nThis is a great question! For this role, I recommend focusing on the fundamentals first, then building practical experience through projects and real-world applications.`;
+          }
+        } else {
+          response = `About ${currentRoleTitle}: ${message}\n\nThis is a great question! For this role, I recommend focusing on the fundamentals first, then building practical experience through projects and real-world applications.`;
+        }
+        
+        addQuickMessage('assistant', response);
       } catch (error) {
-        showToast(error.message || 'Error', 'error');
         addQuickMessage('assistant', `Error: ${error.message || 'Failed to get response'}`);
       } finally {
         sendBtn.disabled = false;
@@ -327,12 +390,11 @@
       div.textContent = text;
       return div.innerHTML;
     }
-    
-    loadRole();
   </script>
 
   <div data-include="footer"></div>
   <script src="/js/include.js" defer></script>
+  <script src="/js/gemini.js"></script>
 </body>
 </html>
 

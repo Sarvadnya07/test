@@ -1,88 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Career Recommendation — EduRise</title>
-  <meta name="description" content="Quick career recommendation based on interests and time availability." />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career Recommender - EduRise</title>
+  <link rel="stylesheet" href="/css/tailwind-input.css">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/config.js"></script>
 </head>
-<body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-  <a href="#main-content" class="skip-link">Skip to main content</a>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
   <div data-include="header"></div>
 
-  <main id="main-content" class="container mx-auto px-4 py-12 max-w-3xl">
-    <h1 class="text-3xl font-bold mb-4">Career Recommendation</h1>
-    <p class="text-gray-600 mb-6">Answer a few quick questions and get a recommended role and next steps.</p>
-
-    <div class="mb-4">
-      <label class="block mb-2 font-semibold">Your main interest</label>
-      <select id="interest" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-800">
-        <option value="web">Building websites/apps</option>
-        <option value="data">Data & analysis</option>
-        <option value="design">Design & UX</option>
-        <option value="cloud">Cloud & DevOps</option>
-      </select>
-    </div>
-    <div class="mb-4">
-      <label class="block mb-2 font-semibold">Available hours per week</label>
-      <input id="hours" type="number" min="1" max="80" value="8" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-800">
+  <main class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold mb-2">Career Path Recommender</h1>
+      <p class="text-lg text-gray-600 dark:text-gray-400">Get personalized career recommendations based on your interests</p>
     </div>
 
-    <div class="flex gap-3">
-      <button id="recommend-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg">Recommend</button>
-      <button id="save-recommendation" class="px-6 py-2 border rounded-lg">Save</button>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+      <div class="mb-4">
+        <label for="interests-input" class="block mb-2 font-semibold">Tell us about your interests, skills, or goals:</label>
+        <textarea 
+          id="interests-input" 
+          rows="4"
+          class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700"
+          placeholder="e.g., I enjoy problem-solving, working with technology, building things, analyzing data..."
+        ></textarea>
+      </div>
+      <button id="get-recommendations" class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+        Get Career Recommendations
+      </button>
     </div>
 
-    <div id="recommendation" class="mt-8"></div>
+    <div id="recommendations-result" class="hidden">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <h2 class="text-2xl font-bold mb-4">Recommended Career Paths</h2>
+        <div id="recommendations-content" class="space-y-4">
+          <!-- Recommendations loaded here -->
+        </div>
+      </div>
+    </div>
+
+    <div id="loading" class="hidden text-center py-8">
+      <div class="spinner inline-block"></div>
+      <p class="mt-4">Analyzing your interests...</p>
+    </div>
   </main>
 
   <div data-include="footer"></div>
+  <script src="/js/include.js" defer></script>
+  <script src="/js/gemini.js"></script>
+  <script>
+    document.getElementById('get-recommendations').addEventListener('click', async () => {
+      const interests = document.getElementById('interests-input').value.trim();
+      if (!interests) {
+        alert('Please describe your interests');
+        return;
+      }
 
-  <script type="module">
-    import { rolesAPI } from '/js/roles-wrapper.js';
-    async function init(){
-      const roles = await rolesAPI.getAllRoles();
-      document.getElementById('recommend-btn').addEventListener('click', ()=>{
-        const interest = document.getElementById('interest').value;
-        const hours = parseInt(document.getElementById('hours').value||'8',10);
-        const rec = recommend(interest, hours, roles);
-        renderRecommendation(rec);
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('recommendations-result').classList.add('hidden');
+
+      try {
+        let recommendations = '';
+        
+        // Try Gemini API first
+        if (window.GeminiAPI && window.GeminiAPI.isConfigured()) {
+          recommendations = await window.GeminiAPI.recommendCareers(interests);
+        } else {
+          // Fallback recommendations
+          recommendations = generateFallbackRecommendations(interests);
+        }
+
+        displayRecommendations(recommendations);
+      } catch (error) {
+        console.error('Error getting recommendations:', error);
+        displayRecommendations(generateFallbackRecommendations(interests));
+      } finally {
+        document.getElementById('loading').classList.add('hidden');
+      }
+    });
+
+    function generateFallbackRecommendations(interests) {
+      const lower = interests.toLowerCase();
+      let careers = [];
+
+      if (lower.includes('code') || lower.includes('program') || lower.includes('software') || lower.includes('web')) {
+        careers.push({
+          title: 'Software Engineer',
+          skills: 'Programming, Problem-solving, System Design',
+          salary: '$80k - $200k+',
+          time: '6-12 months',
+          description: 'Build software applications and systems. High demand, good salary, creative problem-solving.'
+        });
+      }
+
+      if (lower.includes('data') || lower.includes('analytics') || lower.includes('statistics')) {
+        careers.push({
+          title: 'Data Scientist',
+          skills: 'Python, Statistics, Machine Learning, SQL',
+          salary: '$90k - $180k+',
+          time: '8-12 months',
+          description: 'Analyze data to extract insights and build predictive models. Growing field with high demand.'
+        });
+      }
+
+      if (lower.includes('design') || lower.includes('ui') || lower.includes('ux') || lower.includes('visual')) {
+        careers.push({
+          title: 'UI/UX Designer',
+          skills: 'Design Tools, User Research, Prototyping',
+          salary: '$70k - $150k+',
+          time: '3-6 months',
+          description: 'Design beautiful and intuitive user interfaces. Creative field with good work-life balance.'
+        });
+      }
+
+      if (lower.includes('help') || lower.includes('teach') || lower.includes('education') || lower.includes('learn')) {
+        careers.push({
+          title: 'Teacher / Educator',
+          skills: 'Subject Knowledge, Communication, Patience',
+          salary: '$40k - $80k+',
+          time: '4-6 months',
+          description: 'Educate and inspire the next generation. Rewarding career with meaningful impact.'
+        });
+      }
+
+      if (careers.length === 0) {
+        careers = [
+          {
+            title: 'Software Engineer',
+            skills: 'Programming, Problem-solving',
+            salary: '$80k - $200k+',
+            time: '6-12 months',
+            description: 'Build software applications and systems.'
+          },
+          {
+            title: 'Data Analyst',
+            skills: 'Excel, SQL, Statistics',
+            salary: '$60k - $120k+',
+            time: '4-8 months',
+            description: 'Analyze data to help businesses make decisions.'
+          }
+        ];
+      }
+
+      return careers;
+    }
+
+    function displayRecommendations(data) {
+      const content = document.getElementById('recommendations-content');
+      content.innerHTML = '';
+
+      // Check if data is string (from Gemini) or array (fallback)
+      let careers = [];
+      if (typeof data === 'string') {
+        // Parse Gemini response (simple parsing)
+        const lines = data.split('\n');
+        let currentCareer = null;
+        lines.forEach(line => {
+          if (line.match(/^\d+\./)) {
+            if (currentCareer) careers.push(currentCareer);
+            currentCareer = { title: line.replace(/^\d+\.\s*/, ''), skills: '', salary: '', time: '', description: '' };
+          } else if (line.includes('Skills:') || line.includes('Required skills:')) {
+            if (currentCareer) currentCareer.skills = line.replace(/.*:\s*/, '');
+          } else if (line.includes('Salary:') || line.includes('$')) {
+            if (currentCareer) currentCareer.salary = line.replace(/.*:\s*/, '');
+          } else if (line.includes('Time:') || line.includes('months')) {
+            if (currentCareer) currentCareer.time = line.replace(/.*:\s*/, '');
+          } else if (line.trim() && currentCareer && !currentCareer.description) {
+            currentCareer.description = line.trim();
+          }
+        });
+        if (currentCareer) careers.push(currentCareer);
+        
+        // If parsing failed, show raw text
+        if (careers.length === 0) {
+          content.innerHTML = `<div class="whitespace-pre-line">${escapeHtml(data)}</div>`;
+          document.getElementById('recommendations-result').classList.remove('hidden');
+          return;
+        }
+      } else {
+        careers = data;
+      }
+
+      careers.forEach(career => {
+        const card = document.createElement('div');
+        card.className = 'border-l-4 border-blue-600 pl-4 py-4 bg-gray-50 dark:bg-gray-700 rounded';
+        card.innerHTML = `
+          <h3 class="text-xl font-bold mb-2">${escapeHtml(career.title)}</h3>
+          <p class="text-gray-700 dark:text-gray-300 mb-3">${escapeHtml(career.description || '')}</p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
+            <div><strong>Skills:</strong> ${escapeHtml(career.skills || 'Various')}</div>
+            <div><strong>Salary:</strong> ${escapeHtml(career.salary || 'Varies')}</div>
+            <div><strong>Time:</strong> ${escapeHtml(career.time || 'Varies')}</div>
+          </div>
+        `;
+        content.appendChild(card);
       });
+
+      document.getElementById('recommendations-result').classList.remove('hidden');
     }
 
-    function recommend(interest, hours, roles){
-      // simple heuristic mapping
-      let candidates = roles;
-      if (interest === 'web') candidates = roles.filter(r=> r.slug.includes('web') || r.domain==='Technology');
-      if (interest === 'data') candidates = roles.filter(r=> r.slug.includes('data') || r.domain==='Technology');
-      if (interest === 'design') candidates = roles.filter(r=> r.domain==='Design' || r.slug.includes('ui'));
-      if (interest === 'cloud') candidates = roles.filter(r=> r.slug.includes('cloud') || r.domain==='Technology');
-      const pick = candidates[0] || roles[0] || null;
-      return { pick, hours };
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
     }
-
-    function renderRecommendation(res){
-      const container = document.getElementById('recommendation');
-      if (!res.pick) { container.innerHTML = '<p>No recommendation found</p>'; return; }
-      container.innerHTML = `
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg">
-          <h2 class="text-2xl font-bold mb-2">Recommended Role: ${res.pick.title}</h2>
-          <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Estimated time: ~${res.pick.estMonths || 'Varies'} months • Level: ${res.pick.difficulty || 'Intermediate'}</p>
-          <h3 class="font-semibold mb-2">Suggested 6-week focus</h3>
-          <ul class="list-disc list-inside text-sm mb-4">
-            <li>Week 1-2: Foundations & core concepts</li>
-            <li>Week 3-4: Hands-on modules and small projects</li>
-            <li>Week 5: Build a mini-project</li>
-            <li>Week 6: Review and polish portfolio</li>
-          </ul>
-          <a href="/role.html?slug=${res.pick.slug}" class="px-4 py-2 bg-blue-600 text-white rounded-lg">View Full Roadmap</a>
-        </div>
-      `;
-    }
-
-    init();
   </script>
 </body>
 </html>

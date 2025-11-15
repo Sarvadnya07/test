@@ -20,26 +20,14 @@
   {"@context":"https://schema.org","@type":"WebPage","name":"Dashboard - Pathways","description":"Your personalized dashboard: progress, recommendations, badges, and activity on Pathways."}
   </script>
 
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/tailwind-input.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=account_circle,logout,settings,dashboard,person,menu,close,search,notifications,home,school,trending_up,groups,auto_awesome,edit,delete,save,cancel" />
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
-    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="/" class="text-2xl font-bold text-blue-600 dark:text-blue-400">Pathways</a>
-      <div class="flex items-center gap-4">
-        <a href="/roles.html" class="hover:text-blue-600 dark:hover:text-blue-400">Roles</a>
-        <a href="/ai.html" class="hover:text-blue-600 dark:hover:text-blue-400">AI Assistant</a>
-        <a href="/forum.html" class="hover:text-blue-600 dark:hover:text-blue-400">Forum</a>
-        <a href="/gamification.html" class="hover:text-blue-600 dark:hover:text-blue-400">Gamification</a>
-        <span id="notification-container"></span>
-        <a href="/profile.html" class="hover:text-blue-600 dark:hover:text-blue-400">Profile</a>
-        <button id="sign-out" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700">Sign Out</button>
-        <button id="theme-toggle" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">🌙</button>
-      </div>
-    </nav>
-  </header>
+  <!-- Header Component - Includes Profile Icon, Notifications, Theme Toggle -->
+  <div data-include="header"></div>
 
   <main class="container mx-auto px-4 py-8">
     <h1 class="text-4xl font-bold mb-8">Your Dashboard</h1>
@@ -100,89 +88,34 @@
     </section>
   </main>
 
+  <script src="/js/include.js"></script>
   <script type="module">
-    import { initUI } from '/js/ui.js';
-    import { watchAuthState, signOutUser } from '/js/auth.js';
     import { db } from '/js/firebase.js';
     import { collection, query, where, getDocs } from 'firebase/firestore';
     import { getRoleProgress, calculateStreak, getProgressTimeline } from '/js/progress.js';
     import { getRecommendedRoles } from '/js/recommendations.js';
     import { getUserStats } from '/js/gamification.js';
-    import { watchNotifications } from '/js/notifications.js';
     
-    initUI();
-    
-    // Setup notifications
-    function setupNotifications(user) {
-      if (!user) return;
-      
-      const container = document.getElementById('notification-container');
-      container.innerHTML = `
-        <div class="relative">
-          <button id="notification-bell" class="relative p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
-            <span class="text-2xl">🔔</span>
-            <span id="notification-badge" class="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
-          </button>
-          <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
-            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 class="font-bold">Notifications</h3>
-            </div>
-            <div id="notification-list" class="divide-y divide-gray-200 dark:divide-gray-700"></div>
-          </div>
-        </div>
-      `;
-      
-      watchNotifications((notifications) => {
-        const badge = document.getElementById('notification-badge');
-        const list = document.getElementById('notification-list');
-        
-        if (notifications.length > 0) {
-          badge.classList.remove('hidden');
-          badge.textContent = notifications.length > 9 ? '9+' : notifications.length;
+    // Wait for SessionManager to be ready
+    function waitForSession() {
+      return new Promise((resolve) => {
+        if (typeof sessionManager !== 'undefined') {
+          resolve();
         } else {
-          badge.classList.add('hidden');
-        }
-        
-        list.innerHTML = '';
-        notifications.forEach(notif => {
-          const div = document.createElement('div');
-          div.className = 'p-4 hover:bg-gray-50 dark:hover:bg-gray-700';
-          div.innerHTML = `
-            <div class="font-semibold mb-1">${notif.title}</div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">${notif.message}</div>
-          `;
-          list.appendChild(div);
-        });
-        
-        if (notifications.length === 0) {
-          list.innerHTML = '<div class="p-4 text-center text-gray-600 dark:text-gray-400">No notifications</div>';
-        }
-      });
-      
-      document.getElementById('notification-bell')?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        document.getElementById('notification-dropdown').classList.toggle('hidden');
-      });
-      
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('#notification-container')) {
-          document.getElementById('notification-dropdown')?.classList.add('hidden');
+          setTimeout(() => waitForSession().then(resolve), 100);
         }
       });
     }
-    
-    document.getElementById('sign-out').addEventListener('click', async () => {
-      await signOutUser();
-      window.location.href = '/';
-    });
-    
-    watchAuthState(async (user) => {
+
+    async function initDashboard() {
+      await waitForSession();
+      
+      const user = sessionManager.getUser();
       if (!user) {
         window.location.href = '/auth.html';
         return;
       }
       
-      setupNotifications(user);
       
       // Load progress
       const progressSnap = await getDocs(query(collection(db, 'progress'), where('uid', '==', user.uid)));
@@ -256,7 +189,6 @@
         `;
         progressContainer.appendChild(div);
       }
-    });
     
     function renderTimeline(timeline) {
       const container = document.getElementById('timeline-chart');
@@ -319,6 +251,9 @@
         container.appendChild(card);
       });
     }
+    
+    // Initialize dashboard
+    await initDashboard();
   </script>
 </body>
 </html>

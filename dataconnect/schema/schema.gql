@@ -1,0 +1,63 @@
+type User @table {
+  displayName: String!
+  email: String!
+  role: String!
+  createdAt: Timestamp!
+  photoUrl: String
+  bio: String
+  contactNumber: String
+}
+
+type Subject @table {
+  name: String!
+  createdAt: Timestamp!
+  description: String
+}
+
+type TutorProfile @table {
+  user: User!
+  hourlyRate: Float!
+  availability: String!
+  createdAt: Timestamp!
+  qualifications: String
+  experience: String
+  averageRating: Float
+}
+
+type TutorProfileSubject @table(key: ["tutorProfile", "subject"]) {
+  tutorProfile: TutorProfile!
+  subject: Subject!
+}
+
+type Session @table {
+  student: User!
+  tutor: User!
+  subject: Subject!
+  startTime: Timestamp!
+  endTime: Timestamp!
+  status: String!
+  createdAt: Timestamp!
+  meetingLink: String
+  studentNotes: String
+  tutorNotes: String
+}
+
+type Review @table {
+  student: User!
+  tutor: User!
+  session: Session!
+  rating: Int!
+  createdAt: Timestamp!
+  comment: String
+}
+
+type Payment @table {
+  student: User!
+  tutor: User!
+  session: Session!
+  amount: Float!
+  status: String!
+  paymentDate: Date!
+  createdAt: Timestamp!
+  transactionId: String
+}

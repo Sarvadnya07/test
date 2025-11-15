@@ -3,101 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Browse all career roles and pathways on Pathways. Find recommended roadmaps and personalized learning plans." />
-  <title>All Roles - Pathways</title>
-  <link rel="icon" href="/favicon.ico" />
-  <meta name="theme-color" content="#0ea5e9" />
-
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="All Roles - Pathways" />
-  <meta property="og:description" content="Browse all career roles and pathways on Pathways. Find recommended roadmaps and personalized learning plans." />
-  <meta property="og:image" content="/public/og-roles.png" />
-
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="All Roles - Pathways" />
-  <meta name="twitter:description" content="Browse all career roles and pathways on Pathways. Find recommended roadmaps and personalized learning plans." />
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "name": "All Roles - Pathways",
-    "description": "Browse all career roles and pathways on Pathways. Find recommended roadmaps and personalized learning plans.",
-    "publisher": {"@type": "Organization", "name": "Pathways"}
-  }
-  </script>
-
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Explore Roles - EduRise</title>
+  <meta name="description" content="Explore career roles: Doctor, Engineer, Lawyer, Police, Teacher, Designer and more. Find your path." />
+  <link rel="stylesheet" href="/css/tailwind-input.css">
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
-  <a href="#main-content" class="skip-link">Skip to main content</a>
-  
-  <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
-    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="/" class="text-2xl font-bold text-blue-600 dark:text-blue-400">Pathways</a>
-      <div class="flex items-center gap-4">
-        <a href="/roles.html" class="font-semibold text-blue-600 dark:text-blue-400">Roles</a>
-        <a href="/learn.html" class="hover:text-blue-600 dark:hover:text-blue-400">Learn</a>
-        <a href="/ai.html" class="hover:text-blue-600 dark:hover:text-blue-400">AI Assistant</a>
-        <span id="auth-status"></span>
-        <button id="theme-toggle" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">🌙</button>
-      </div>
-    </nav>
-  </header>
+  <div data-include="header"></div>
 
-  <main id="main-content" class="container mx-auto px-4 py-8">
-    <!-- Hero Section -->
-    <section class="text-center py-12 mb-8">
-      <h1 class="text-5xl font-bold mb-4">Explore Career Roles</h1>
-      <p class="text-xl text-gray-600 dark:text-gray-400 mb-4">Discover structured learning paths for your dream career</p>
-      <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-6">Choose from a curated collection of career roles spanning Healthcare, Technology, Law, Education, and more. Each role includes a detailed roadmap with skills to develop, tasks to complete, and resources to help you succeed.</p>
-    </section>
-
-    <!-- Filters Section -->
-    <div class="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-      <h3 class="font-bold text-lg mb-4">Filter Roles</h3>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label for="domain-filter" class="block text-sm font-semibold mb-2">Domain / Industry</label>
-          <select id="domain-filter" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-600">
-            <option value="">All Domains</option>
-            <option value="Healthcare">Healthcare</option>
-            <option value="Technology">Technology</option>
-            <option value="Law">Law</option>
-            <option value="Education">Education</option>
-            <option value="Public Service">Public Service</option>
-          </select>
-        </div>
-        <div>
-          <label for="difficulty-filter" class="block text-sm font-semibold mb-2">Difficulty Level</label>
-          <select id="difficulty-filter" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-600">
-            <option value="">All Levels</option>
-            <option value="Beginner">Beginner</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Advanced">Advanced</option>
-          </select>
-        </div>
-        <div class="flex items-end">
-          <button id="clear-filters" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-semibold transition">Clear Filters</button>
-        </div>
-      </div>
+  <main class="container mx-auto px-4 py-8">
+    <div class="mb-8">
+      <h1 class="text-4xl md:text-5xl font-bold mb-2">Explore Career Roles</h1>
+      <p class="text-lg text-gray-600 dark:text-gray-400">Choose your career path and start your learning journey</p>
     </div>
 
-    <!-- Stats Bar -->
-    <div class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-4 text-center">
-        <div class="text-2xl font-bold text-blue-600 dark:text-blue-200">20+</div>
-        <div class="text-sm text-gray-600 dark:text-gray-400">Career Roles</div>
-      </div>
-      <div class="bg-green-50 dark:bg-green-900 rounded-lg p-4 text-center">
-        <div class="text-2xl font-bold text-green-600 dark:text-green-200">1000+</div>
-        <div class="text-sm text-gray-600 dark:text-gray-400">Learning Tasks</div>
-      </div>
-      <div class="bg-purple-50 dark:bg-purple-900 rounded-lg p-4 text-center">
-        <div class="text-2xl font-bold text-purple-600 dark:text-purple-200">500+</div>
-        <div class="text-sm text-gray-600 dark:text-gray-400">Curated Resources</div>
-      </div>
+    <!-- Filters -->
+    <div class="mb-8 flex flex-wrap gap-2">
+      <button data-filter="all" class="filter-btn active px-4 py-2 rounded-lg font-medium bg-blue-600 text-white">All</button>
+      <button data-filter="Technology" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Technology</button>
+      <button data-filter="Healthcare" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Healthcare</button>
+      <button data-filter="Legal" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Legal</button>
+      <button data-filter="Education" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Education</button>
+      <button data-filter="Public Service" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Public Service</button>
+      <button data-filter="Design" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Design</button>
     </div>
 
     <!-- Roles Grid -->
@@ -106,72 +34,164 @@
     </div>
   </main>
 
-  <footer class="bg-gray-800 dark:bg-gray-900 text-gray-300 py-8 mt-16">
-    <div class="container mx-auto px-4 text-center text-sm">
-      <p>© 2025 Pathways. All rights reserved.</p>
-    </div>
-  </footer>
+  <div data-include="footer"></div>
+  <script src="/js/include.js" defer></script>
+  <script src="/js/roles-data-vanilla.js"></script>
+  <script>
+  let currentFilter = 'all';
+  const roles = window.ROLES_DATA || [];
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialSearch = urlParams.get('search') || null;
+  const initialSuggest = urlParams.get('suggest') || null;
 
-  <script type="module">
-    import { initUI } from '/js/ui.js';
-    import { watchAuthState } from '/js/auth.js';
-    import { getAllRoles } from '/js/roles.js';
-    
-    initUI();
-    
-    watchAuthState((user) => {
-      const authStatus = document.getElementById('auth-status');
-      if (user) {
-        authStatus.innerHTML = `<a href="/dashboard.html" class="hover:text-blue-600 dark:hover:text-blue-400">Dashboard</a>`;
-      } else {
-        authStatus.innerHTML = `<a href="/auth.html" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Sign In</a>`;
-      }
-    });
-    
-    let allRoles = [];
-    
-    getAllRoles().then(roles => {
-      allRoles = roles;
-      renderRoles(roles);
-    });
-    
-    function renderRoles(roles) {
+    function renderRoles() {
       const grid = document.getElementById('roles-grid');
+      if (!grid) return;
+
+      let filtered = currentFilter === 'all' 
+        ? roles 
+        : roles.filter(r => r.domain === currentFilter);
+
+      // If there's a search param from Pathways, prefer those matches
+      if (initialSearch) {
+        const q = initialSearch.toLowerCase();
+        filtered = roles.filter(r => r.title.toLowerCase().includes(q) || r.slug === (initialSuggest || '').toLowerCase());
+        // If no exact matches, fall back to title contains
+        if (filtered.length === 0) {
+          filtered = roles.filter(r => r.title.toLowerCase().includes(q));
+        }
+      }
+
       grid.innerHTML = '';
-      roles.forEach(role => {
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<p class="col-span-full text-center text-gray-600 dark:text-gray-400 py-8">No roles found</p>';
+        return;
+      }
+
+      filtered.forEach(role => {
         const card = document.createElement('div');
-        card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition';
+        card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-all cursor-pointer border border-gray-200 dark:border-gray-700';
         card.innerHTML = `
-          <a href="/role.html?slug=${role.slug}" class="block">
-            ${role.coverImage ? `<img src="${role.coverImage}" alt="${role.title}" class="w-full h-48 object-cover" loading="lazy">` : '<div class="w-full h-48 bg-gradient-to-br from-blue-400 to-purple-500"></div>'}
-            <div class="p-6">
-              <h3 class="text-xl font-bold mb-2">${role.title}</h3>
-              <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">${role.summary || ''}</p>
-              <div class="flex gap-2 flex-wrap">
-                <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">${role.domain || 'General'}</span>
-                <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">${role.difficulty || 'Intermediate'}</span>
-                ${role.estMonths ? `<span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">~${role.estMonths} months</span>` : ''}
-              </div>
+          <div class="p-6">
+            <div class="text-4xl mb-3">${getRoleIcon(role.slug)}</div>
+            <h3 class="text-xl font-bold mb-2">${escapeHtml(role.title)}</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4 text-sm">${escapeHtml(role.summary)}</p>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-xs">${escapeHtml(role.domain)}</span>
+              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">${escapeHtml(role.difficulty)}</span>
+              ${role.estMonths ? `<span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">~${role.estMonths} months</span>` : ''}
             </div>
-          </a>
+            <a href="/role.html?slug=${role.slug}" class="block w-full text-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold">
+              Explore Role →
+            </a>
+          </div>
         `;
         grid.appendChild(card);
       });
     }
-    
-    document.getElementById('domain-filter')?.addEventListener('change', filterRoles);
-    document.getElementById('difficulty-filter')?.addEventListener('change', filterRoles);
-    
-    function filterRoles() {
-      const domain = document.getElementById('domain-filter').value;
-      const difficulty = document.getElementById('difficulty-filter').value;
-      const filtered = allRoles.filter(role => 
-        (!domain || role.domain === domain) && 
-        (!difficulty || role.difficulty === difficulty)
-      );
-      renderRoles(filtered);
+
+    function getRoleIcon(slug) {
+      const icons = {
+        // Technology
+        'engineer': '👨‍💻',
+        'software-engineer': '💻',
+        'data-analyst': '📊',
+        'machine-learning-engineer': '🤖',
+        'frontend-developer': '🎨',
+        'backend-developer': '⚙️',
+        'devops-engineer': '🚀',
+        'qa-engineer': '✅',
+        'cloud-architect': '☁️',
+        'security-engineer': '🔒',
+        'mobile-developer': '📱',
+        'game-developer': '🎮',
+        'database-admin': '🗄️',
+        'systems-admin': '🖥️',
+        'network-engineer': '🌐',
+        // Healthcare
+        'doctor': '👨‍⚕️',
+        'nurse': '👩‍⚕️',
+        'dentist': '🦷',
+        'therapist': '🧠',
+        'vet': '🐾',
+        'radiologist': '💉',
+        'surgeon': '🔬',
+        'pharmacist': '💊',
+        'psychologist': '🧑‍⚕️',
+        'medical-tech': '🩺',
+        // Finance
+        'accountant': '💰',
+        'financial-analyst': '📈',
+        'investment-banker': '🏦',
+        'trader': '�',
+        'auditor': '�',
+        // Legal
+        'lawyer': '⚖️',
+        'paralegal': '📜',
+        'judge': '🔨',
+        'legal-counsel': '👨‍⚖️',
+        // Marketing
+        'marketing-manager': '📢',
+        'brand-strategist': '🎯',
+        'seo-specialist': '🔍',
+        'content-creator': '📝',
+        'email-marketer': '💌',
+        // Design
+        'designer': '🎨',
+        'ui-ux-designer': '🎨',
+        'graphic-designer': '✏️',
+        'motion-graphics': '🎬',
+        'industrial-designer': '🏗️',
+        // Business
+        'consultant': '💼',
+        'product-manager': '🎯',
+        'project-manager': '�',
+        'operations-manager': '⚙️',
+        'hr-manager': '👥',
+        // Education
+        'teacher': '👨‍🏫',
+        'professor': '🎓',
+        'curriculum-developer': '📚',
+        'instructional-designer': '📖',
+        // Public Service
+        'police-officer': '👮',
+        'police': '👮',
+        'firefighter': '🚒',
+        'paramedic': '🚑',
+        'military-officer': '⛑️',
+        // Manufacturing
+        'machinist': '🔧',
+        'electrician': '⚡',
+        'plumber': '🔧',
+        'hvac-technician': '❄️',
+        'welder': '🔥'
+      };
+      return icons[slug] || '📚';
     }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentFilter = btn.dataset.filter;
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.remove('active', 'bg-blue-600', 'text-white');
+          b.classList.add('bg-gray-200', 'dark:bg-gray-700');
+        });
+        btn.classList.add('active', 'bg-blue-600', 'text-white');
+        btn.classList.remove('bg-gray-200', 'dark:bg-gray-700');
+        renderRoles();
+      });
+    });
+
+    // Initial render
+    renderRoles();
   </script>
 </body>
 </html>
-

@@ -20,8 +20,10 @@
   {"@context":"https://schema.org","@type":"DiscussionForumPosting","name":"Q&A Forum - Pathways","description":"Ask the community, share knowledge, and get help on career roadmaps and learning resources in the Pathways forum."}
   </script>
 
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/tailwind-input.css">
   <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/config.js"></script>
+  <script src="/js/firebase-vanilla.js"></script>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
   <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -109,28 +111,108 @@
     </div>
   </main>
 
-  <script type="module">
-    import { initUI, showToast } from '/js/ui.js';
-    import { watchAuthState, getCurrentUser } from '/js/auth.js';
-    import { db, auth } from '/js/firebase.js';
-    import { collection, addDoc, query, orderBy, getDocs, onSnapshot, serverTimestamp, doc, getDoc, updateDoc, increment } from 'firebase/firestore';
+  <!-- Floating Compose Button (compact) -->
+  <div id="fab-compose" class="fixed right-6 bottom-6 z-40">
+    <button title="Ask a question" id="fab-open" class="w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg flex items-center justify-center text-2xl">+</button>
+  </div>
+
+  <!-- Compact Compose Popup -->
+  <div id="compact-popup" class="fixed right-6 bottom-20 z-50 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-80 p-4">
+      <div class="flex items-center justify-between mb-2">
+        <strong>Ask a question</strong>
+        <button id="compact-cancel" class="text-gray-500 hover:text-gray-700">✕</button>
+      </div>
+      <input id="compact-title" type="text" placeholder="Short title" class="w-full mb-2 px-3 py-2 border rounded bg-white dark:bg-gray-700 text-sm" />
+      <select id="compact-category" class="w-full mb-2 px-3 py-2 border rounded bg-white dark:bg-gray-700 text-sm">
+        <option value="general">General</option>
+        <option value="career">Career Advice</option>
+        <option value="skills">Skills & Learning</option>
+        <option value="roadmap">Roadmap Help</option>
+        <option value="resources">Resources</option>
+      </select>
+      <textarea id="compact-content" rows="4" placeholder="Describe briefly..." class="w-full mb-2 px-3 py-2 border rounded bg-white dark:bg-gray-700 text-sm"></textarea>
+      <div class="flex gap-2">
+        <button id="compact-submit" class="flex-1 px-3 py-2 bg-blue-600 text-white rounded">Post</button>
+        <button id="compact-clear" class="flex-1 px-3 py-2 border rounded">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/seed-test-data.js"></script>
+  <script src="/js/include.js" defer></script>
+  <script>
+    let currentUser = null;
     
-    initUI();
+    // Get current user from localStorage
+    function getCurrentUser() {
+      try {
+        const userStr = localStorage.getItem('currentUser');
+        if (userStr) {
+          return JSON.parse(userStr);
+        }
+      } catch (e) {
+        console.error('Error parsing user:', e);
+      }
+      return null;
+    }
+    
+    // Update auth UI
+    function updateAuthUI() {
+      currentUser = getCurrentUser();
+      const authStatus = document.getElementById('auth-status');
+      const newQuestionBtn = document.getElementById('new-question-btn');
+      
+      if (!authStatus) return;
+      
+      if (!currentUser) {
+        if (authStatus) {
+          authStatus.innerHTML = `<a href="/auth.html" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Sign In</a>`;
+        }
+        if (newQuestionBtn) {
+          newQuestionBtn.style.display = 'none';
+        }
+      } else {
+        if (authStatus) {
+          authStatus.innerHTML = `
+            <a href="/dashboard.html" class="hover:text-blue-600 dark:hover:text-blue-400 mr-2">Dashboard</a>
+            <a href="/profile.html" class="hover:text-blue-600 dark:hover:text-blue-400 mr-2">Profile</a>
+            <button onclick="logout()" class="text-red-600 dark:text-red-400 hover:underline">Logout</button>
+          `;
+        }
+        if (newQuestionBtn) {
+          newQuestionBtn.style.display = 'block';
+        }
+      }
+      // If ?seed=1 is present, populate sample data (will not overwrite existing data unless forced)
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('seed') === '1') {
+        const seeded = window.SeedTestData && window.SeedTestData.seedForum && window.SeedTestData.seedForum(false);
+        if (seeded) console.log('Forum seeded with sample questions');
+      }
+
+      loadQuestions();
+    }
+    
+    // Logout function
+    function logout() {
+      localStorage.removeItem('currentUser');
+      currentUser = null;
+      updateAuthUI();
+      window.location.href = '/index.html';
+    }
+    
+    // Make logout available globally
+    window.logout = logout;
+    
+    // Listen for auth changes
+    window.addEventListener('storage', () => {
+      updateAuthUI();
+    });
     
     let currentFilter = 'all';
     let currentQuestionId = null;
-    
-    watchAuthState((user) => {
-      const authStatus = document.getElementById('auth-status');
-      if (!user) {
-        authStatus.innerHTML = `<a href="/auth.html" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Sign In</a>`;
-        document.getElementById('new-question-btn').style.display = 'none';
-      } else {
-        authStatus.innerHTML = `<a href="/dashboard.html" class="hover:text-blue-600 dark:hover:text-blue-400">Dashboard</a>`;
-        document.getElementById('new-question-btn').style.display = 'block';
-      }
-      loadQuestions();
-    });
+    const FORUM_KEY = 'forum_qa';
     
     // Filter tabs
     document.querySelectorAll('.filter-tab').forEach(btn => {
@@ -146,33 +228,37 @@
       });
     });
     
-    async function loadQuestions() {
+    function loadQuestions() {
       const list = document.getElementById('questions-list');
-      list.innerHTML = '<div class="text-center py-8"><div class="spinner"></div></div>';
       
-      let q = query(collection(db, 'forumQuestions'), orderBy('createdAt', 'desc'));
-      
-      if (currentFilter === 'popular') {
-        q = query(collection(db, 'forumQuestions'), orderBy('upvotes', 'desc'));
+      let questions = [];
+      try {
+        questions = JSON.parse(localStorage.getItem(FORUM_KEY) || '[]');
+      } catch (e) {
+        questions = [];
       }
       
-      const snapshot = await getDocs(q);
-      const questions = [];
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        if (currentFilter === 'unanswered' && (data.replyCount || 0) > 0) return;
-        questions.push({ id: doc.id, ...data });
-      });
+      // Sort by creation time (descending)
+      questions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      
+      // Filter
+      let filtered = questions;
+      if (currentFilter === 'unanswered') {
+        filtered = questions.filter(q => (q.replies || []).length === 0);
+      } else if (currentFilter === 'popular') {
+        filtered = [...questions].sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
+      }
       
       list.innerHTML = '';
-      if (questions.length === 0) {
+      if (filtered.length === 0) {
         list.innerHTML = '<p class="text-center text-gray-600 dark:text-gray-400 py-8">No questions yet. Be the first to ask!</p>';
         return;
       }
       
-      questions.forEach(question => {
+      filtered.forEach(question => {
         const div = document.createElement('div');
         div.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-lg transition cursor-pointer';
+        const replyCount = (question.replies || []).length;
         div.innerHTML = `
           <div class="flex items-start gap-4">
             <div class="text-center">
@@ -180,13 +266,13 @@
               <div class="text-xs text-gray-600 dark:text-gray-400">votes</div>
             </div>
             <div class="flex-1">
-              <h3 class="text-xl font-bold mb-2">${question.title}</h3>
-              <p class="text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">${question.content || ''}</p>
+              <h3 class="text-xl font-bold mb-2">${escapeHtml(question.title)}</h3>
+              <p class="text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">${escapeHtml(question.content || '')}</p>
               <div class="flex items-center gap-4 text-sm text-gray-500">
-                <span>${question.authorName || 'Anonymous'}</span>
+                <span>${escapeHtml(question.authorName || 'Anonymous')}</span>
                 <span>•</span>
-                <span>${question.replyCount || 0} replies</span>
-                ${question.category ? `<span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-xs">${question.category}</span>` : ''}
+                <span>${replyCount} ${replyCount === 1 ? 'reply' : 'replies'}</span>
+                ${question.category ? `<span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-xs">${escapeHtml(question.category)}</span>` : ''}
               </div>
             </div>
           </div>
@@ -194,6 +280,11 @@
         div.addEventListener('click', () => showQuestionDetail(question.id));
         list.appendChild(div);
       });
+    }
+    
+    function escapeHtml(text) {
+      const map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" };
+      return String(text).replace(/[&<>"'"]/g, m => map[m]);
     }
     
     // New question modal
@@ -215,67 +306,72 @@
       const category = document.getElementById('question-category').value;
       
       if (!title || !content) {
-        showToast('Please fill in all fields', 'error');
+        alert('Please fill in all fields');
         return;
       }
       
-      const user = getCurrentUser();
-      if (!user) {
-        showToast('Please sign in', 'error');
+      currentUser = getCurrentUser();
+      if (!currentUser) {
+        alert('Please sign in to post a question');
+        window.location.href = '/auth.html';
         return;
       }
       
       try {
-        await addDoc(collection(db, 'forumQuestions'), {
+        const questions = JSON.parse(localStorage.getItem(FORUM_KEY) || '[]');
+        const newQuestion = {
+          id: 'q_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
           title,
           content,
           category: category || 'general',
-          authorId: user.uid,
-          authorName: user.displayName || 'Anonymous',
+          authorId: currentUser.uid || 'anon',
+          authorName: currentUser.name || currentUser.displayName || currentUser.email || 'Anonymous',
           upvotes: 0,
-          replyCount: 0,
-          createdAt: serverTimestamp()
-        });
+          replies: [],
+          createdAt: new Date().toISOString()
+        };
         
-        showToast('Question posted!', 'success');
+        questions.push(newQuestion);
+        localStorage.setItem(FORUM_KEY, JSON.stringify(questions));
+        
+        alert('Question posted!');
         document.getElementById('cancel-question').click();
         loadQuestions();
       } catch (error) {
-        showToast(error.message, 'error');
+        alert('Error: ' + error.message);
       }
     });
     
     async function showQuestionDetail(questionId) {
       currentQuestionId = questionId;
-      const questionDoc = await getDoc(doc(db, 'forumQuestions', questionId));
-      if (!questionDoc.exists()) return;
+      const questions = JSON.parse(localStorage.getItem(FORUM_KEY) || '[]');
+      const question = questions.find(q => q.id === questionId);
+      if (!question) return;
       
-      const question = { id: questionDoc.id, ...questionDoc.data() };
       document.getElementById('detail-title').textContent = question.title;
       document.getElementById('detail-content').innerHTML = `
         <div class="mb-4">
-          <p class="text-gray-700 dark:text-gray-300">${question.content}</p>
+          <p class="text-gray-700 dark:text-gray-300">${escapeHtml(question.content)}</p>
         </div>
         <div class="text-sm text-gray-500">
-          Asked by ${question.authorName} • ${question.replyCount || 0} replies
+          Asked by ${escapeHtml(question.authorName)} • ${(question.replies || []).length} replies
         </div>
       `;
       
       // Load replies
-      const repliesSnap = await getDocs(query(collection(db, 'forumReplies'), where('questionId', '==', questionId), orderBy('createdAt', 'asc')));
+      const replies = question.replies || [];
       const repliesList = document.getElementById('replies-list');
       repliesList.innerHTML = '';
       
-      if (repliesSnap.size === 0) {
+      if (replies.length === 0) {
         repliesList.innerHTML = '<p class="text-gray-600 dark:text-gray-400">No replies yet. Be the first to answer!</p>';
       } else {
-        repliesSnap.forEach(doc => {
-          const reply = doc.data();
+        replies.forEach(reply => {
           const div = document.createElement('div');
           div.className = 'border-l-4 border-blue-600 pl-4 py-2';
           div.innerHTML = `
-            <p class="mb-2">${reply.content}</p>
-            <div class="text-sm text-gray-500">— ${reply.authorName || 'Anonymous'}</div>
+            <p class="mb-2">${escapeHtml(reply.content)}</p>
+            <div class="text-sm text-gray-500">— ${escapeHtml(reply.authorName || 'Anonymous')}</div>
           `;
           repliesList.appendChild(div);
         });
@@ -293,39 +389,232 @@
     document.getElementById('submit-reply').addEventListener('click', async () => {
       const content = document.getElementById('reply-content').value.trim();
       if (!content) {
-        showToast('Please enter a reply', 'error');
+        alert('Please enter a reply');
         return;
       }
       
-      const user = getCurrentUser();
-      if (!user) {
-        showToast('Please sign in', 'error');
+      currentUser = getCurrentUser();
+      if (!currentUser) {
+        alert('Please sign in to post a reply');
+        window.location.href = '/auth.html';
         return;
       }
       
       try {
-        await addDoc(collection(db, 'forumReplies'), {
-          questionId: currentQuestionId,
+        const questions = JSON.parse(localStorage.getItem(FORUM_KEY) || '[]');
+        const question = questions.find(q => q.id === currentQuestionId);
+        if (!question) return;
+        
+        if (!question.replies) question.replies = [];
+        question.replies.push({
+          id: 'r_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
           content,
-          authorId: user.uid,
-          authorName: user.displayName || 'Anonymous',
-          createdAt: serverTimestamp()
+          authorId: currentUser.uid || 'anon',
+          authorName: currentUser.name || currentUser.displayName || currentUser.email || 'Anonymous',
+          createdAt: new Date().toISOString()
         });
         
-        // Update reply count
-        await updateDoc(doc(db, 'forumQuestions', currentQuestionId), {
-          replyCount: increment(1)
-        });
+        localStorage.setItem(FORUM_KEY, JSON.stringify(questions));
         
-        showToast('Reply posted!', 'success');
+        alert('Reply posted!');
         document.getElementById('reply-content').value = '';
         showQuestionDetail(currentQuestionId);
       } catch (error) {
-        showToast(error.message, 'error');
+        alert('Error: ' + error.message);
       }
     });
     
-    loadQuestions();
+    // Floating FAB & compact popup handlers
+    document.addEventListener('DOMContentLoaded', () => {
+      const fabOpen = document.getElementById('fab-open');
+      const compactPopup = document.getElementById('compact-popup');
+      const compactCancel = document.getElementById('compact-cancel');
+      const compactSubmit = document.getElementById('compact-submit');
+      const compactClear = document.getElementById('compact-clear');
+
+      if (fabOpen) {
+        fabOpen.addEventListener('click', () => {
+          // If user not signed in, redirect to auth
+          const user = getCurrentUser();
+          if (!user) {
+            window.location.href = '/auth.html';
+            return;
+          }
+          compactPopup.classList.remove('hidden');
+        });
+      }
+
+      if (compactCancel) {
+        compactCancel.addEventListener('click', () => {
+          compactPopup.classList.add('hidden');
+        });
+      }
+
+      if (compactClear) {
+        compactClear.addEventListener('click', () => {
+          document.getElementById('compact-title').value = '';
+          document.getElementById('compact-content').value = '';
+        });
+      }
+
+      if (compactSubmit) {
+        compactSubmit.addEventListener('click', async () => {
+          const title = document.getElementById('compact-title').value.trim();
+          const content = document.getElementById('compact-content').value.trim();
+          const category = document.getElementById('compact-category').value;
+          if (!title || !content) {
+            alert('Please fill in both title and content');
+            return;
+          }
+          const user = getCurrentUser();
+          if (!user) {
+            alert('Please sign in to post a question');
+            window.location.href = '/auth.html';
+            return;
+          }
+
+          try {
+            const qs = JSON.parse(localStorage.getItem(FORUM_KEY) || '[]');
+            const newQ = {
+              id: 'q_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+              title,
+              content,
+              category: category || 'general',
+              authorId: user.uid || 'anon',
+              authorName: user.name || user.displayName || user.email || 'Anonymous',
+              upvotes: 0,
+              replies: [],
+              createdAt: new Date().toISOString()
+            };
+            qs.push(newQ);
+            localStorage.setItem(FORUM_KEY, JSON.stringify(qs));
+            compactPopup.classList.add('hidden');
+            document.getElementById('compact-title').value = '';
+            document.getElementById('compact-content').value = '';
+            alert('Question posted!');
+            loadQuestions();
+          } catch (err) {
+            alert('Error posting: ' + err.message);
+          }
+        });
+      }
+    });
+    
+    // Load dummy data if no questions exist
+    function loadDummyData() {
+      const questions = JSON.parse(localStorage.getItem(FORUM_KEY) || '[]');
+      if (questions.length === 0) {
+        const dummyQuestions = [
+          {
+            id: 'q1',
+            title: 'What are the best resources to learn web development?',
+            content: 'I\'m just starting out and want to know the best free resources for learning HTML, CSS, and JavaScript. Any recommendations?',
+            category: 'resources',
+            authorName: 'Alex Johnson',
+            upvotes: 12,
+            replies: [
+              {
+                id: 'r1',
+                content: 'I highly recommend freeCodeCamp and MDN Web Docs. They\'re both free and comprehensive!',
+                authorName: 'Sarah Chen',
+                createdAt: new Date(Date.now() - 86400000).toISOString()
+              },
+              {
+                id: 'r2',
+                content: 'Don\'t forget about YouTube channels like Traversy Media and The Net Ninja. Great for visual learners!',
+                authorName: 'Mike Rodriguez',
+                createdAt: new Date(Date.now() - 43200000).toISOString()
+              }
+            ],
+            createdAt: new Date(Date.now() - 172800000).toISOString()
+          },
+          {
+            id: 'q2',
+            title: 'How long does it take to become a software engineer?',
+            content: 'I\'m considering a career change. How long would it realistically take to learn enough to get a job as a software engineer?',
+            category: 'career',
+            authorName: 'Jordan Smith',
+            upvotes: 8,
+            replies: [
+              {
+                id: 'r3',
+                content: 'It depends on your dedication, but most people can get their first job in 6-12 months with consistent practice (8-10 hours/week).',
+                authorName: 'David Kim',
+                createdAt: new Date(Date.now() - 3600000).toISOString()
+              }
+            ],
+            createdAt: new Date(Date.now() - 259200000).toISOString()
+          },
+          {
+            id: 'q3',
+            title: 'Should I learn React or Vue for frontend development?',
+            content: 'I\'m learning frontend development and can\'t decide between React and Vue. Which one should I choose?',
+            category: 'skills',
+            authorName: 'Emma Wilson',
+            upvotes: 15,
+            replies: [
+              {
+                id: 'r4',
+                content: 'Both are great! React has more job opportunities, but Vue is easier to learn. I\'d recommend starting with React if you want more career options.',
+                authorName: 'Chris Taylor',
+                createdAt: new Date(Date.now() - 7200000).toISOString()
+              },
+              {
+                id: 'r5',
+                content: 'Vue is more beginner-friendly and has better documentation. Start with Vue, then learn React later if needed.',
+                authorName: 'Lisa Park',
+                createdAt: new Date(Date.now() - 5400000).toISOString()
+              }
+            ],
+            createdAt: new Date(Date.now() - 345600000).toISOString()
+          },
+          {
+            id: 'q4',
+            title: 'What projects should I build for my portfolio?',
+            content: 'I\'m building my portfolio and want to know what types of projects employers are looking for.',
+            category: 'roadmap',
+            authorName: 'Ryan Martinez',
+            upvotes: 6,
+            replies: [],
+            createdAt: new Date(Date.now() - 86400000).toISOString()
+          },
+          {
+            id: 'q5',
+            title: 'Is a computer science degree necessary for software engineering?',
+            content: 'I don\'t have a CS degree but I\'m learning programming. Can I still get a job as a software engineer?',
+            category: 'career',
+            authorName: 'Taylor Brown',
+            upvotes: 20,
+            replies: [
+              {
+                id: 'r6',
+                content: 'Absolutely! Many successful developers are self-taught. Focus on building a strong portfolio and demonstrating your skills.',
+                authorName: 'James Wilson',
+                createdAt: new Date(Date.now() - 1800000).toISOString()
+              },
+              {
+                id: 'r7',
+                content: 'While a degree helps, it\'s not required. What matters most is your ability to code and solve problems. Build projects and contribute to open source!',
+                authorName: 'Maria Garcia',
+                createdAt: new Date(Date.now() - 900000).toISOString()
+              }
+            ],
+            createdAt: new Date(Date.now() - 518400000).toISOString()
+          }
+        ];
+        localStorage.setItem(FORUM_KEY, JSON.stringify(dummyQuestions));
+      }
+    }
+    
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', function() {
+      updateAuthUI();
+      loadDummyData();
+      loadQuestions();
+    });
+    
+    // Also check on page load
+    updateAuthUI();
   </script>
 </body>
 </html>
