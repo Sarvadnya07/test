@@ -1,391 +1,726 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- =========================================================
+       META & BASIC CONFIG
+  ========================================================== -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign In - Pathways</title>
-  <meta name="description" content="Sign in or create an account to track your progress, access personalized roadmaps, and join the Pathways community." />
+
+  <meta
+    name="description"
+    content="Sign in or create an account to track your progress, access personalized roadmaps, and join the Pathways community."
+  />
   <link rel="icon" href="/favicon.ico" />
   <meta name="theme-color" content="#0ea5e9" />
 
+  <!-- OpenGraph / SEO -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Sign In - Pathways" />
-  <meta property="og:description" content="Sign in or create an account to track your progress, access personalized roadmaps, and join the Pathways community." />
+  <meta
+    property="og:description"
+    content="Sign in or create an account to track your progress, access personalized roadmaps, and join the Pathways community."
+  />
 
+  <!-- Twitter -->
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Sign In - Pathways" />
-  <meta name="twitter:description" content="Sign in or create an account to track your progress, access personalized roadmaps, and join the Pathways community." />
+  <meta
+    name="twitter:description"
+    content="Sign in or create an account to track your progress, access personalized roadmaps, and join the Pathways community."
+  />
 
+  <!-- Schema -->
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"WebPage","name":"Sign In - Pathways","description":"Sign in or create an account to track your progress, access personalized roadmaps, and join the Pathways community."}
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Sign In - Pathways",
+    "description": "Sign in or create an account to track your progress, access personalized roadmaps, and join the Pathways community."
+  }
   </script>
 
-  <link rel="stylesheet" href="/css/tailwind-input.css">
-  <link rel="stylesheet" href="/css/styles.css">
+  <!-- =========================================================
+       STYLES
+  ========================================================== -->
+  <link rel="stylesheet" href="/css/tailwind-input.css" />
+  <link rel="stylesheet" href="/css/styles.css" />
+
+  <!-- =========================================================
+       CONFIG + FIREBASE (GLOBAL HELPERS)
+       - config.js must load before firebase-vanilla.js
+  ========================================================== -->
   <script src="/js/config.js"></script>
   <script src="/js/firebase-vanilla.js"></script>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+
+<body
+  class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen"
+>
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  
-  <!-- Split Layout: Left side benefits, Right side form -->
+
+  <!-- =========================================================
+       LAYOUT
+       Left: marketing / features
+       Right: auth card
+  ========================================================== -->
   <div class="flex min-h-screen">
-    <!-- Left Side: Benefits -->
-    <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 to-purple-600 text-white p-12 flex-col justify-center">
+    <!-- LEFT SIDE: BENEFITS / MARKETING -->
+    <aside
+      class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 to-purple-600 text-white p-12 flex-col justify-center"
+      aria-label="Pathways benefits"
+    >
       <div class="max-w-md">
         <h2 class="text-4xl font-bold mb-8">Welcome to Pathways</h2>
+
         <div class="space-y-6">
           <div class="flex gap-3">
-            <div class="text-2xl flex-shrink-0">🎯</div>
+            <div class="text-2xl flex-shrink-0" aria-hidden="true">🎯</div>
             <div>
               <h3 class="font-bold mb-1">Structured Career Paths</h3>
-              <p class="text-sm text-blue-100">Follow proven roadmaps for your dream career with clear milestones and goals.</p>
+              <p class="text-sm text-blue-100">
+                Follow proven roadmaps for your dream career with clear milestones and
+                step-by-step guidance.
+              </p>
             </div>
           </div>
+
           <div class="flex gap-3">
-            <div class="text-2xl flex-shrink-0">📚</div>
+            <div class="text-2xl flex-shrink-0" aria-hidden="true">📚</div>
             <div>
               <h3 class="font-bold mb-1">Curated Resources</h3>
-              <p class="text-sm text-blue-100">Access handpicked courses, articles, videos, and tools from industry experts.</p>
+              <p class="text-sm text-blue-100">
+                Access handpicked courses, articles, videos, and tools from industry
+                experts, all in one place.
+              </p>
             </div>
           </div>
+
           <div class="flex gap-3">
-            <div class="text-2xl flex-shrink-0">🤖</div>
+            <div class="text-2xl flex-shrink-0" aria-hidden="true">🤖</div>
             <div>
-              <h3 class="font-bold mb-1">AI Guidance</h3>
-              <p class="text-sm text-blue-100">Get personalized learning plans and career advice powered by AI.</p>
+              <h3 class="font-bold mb-1">AI Career Guidance</h3>
+              <p class="text-sm text-blue-100">
+                Get personalized learning plans and career suggestions powered by AI
+                Mentor.
+              </p>
             </div>
           </div>
+
           <div class="flex gap-3">
-            <div class="text-2xl flex-shrink-0">📊</div>
+            <div class="text-2xl flex-shrink-0" aria-hidden="true">📊</div>
             <div>
-              <h3 class="font-bold mb-1">Track Progress</h3>
-              <p class="text-sm text-blue-100">Monitor your learning journey with stats, badges, and achievement milestones.</p>
+              <h3 class="font-bold mb-1">Track Your Progress</h3>
+              <p class="text-sm text-blue-100">
+                Monitor your learning journey with stats, streaks, badges, and milestones.
+              </p>
             </div>
           </div>
+
           <div class="flex gap-3">
-            <div class="text-2xl flex-shrink-0">💬</div>
+            <div class="text-2xl flex-shrink-0" aria-hidden="true">💬</div>
             <div>
               <h3 class="font-bold mb-1">Community Support</h3>
-              <p class="text-sm text-blue-100">Connect with peers, ask questions in the forum, and share experiences.</p>
+              <p class="text-sm text-blue-100">
+                Connect with peers, share experiences, and get feedback on your progress.
+              </p>
             </div>
           </div>
         </div>
-        <div class="mt-12 pt-8 border-t border-blue-400">
-          <p class="text-sm text-blue-100">Join 10,000+ learners on their career journeys</p>
-        </div>
-      </div>
-    </div>
 
-    <!-- Right Side: Auth Form -->
-    <main id="main-content" class="w-full lg:w-1/2 p-8 flex items-center justify-center">
+        <div class="mt-12 pt-8 border-t border-blue-400">
+          <p class="text-sm text-blue-100">
+            Join <span class="font-semibold">10,000+</span> learners on their career
+            journeys 🚀
+          </p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT SIDE: AUTH PANEL -->
+    <main
+      id="main-content"
+      class="w-full lg:w-1/2 p-4 sm:p-8 flex items-center justify-center"
+    >
       <div class="w-full max-w-md">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-      <h1 class="text-3xl font-bold mb-2 text-center">Welcome to Pathways</h1>
-      <p class="text-gray-600 dark:text-gray-400 text-center mb-8">Sign in to track your progress</p>
-      
-      <!-- Tabs -->
-      <div class="flex gap-4 mb-6 border-b">
-        <button id="signin-tab" class="px-4 py-2 font-semibold border-b-2 border-blue-600">Sign In</button>
-        <button id="signup-tab" class="px-4 py-2 text-gray-600 dark:text-gray-400">Sign Up</button>
-      </div>
-      
-      <!-- Sign In Form -->
-      <form id="signin-form" class="space-y-4">
-        <div>
-          <label for="signin-email" class="block mb-2 font-semibold">Email</label>
-          <input type="email" id="signin-email" required 
-            class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
-        </div>
-        <div>
-          <label for="signin-password" class="block mb-2 font-semibold">Password</label>
-          <input type="password" id="signin-password" required 
-            class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
-        </div>
-        <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
-          Sign In
-        </button>
-      </form>
-      
-      <!-- Sign Up Form -->
-      <form id="signup-form" class="space-y-4 hidden">
-        <div>
-          <label for="signup-name" class="block mb-2 font-semibold">Name</label>
-          <input type="text" id="signup-name" required 
-            class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
-        </div>
-        <div>
-          <label for="signup-email" class="block mb-2 font-semibold">Email</label>
-          <input type="email" id="signup-email" required 
-            class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
-        </div>
-        <div>
-          <label for="signup-password" class="block mb-2 font-semibold">Password</label>
-          <input type="password" id="signup-password" required minlength="6"
-            class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
-        </div>
-        <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
-          Sign Up
-        </button>
-      </form>
-      
-      <div class="mt-6 text-center">
-        <p class="text-gray-600 dark:text-gray-400 mb-4">or</p>
-        <button id="google-signin" class="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold flex items-center justify-center gap-2">
-          <span>🔍</span>
-          Continue with Google
-        </button>
-      </div>
-      
-      <div id="auth-error" class="mt-4 p-3 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded hidden"></div>
-      
-      <p class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-        <a href="/" class="text-blue-600 dark:text-blue-400 hover:underline">Back to home</a>
-      </p>
-    </div>
+        <section
+          class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8"
+          aria-label="Sign in or create account"
+        >
+          <header class="mb-6 sm:mb-8 text-center">
+            <h1 class="text-3xl font-bold mb-2">Welcome to Pathways</h1>
+            <p class="text-gray-600 dark:text-gray-400">
+              Sign in or create an account to start your learning journey.
+            </p>
+          </header>
+
+          <!-- =====================================================
+               TABS: SIGN IN / SIGN UP
+          ====================================================== -->
+          <div class="flex gap-4 mb-6 border-b" role="tablist">
+            <button
+              id="signin-tab"
+              role="tab"
+              aria-selected="true"
+              aria-controls="signin-form"
+              class="px-4 py-2 font-semibold border-b-2 border-blue-600"
+            >
+              Sign In
+            </button>
+            <button
+              id="signup-tab"
+              role="tab"
+              aria-selected="false"
+              aria-controls="signup-form"
+              class="px-4 py-2 text-gray-600 dark:text-gray-400"
+            >
+              Sign Up
+            </button>
+          </div>
+
+          <!-- =====================================================
+               SIGN IN FORM
+          ====================================================== -->
+          <form
+            id="signin-form"
+            class="space-y-4"
+            aria-label="Sign in form"
+          >
+            <div>
+              <label
+                for="signin-email"
+                class="block mb-2 font-semibold"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                id="signin-email"
+                autocomplete="email"
+                required
+                class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700"
+              />
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label
+                  for="signin-password"
+                  class="font-semibold"
+                >
+                  Password
+                </label>
+                <button
+                  type="button"
+                  id="signin-toggle-password"
+                  class="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  Show
+                </button>
+              </div>
+              <div class="relative">
+                <input
+                  type="password"
+                  id="signin-password"
+                  autocomplete="current-password"
+                  required
+                  class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 pr-10"
+                />
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-sm">
+              <label class="inline-flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="remember-me"
+                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span>Remember me</span>
+              </label>
+              <button
+                type="button"
+                id="forgot-password-btn"
+                class="text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+            >
+              Sign In
+            </button>
+          </form>
+
+          <!-- =====================================================
+               SIGN UP FORM
+          ====================================================== -->
+          <form
+            id="signup-form"
+            class="space-y-4 hidden"
+            aria-label="Create account form"
+          >
+            <div>
+              <label
+                for="signup-name"
+                class="block mb-2 font-semibold"
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                id="signup-name"
+                autocomplete="name"
+                required
+                class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700"
+              />
+            </div>
+
+            <div>
+              <label
+                for="signup-email"
+                class="block mb-2 font-semibold"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                id="signup-email"
+                autocomplete="email"
+                required
+                class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700"
+              />
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label
+                  for="signup-password"
+                  class="font-semibold"
+                >
+                  Password
+                </label>
+                <button
+                  type="button"
+                  id="signup-toggle-password"
+                  class="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  Show
+                </button>
+              </div>
+
+              <input
+                type="password"
+                id="signup-password"
+                autocomplete="new-password"
+                required
+                minlength="6"
+                class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700"
+              />
+              <p class="mt-1 text-xs text-gray-500">
+                Minimum 6 characters. Use a mix of letters, numbers, and symbols for
+                better security.
+              </p>
+            </div>
+
+            <div class="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
+              <input
+                id="terms-checkbox"
+                type="checkbox"
+                class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <label for="terms-checkbox">
+                I agree to the
+                <a
+                  href="/terms.html"
+                  class="text-blue-600 dark:text-blue-400 hover:underline"
+                  >Terms of Use</a
+                >
+                and
+                <a
+                  href="/privacy.html"
+                  class="text-blue-600 dark:text-blue-400 hover:underline"
+                  >Privacy Policy</a
+                >.
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+            >
+              Sign Up
+            </button>
+          </form>
+
+          <!-- =====================================================
+               DIVIDER + GOOGLE SIGN-IN
+          ====================================================== -->
+          <div class="mt-6 text-center">
+            <p class="text-gray-600 dark:text-gray-400 mb-4 text-sm">
+              or continue with
+            </p>
+            <button
+              id="google-signin"
+              type="button"
+              class="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold flex items-center justify-center gap-2"
+            >
+              <span aria-hidden="true">🔍</span>
+              <span>Continue with Google</span>
+            </button>
+          </div>
+
+          <!-- =====================================================
+               ERROR AREA
+          ====================================================== -->
+          <div
+            id="auth-error"
+            class="mt-4 p-3 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded hidden text-sm"
+            role="alert"
+          ></div>
+
+          <!-- =====================================================
+               FOOTER TEXT
+          ====================================================== -->
+          <p
+            class="mt-6 text-center text-xs text-gray-500 dark:text-gray-400 leading-relaxed"
+          >
+            By continuing, you agree to Pathways storing your profile and progress
+            securely in order to track your learning journey.
+          </p>
+
+          <p class="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+            <a
+              href="/"
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              ← Back to home
+            </a>
+          </p>
+        </section>
       </div>
     </main>
   </div>
 
+  <!-- =========================================================
+       AUTH LOGIC SCRIPT
+       - Uses loadFirebase, FirebaseSignInEmail, FirebaseSignUpEmail
+       - Uses FirebaseAuth.signInGoogle
+       - Compatible with sessionManager (if present)
+  ========================================================== -->
   <script>
-    // Wait for Firebase to load
-    document.addEventListener('DOMContentLoaded', function() {
-      const signinTab = document.getElementById('signin-tab');
-      const signupTab = document.getElementById('signup-tab');
+    document.addEventListener('DOMContentLoaded', () => {
+      const signinTab  = document.getElementById('signin-tab');
+      const signupTab  = document.getElementById('signup-tab');
       const signinForm = document.getElementById('signin-form');
       const signupForm = document.getElementById('signup-form');
-      const errorDiv = document.getElementById('auth-error');
-      
-      // Tab switching
-      signinTab.addEventListener('click', () => {
-        signinTab.classList.add('border-b-2', 'border-blue-600', 'font-semibold');
-        signinTab.classList.remove('text-gray-600', 'dark:text-gray-400');
-        signupTab.classList.remove('border-b-2', 'border-blue-600', 'font-semibold');
-        signupTab.classList.add('text-gray-600', 'dark:text-gray-400');
-        signinForm.classList.remove('hidden');
-        signupForm.classList.add('hidden');
+      const errorDiv   = document.getElementById('auth-error');
+      const googleBtn  = document.getElementById('google-signin');
+
+      const signinPasswordInput  = document.getElementById('signin-password');
+      const signupPasswordInput  = document.getElementById('signup-password');
+      const signinTogglePassword = document.getElementById('signin-toggle-password');
+      const signupTogglePassword = document.getElementById('signup-toggle-password');
+      const rememberMeCheckbox   = document.getElementById('remember-me');
+      const termsCheckbox        = document.getElementById('terms-checkbox');
+      const forgotPasswordBtn    = document.getElementById('forgot-password-btn');
+
+      /* =======================================================
+         SMALL HELPER: SHOW ERROR
+      ======================================================== */
+      function showError(message) {
+        if (!errorDiv) return;
+        errorDiv.textContent = message;
+        errorDiv.classList.remove('hidden');
+      }
+
+      function clearError() {
+        if (!errorDiv) return;
+        errorDiv.textContent = '';
         errorDiv.classList.add('hidden');
-      });
-      
-      signupTab.addEventListener('click', () => {
-        signupTab.classList.add('border-b-2', 'border-blue-600', 'font-semibold');
-        signupTab.classList.remove('text-gray-600', 'dark:text-gray-400');
-        signinTab.classList.remove('border-b-2', 'border-blue-600', 'font-semibold');
-        signinTab.classList.add('text-gray-600', 'dark:text-gray-400');
-        signupForm.classList.remove('hidden');
-        signinForm.classList.add('hidden');
-        errorDiv.classList.add('hidden');
-      });
-      
-      // Sign in form
+      }
+
+      /* =======================================================
+         SMALL HELPER: BUILD USER PROFILE OBJECT
+      ======================================================== */
+      function buildUserProfile(user, fallbackName) {
+        if (!user) return null;
+
+        const name =
+          user.displayName ||
+          fallbackName ||
+          (user.email ? user.email.split('@')[0] : 'Learner');
+
+        return {
+          uid: user.uid,
+          email: user.email || '',
+          name: name,
+          photoURL: user.photoURL || null,
+          role: 'student',
+          createdAt: user.metadata?.creationTime || new Date().toISOString(),
+          sessionStart: Date.now(),
+          lastActivity: Date.now()
+        };
+      }
+
+      function saveSession(profile) {
+        if (!profile) return;
+
+        if (window.sessionManager && typeof window.sessionManager.setUser === 'function') {
+          window.sessionManager.setUser(profile);
+        } else {
+          localStorage.setItem('currentUser', JSON.stringify(profile));
+        }
+
+        try {
+          window.dispatchEvent(new Event('profileUpdated'));
+        } catch (e) {
+          console.warn('Could not dispatch profileUpdated event:', e);
+        }
+      }
+
+      /* =======================================================
+         TAB SWITCHING (SIGN IN / SIGN UP)
+      ======================================================== */
+      function setActiveTab(tab) {
+        if (tab === 'signin') {
+          signinTab.classList.add('border-b-2', 'border-blue-600', 'font-semibold');
+          signupTab.classList.remove('border-b-2', 'border-blue-600');
+
+          signinForm.classList.remove('hidden');
+          signupForm.classList.add('hidden');
+
+          signinTab.setAttribute('aria-selected', 'true');
+          signupTab.setAttribute('aria-selected', 'false');
+        } else {
+          signupTab.classList.add('border-b-2', 'border-blue-600', 'font-semibold');
+          signinTab.classList.remove('border-b-2', 'border-blue-600');
+
+          signupForm.classList.remove('hidden');
+          signinForm.classList.add('hidden');
+
+          signupTab.setAttribute('aria-selected', 'true');
+          signinTab.setAttribute('aria-selected', 'false');
+        }
+
+        clearError();
+      }
+
+      signinTab.addEventListener('click', () => setActiveTab('signin'));
+      signupTab.addEventListener('click', () => setActiveTab('signup'));
+
+      /* =======================================================
+         PASSWORD SHOW/HIDE TOGGLES
+      ======================================================== */
+      function togglePasswordVisibility(input, toggleBtn) {
+        if (!input || !toggleBtn) return;
+
+        const isPassword = input.getAttribute('type') === 'password';
+        input.setAttribute('type', isPassword ? 'text' : 'password');
+        toggleBtn.textContent = isPassword ? 'Hide' : 'Show';
+      }
+
+      if (signinTogglePassword && signinPasswordInput) {
+        signinTogglePassword.addEventListener('click', () => {
+          togglePasswordVisibility(signinPasswordInput, signinTogglePassword);
+        });
+      }
+
+      if (signupTogglePassword && signupPasswordInput) {
+        signupTogglePassword.addEventListener('click', () => {
+          togglePasswordVisibility(signupPasswordInput, signupTogglePassword);
+        });
+      }
+
+      /* =======================================================
+         FORGOT PASSWORD (Placeholder)
+         - You can later wire this to Firebase sendPasswordResetEmail
+      ======================================================== */
+      if (forgotPasswordBtn) {
+        forgotPasswordBtn.addEventListener('click', () => {
+          alert(
+            'Password reset is not fully wired yet.\n\n' +
+            'Later you can connect this button to Firebase sendPasswordResetEmail(email).'
+          );
+        });
+      }
+
+      /* =======================================================
+         SIGN-IN FORM SUBMIT
+         Uses: loadFirebase, FirebaseSignInEmail
+      ======================================================== */
       signinForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        errorDiv.classList.add('hidden');
-        const email = document.getElementById('signin-email').value.trim();
-        const password = document.getElementById('signin-password').value;
-        
+        clearError();
+
+        const email    = document.getElementById('signin-email').value.trim();
+        const password = signinPasswordInput.value;
+
         if (!email || !password) {
-          errorDiv.textContent = 'Please enter email and password';
-          errorDiv.classList.remove('hidden');
+          showError('Please enter email and password.');
           return;
         }
-        
+
         try {
-          let user = null;
-          
-          // Try Firebase if available
-          if (window.FirebaseAuth && window.loadFirebase) {
-            try {
-              await window.loadFirebase();
-              user = await window.FirebaseAuth.signInEmail(email, password);
-            } catch (firebaseError) {
-              console.warn('Firebase signin failed, trying localStorage:', firebaseError);
-            }
+          if (rememberMeCheckbox && rememberMeCheckbox.checked) {
+            localStorage.setItem('rememberedEmail', email);
+          } else {
+            localStorage.removeItem('rememberedEmail');
           }
-          
-          // Fallback to localStorage (for offline mode)
-          if (!user) {
-            const userStr = localStorage.getItem('currentUser');
-            if (userStr) {
-              const savedUser = JSON.parse(userStr);
-              if (savedUser.email === email) {
-                // Check if password exists in profile
-                const profileKey = `profile_${savedUser.uid}`;
-                const profile = JSON.parse(localStorage.getItem(profileKey) || '{}');
-                if (profile.email === email) {
-                  user = savedUser;
-                }
-              }
-            }
-            
-            if (!user) {
-              throw new Error('Invalid email or password. Please sign up first.');
-            }
+        } catch (e) {
+          console.warn('Could not store remembered email:', e);
+        }
+
+        try {
+          if (typeof loadFirebase !== 'function') {
+            throw new Error('Firebase is not loaded. Please check firebase-vanilla.js.');
           }
-          
-          // Save current user
-          const userProfile = {
-            uid: user.uid || 'user_' + Date.now(),
-            email: user.email || email,
-            name: user.displayName || user.name || email.split('@')[0],
-            role: user.role || 'student'
-          };
-          localStorage.setItem('currentUser', JSON.stringify(userProfile));
-          
-          alert('Signed in successfully!');
+
+          await loadFirebase();
+
+          if (typeof FirebaseSignInEmail !== 'function') {
+            throw new Error('FirebaseSignInEmail helper is not defined.');
+          }
+
+          const result = await FirebaseSignInEmail(email, password);
+          const user   = result.user || result;
+
+          const profile = buildUserProfile(user);
+          saveSession(profile);
+
           window.location.href = '/dashboard.html';
-        } catch (error) {
-          errorDiv.textContent = error.message || 'Sign in failed. Please check your credentials.';
-          errorDiv.classList.remove('hidden');
+        } catch (err) {
+          console.error('Sign-In error:', err);
+          showError(err.message || 'Sign-In failed. Please check your credentials.');
         }
       });
-      
-      // Sign up form
+
+      /* =======================================================
+         SIGN-UP FORM SUBMIT
+         Uses: loadFirebase, FirebaseSignUpEmail
+      ======================================================== */
       signupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        errorDiv.classList.add('hidden');
-        const name = document.getElementById('signup-name').value.trim();
-        const email = document.getElementById('signup-email').value.trim();
-        const password = document.getElementById('signup-password').value;
-        
+        clearError();
+
+        const name     = document.getElementById('signup-name').value.trim();
+        const email    = document.getElementById('signup-email').value.trim();
+        const password = signupPasswordInput.value;
+
         if (!name || !email || !password) {
-          errorDiv.textContent = 'Please fill in all fields';
-          errorDiv.classList.remove('hidden');
+          showError('Please fill all fields.');
           return;
         }
-        
+
         if (password.length < 6) {
-          errorDiv.textContent = 'Password must be at least 6 characters';
-          errorDiv.classList.remove('hidden');
+          showError('Password must be at least 6 characters long.');
           return;
         }
-        
-        // Check if email already exists
-        const existingUser = localStorage.getItem('currentUser');
-        if (existingUser) {
-          const user = JSON.parse(existingUser);
-          if (user.email === email) {
-            errorDiv.textContent = 'Email already registered. Please sign in instead.';
-            errorDiv.classList.remove('hidden');
-            return;
-          }
+
+        if (termsCheckbox && !termsCheckbox.checked) {
+          showError('Please accept the Terms of Use and Privacy Policy.');
+          return;
         }
-        
+
         try {
-          let user = null;
-          const userProfile = {
-            uid: 'user_' + Date.now(),
-            email: email,
-            name: name,
-            role: 'student',
-            createdAt: new Date().toISOString(),
-            photoURL: null
-          };
-          
-          // Try Firebase if available
-          if (window.FirebaseAuth && window.loadFirebase) {
-            try {
-              await window.loadFirebase();
-              user = await window.FirebaseAuth.signUpEmail(email, password, name);
-              if (user) {
-                userProfile.uid = user.uid;
-                userProfile.email = user.email;
-                userProfile.name = user.displayName || name;
-              }
-            } catch (firebaseError) {
-              console.warn('Firebase signup failed, using localStorage:', firebaseError);
-              // Continue with localStorage fallback
-            }
+          if (typeof loadFirebase !== 'function') {
+            throw new Error('Firebase is not loaded. Please check firebase-vanilla.js.');
           }
-          
-          // Save to localStorage
-          localStorage.setItem('currentUser', JSON.stringify(userProfile));
-          
-          // Create profile data with password hash (simple storage)
-          const profileData = {
-            name: name,
-            email: email,
-            password: btoa(password), // Simple encoding (not secure, but works for demo)
-            bio: '',
-            preferredField: '',
-            goals: [],
-            createdAt: new Date().toISOString()
-          };
-          localStorage.setItem(`profile_${userProfile.uid}`, JSON.stringify(profileData));
-          
-          alert('Account created! Welcome to EduRise!');
+
+          await loadFirebase();
+
+          if (typeof FirebaseSignUpEmail !== 'function') {
+            throw new Error('FirebaseSignUpEmail helper is not defined.');
+          }
+
+          const result = await FirebaseSignUpEmail(email, password, name);
+          const user   = result.user || result;
+
+          const profile = buildUserProfile(user, name);
+          saveSession(profile);
+
+          alert('Account created! Welcome to Pathways.');
           window.location.href = '/profile.html';
-        } catch (error) {
-          errorDiv.textContent = error.message || 'Sign up failed. Please try again.';
-          errorDiv.classList.remove('hidden');
+        } catch (err) {
+          console.error('Sign-Up error:', err);
+          showError(err.message || 'Sign-Up failed. Please try again.');
         }
       });
-      
-      // Google sign in
-      document.getElementById('google-signin').addEventListener('click', async () => {
-        errorDiv.classList.add('hidden');
-        const button = document.getElementById('google-signin');
-        const originalText = button.textContent;
-        button.disabled = true;
-        button.textContent = 'Loading...';
-        
-        try {
-          // Check if Firebase is available
-          if (!window.FirebaseAuth || !window.loadFirebase) {
-            errorDiv.textContent = '⚠️ Google Sign-In is not available in offline mode. Please use Email/Password authentication instead, or check your internet connection.';
-            errorDiv.classList.remove('hidden');
-            button.disabled = false;
-            button.textContent = originalText;
-            return;
-          }
-          
-          // Ensure Firebase is loaded and initialized
+
+      /* =======================================================
+         GOOGLE SIGN-IN
+         Uses: loadFirebase, FirebaseAuth.signInGoogle
+      ======================================================== */
+      if (googleBtn) {
+        googleBtn.addEventListener('click', async () => {
+          clearError();
+
+          const originalHtml = googleBtn.innerHTML;
+          googleBtn.disabled = true;
+          googleBtn.innerHTML = '<span>⏳</span><span> Signing in...</span>';
+
           try {
-            console.log('Loading Firebase for Google Sign-In...');
-            await window.loadFirebase();
-            console.log('Firebase loaded successfully');
-          } catch (loadError) {
-            console.warn('Firebase load error (offline mode):', loadError.message);
-            errorDiv.textContent = '⚠️ Google Sign-In requires an internet connection. Please use Email/Password authentication instead.';
-            errorDiv.classList.remove('hidden');
-            button.disabled = false;
-            button.textContent = originalText;
-            return;
-          }
-          
-          // Check if Firebase is initialized
-          if (!window.isFirebaseInitialized || !window.isFirebaseInitialized()) {
-            errorDiv.textContent = '⚠️ Firebase is not initialized. Please use Email/Password authentication instead.';
-            errorDiv.classList.remove('hidden');
-            button.disabled = false;
-            button.textContent = originalText;
-            return;
-          }
-          
-          // Attempt Google sign in
-          const user = await window.FirebaseAuth.signInGoogle();
-          if (user) {
-            const userProfile = {
-              uid: user.uid,
-              email: user.email,
-              name: user.displayName || user.email.split('@')[0],
-              role: 'student'
-            };
-            localStorage.setItem('currentUser', JSON.stringify(userProfile));
-            alert('Signed in successfully!');
+            if (typeof loadFirebase !== 'function') {
+              throw new Error('Firebase is not loaded. Please check firebase-vanilla.js.');
+            }
+
+            await loadFirebase();
+
+            if (
+              !window.FirebaseAuth ||
+              typeof window.FirebaseAuth.signInGoogle !== 'function'
+            ) {
+              throw new Error(
+                'Google Sign-In is not configured correctly. ' +
+                'Make sure FirebaseAuth.signInGoogle exists in firebase-vanilla.js.'
+              );
+            }
+
+            const user = await window.FirebaseAuth.signInGoogle();
+            if (!user) {
+              throw new Error('No user returned from Google Sign-In.');
+            }
+
+            const profile = buildUserProfile(user);
+            saveSession(profile);
+
+            alert('Signed in with Google successfully!');
             window.location.href = '/dashboard.html';
+          } catch (err) {
+            console.error('Google Sign-In error:', err);
+            showError(
+              'Google Sign-In failed: ' +
+              (err.message || 'Please try again or use email/password.')
+            );
+          } finally {
+            googleBtn.disabled = false;
+            googleBtn.innerHTML = originalHtml;
           }
-        } catch (error) {
-          console.error('Google sign in error:', error);
-          errorDiv.textContent = '⚠️ Google Sign-In failed. ' + (error.message || 'Please check your internet connection or use Email/Password authentication.');
-          errorDiv.classList.remove('hidden');
-        } finally {
-          button.disabled = false;
-          button.textContent = originalText;
+        });
+      }
+
+      /* =======================================================
+         PREFILL REMEMBERED EMAIL (if exists)
+      ======================================================== */
+      try {
+        const remembered = localStorage.getItem('rememberedEmail');
+        if (remembered) {
+          const emailInput = document.getElementById('signin-email');
+          if (emailInput) {
+            emailInput.value = remembered;
+          }
+          if (rememberMeCheckbox) {
+            rememberMeCheckbox.checked = true;
+          }
         }
-      });
+      } catch (e) {
+        console.warn('Could not read remembered email:', e);
+      }
     });
   </script>
 </body>
 </html>
-

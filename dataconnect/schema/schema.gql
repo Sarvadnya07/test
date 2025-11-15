@@ -1,63 +1,135 @@
+// ==========================
+// User Table
+// ==========================
 type User @table {
+  id: String @id @default(uuid())
   displayName: String!
-  email: String!
+  email: String! @unique
   role: String!
-  createdAt: Timestamp!
+  createdAt: Timestamp! @default(now())
   photoUrl: String
   bio: String
   contactNumber: String
+
+  // Relations
+  tutorProfile: TutorProfile?
+  studentSessions: [Session] @relation(name: "StudentSessions")
+  tutorSessions: [Session] @relation(name: "TutorSessions")
+  studentReviews: [Review] @relation(name: "StudentReviews")
+  tutorReviews: [Review] @relation(name: "TutorReviews")
+  studentPayments: [Payment] @relation(name: "StudentPayments")
+  tutorPayments: [Payment] @relation(name: "TutorPayments")
 }
 
+// ==========================
+// Subject Table
+// ==========================
 type Subject @table {
+  id: String @id @default(uuid())
   name: String!
-  createdAt: Timestamp!
+  createdAt: Timestamp! @default(now())
   description: String
+
+  tutorSubjects: [TutorProfileSubject]
+  sessions: [Session]
 }
 
+// ==========================
+// Tutor Profile Table
+// ==========================
 type TutorProfile @table {
-  user: User!
+  id: String @id @default(uuid())
+  user: User! @relation(fields: [userId], references: [id])
+  userId: String!
+
   hourlyRate: Float!
   availability: String!
-  createdAt: Timestamp!
+  createdAt: Timestamp! @default(now())
   qualifications: String
   experience: String
   averageRating: Float
+
+  subjects: [TutorProfileSubject]
 }
 
+// ==========================
+// Junction Table: TutorProfile <-> Subject
+// ==========================
 type TutorProfileSubject @table(key: ["tutorProfile", "subject"]) {
-  tutorProfile: TutorProfile!
-  subject: Subject!
+  id: String @id @default(uuid())
+
+  tutorProfile: TutorProfile! @relation(fields: [tutorProfileId], references: [id])
+  tutorProfileId: String!
+
+  subject: Subject! @relation(fields: [subjectId], references: [id])
+  subjectId: String!
 }
 
+// ==========================
+// Session Table
+// ==========================
 type Session @table {
-  student: User!
-  tutor: User!
-  subject: Subject!
+  id: String @id @default(uuid())
+
+  student: User! @relation(name: "StudentSessions", fields: [studentId], references: [id])
+  studentId: String!
+
+  tutor: User! @relation(name: "TutorSessions", fields: [tutorId], references: [id])
+  tutorId: String!
+
+  subject: Subject! @relation(fields: [subjectId], references: [id])
+  subjectId: String!
+
   startTime: Timestamp!
   endTime: Timestamp!
   status: String!
-  createdAt: Timestamp!
+  createdAt: Timestamp! @default(now())
   meetingLink: String
   studentNotes: String
   tutorNotes: String
+
+  review: Review?
+  payment: Payment?
 }
 
+// ==========================
+// Review Table
+// ==========================
 type Review @table {
-  student: User!
-  tutor: User!
-  session: Session!
+  id: String @id @default(uuid())
+
+  student: User! @relation(name: "StudentReviews", fields: [studentId], references: [id])
+  studentId: String!
+
+  tutor: User! @relation(name: "TutorReviews", fields: [tutorId], references: [id])
+  tutorId: String!
+
+  session: Session! @relation(fields: [sessionId], references: [id])
+  sessionId: String!
+
   rating: Int!
-  createdAt: Timestamp!
+  createdAt: Timestamp! @default(now())
   comment: String
 }
 
+// ==========================
+// Payments Table
+// ==========================
 type Payment @table {
-  student: User!
-  tutor: User!
-  session: Session!
+  id: String @id @default(uuid())
+
+  student: User! @relation(name: "StudentPayments", fields: [studentId], references: [id])
+  studentId: String!
+
+  tutor: User! @relation(name: "TutorPayments", fields: [tutorId], references: [id])
+  tutorId: String!
+
+  session: Session! @relation(fields: [sessionId], references: [id])
+  sessionId: String!
+
   amount: Float!
   status: String!
-  paymentDate: Date!
-  createdAt: Timestamp!
+  paymentDate: Timestamp!
+  createdAt: Timestamp! @default(now())
   transactionId: String
 }

@@ -4,30 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Skill Explainer - EduRise</title>
-  <link rel="stylesheet" href="/css/tailwind-input.css">
-  <link rel="stylesheet" href="/css/styles.css">
-  <script src="/js/config.js"></script>
+
+  <!-- ✅ Load config FIRST (no defer, so Gemini sees CONFIG reliably) -->
+  <script src="./js/config.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/tailwind-input.css">
+  <link rel="stylesheet" href="./css/styles.css">
 </head>
+
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
   <div data-include="header"></div>
 
   <main class="container mx-auto px-4 py-8 max-w-4xl">
     <div class="mb-8">
       <h1 class="text-4xl font-bold mb-2">Skill Explainer</h1>
-      <p class="text-lg text-gray-600 dark:text-gray-400">Get clear explanations of any skill or concept</p>
+      <p class="text-lg text-gray-600 dark:text-gray-400">
+        Get clear explanations of any skill or concept
+      </p>
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
       <div class="mb-4">
-        <label for="skill-input" class="block mb-2 font-semibold">What skill would you like explained?</label>
+        <label for="skill-input" class="block mb-2 font-semibold">
+          What skill would you like explained?
+        </label>
         <input 
           type="text" 
           id="skill-input" 
           class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700"
-          placeholder="e.g., JavaScript, Python, React, Machine Learning, System Design"
-        >
+          placeholder="e.g., JavaScript, Python, React, Machine Learning, System Design">
       </div>
-      <button id="explain-skill" class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+
+      <button
+        id="explain-skill"
+        class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+      >
         Explain Skill
       </button>
     </div>
@@ -35,9 +47,7 @@
     <div id="explanation-result" class="hidden">
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
         <h2 class="text-2xl font-bold mb-4">Explanation</h2>
-        <div id="explanation-content" class="prose dark:prose-invert max-w-none">
-          <!-- Explanation loaded here -->
-        </div>
+        <div id="explanation-content" class="prose dark:prose-invert max-w-none"></div>
       </div>
     </div>
 
@@ -48,9 +58,34 @@
   </main>
 
   <div data-include="footer"></div>
-  <script src="/js/include.js" defer></script>
-  <script src="/js/gemini.js"></script>
+
+  <!-- Scripts -->
+  <script src="./js/include.js" defer></script>
+  <script src="./js/gemini.js"></script>
+
   <script>
+    // ------------------------------------------
+    // ✅ Ensure Gemini API is fully ready
+    // ------------------------------------------
+    function ensureGeminiReady() {
+      return new Promise((resolve) => {
+        const check = () => {
+          if (window.GeminiAPI) {
+            window.GeminiAPI.init();
+            if (window.GeminiAPI.isConfigured()) {
+              console.log("Gemini OK");
+              return resolve(true);
+            }
+          }
+          setTimeout(check, 100);
+        };
+        check();
+      });
+    }
+
+    // ------------------------------------------
+    //  Explain Skill Button Logic
+    // ------------------------------------------
     document.getElementById('explain-skill').addEventListener('click', async () => {
       const skill = document.getElementById('skill-input').value.trim();
       if (!skill) {
@@ -63,26 +98,39 @@
 
       try {
         let explanation = '';
-        
-        // Try Gemini API first
-        if (window.GeminiAPI && window.GeminiAPI.isConfigured()) {
-          explanation = await window.GeminiAPI.explainSkill(skill);
+
+        // 🚀 Try Gemini API
+        if (await ensureGeminiReady()) {
+          console.log('🚀 Using Gemini API to explain skill...');
+          try {
+            explanation = await GeminiAPI.explainSkill(skill);
+            console.log('✅ Gemini API response received');
+          } catch (apiError) {
+            console.warn('❌ Gemini API error:', apiError);
+            explanation = generateFallbackExplanation(skill);
+          }
         } else {
-          // Fallback explanation
+          console.warn('⚠️ Gemini API not configured, using fallback');
           explanation = generateFallbackExplanation(skill);
         }
 
         displayExplanation(explanation);
+
       } catch (error) {
         console.error('Error explaining skill:', error);
         displayExplanation(generateFallbackExplanation(skill));
+
       } finally {
         document.getElementById('loading').classList.add('hidden');
       }
     });
 
+    // ------------------------------------------
+    //  Fallback Logic
+    // ------------------------------------------
     function generateFallbackExplanation(skill) {
       const lower = skill.toLowerCase();
+
       if (lower.includes('javascript')) {
         return `JavaScript: A Programming Language
 
@@ -110,53 +158,55 @@ Time Estimate:
         return `Python: A Versatile Programming Language
 
 Definition:
-Python is a high-level, interpreted programming language known for its simplicity and readability. It's widely used in web development, data science, AI, and automation.
+Python is a beginner-friendly, interpreted programming language known for readability and strong community support.
 
 Key Uses:
+- Data science, ML, automation
 - Web development (Django, Flask)
-- Data science and analytics
-- Machine learning and AI
-- Automation and scripting
-- Scientific computing
+- Scripting
+- AI & research
 
 Learning Path:
-1. Basics: Syntax, data types, control flow
-2. Functions and modules
-3. Object-oriented programming
-4. Libraries (NumPy, Pandas, etc.)
-5. Specialization (web, data, ML)
+1. Basics: Variables, loops, functions
+2. Data structures & modules
+3. OOP concepts
+4. Libraries (NumPy, Pandas, Flask)
+5. Advanced topics (ML, automation)
 
 Time Estimate:
 - Basics: 2-3 weeks
 - Intermediate: 2-4 months
 - Advanced: 6-12 months`;
-      } else {
-        return `${skill}: Overview
+      }
+
+      return `${skill}: Overview
 
 Definition:
-${skill} is an important skill/concept in modern technology and development.
+${skill} is an important concept or skill used in modern technology.
 
 Key Concepts:
-- Core principles and fundamentals
+- Core fundamentals
 - Practical applications
-- Industry best practices
+- Common tools and workflows
 
 Learning Path:
-1. Start with basics
-2. Practice with projects
-3. Explore advanced topics
-4. Build real-world applications
+1. Understand basics
+2. Build small projects
+3. Explore advanced concepts
+4. Apply in real applications
 
 Time Estimate:
-- Beginner: 1-2 months
-- Intermediate: 3-6 months
-- Advanced: 6-12 months`;
-      }
+- Beginner: 1–2 months
+- Intermediate: 3–6 months
+- Advanced: 6–12 months`;
     }
 
+    // ------------------------------------------
+    // Display
+    // ------------------------------------------
     function displayExplanation(explanation) {
-      const content = document.getElementById('explanation-content');
-      content.innerHTML = `<div class="whitespace-pre-line">${escapeHtml(explanation)}</div>`;
+      document.getElementById('explanation-content').innerHTML =
+        '<div class="whitespace-pre-line">' + escapeHtml(explanation) + '</div>';
       document.getElementById('explanation-result').classList.remove('hidden');
     }
 

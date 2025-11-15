@@ -27,31 +27,127 @@
         <a href="/forum.html" class="hover:text-blue-600 dark:hover:text-blue-400">Forum</a>
         <a href="/profile.html" class="hover:text-blue-600 dark:hover:text-blue-400">Profile</a>
         <a href="/auth.html" class="btn-primary">Sign Up</a>
-        <button id="theme-toggle" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700" aria-label="Toggle theme">🌙</button>
+        <button
+          id="theme-toggle"
+          class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+          aria-label="Toggle theme"
+        >
+          🌙
+        </button>
       </div>
     </nav>
   </header>
 
   <main id="main-content" class="container mx-auto px-4 py-12">
     <section class="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow p-8">
-      <h1 class="text-3xl font-bold mb-4">Feedback</h1>
-      <p class="text-gray-600 dark:text-gray-300 mb-6">We read every message. Tell us what's working, what isn't, or what you'd like to see.</p>
+      <h1 class="text-3xl font-bold mb-3">Feedback</h1>
+      <p class="text-gray-600 dark:text-gray-300 mb-6">
+        We read every message. Tell us what's working, what isn't, or what you'd like to see next.
+      </p>
 
-      <form id="feedback-form" class="space-y-4">
+      <form id="feedback-form" class="space-y-5" novalidate>
+        <!-- Which feature -->
         <label class="block">
-          <span class="text-sm font-semibold">What feature did you use?</span>
-          <input name="feature" class="mt-1 block w-full rounded border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3" placeholder="e.g., AI Mentor, Pathways">
+          <span class="text-sm font-semibold">Which part of EduRise were you using?</span>
+          <select
+            name="feature"
+            id="feature"
+            class="mt-1 block w-full rounded border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm"
+          >
+            <option value="">Select a feature (optional)</option>
+            <option value="ai-mentor">AI Mentor</option>
+            <option value="pathways">Pathways / Career Roadmaps</option>
+            <option value="dashboard">Dashboard</option>
+            <option value="study-resources">Study Resources</option>
+            <option value="auth">Sign In / Sign Up</option>
+            <option value="other">Other</option>
+          </select>
         </label>
 
-        <label class="block">
-          <span class="text-sm font-semibold">Your feedback</span>
-          <textarea name="feedback" rows="6" class="mt-1 block w-full rounded border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3" placeholder="Share your thoughts"></textarea>
-        </label>
+        <!-- Rating -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label class="block">
+            <span class="text-sm font-semibold">Overall experience</span>
+            <select
+              name="rating"
+              id="rating"
+              class="mt-1 block w-full rounded border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm"
+            >
+              <option value="">Choose a rating</option>
+              <option value="5">⭐⭐⭐⭐⭐ Amazing</option>
+              <option value="4">⭐⭐⭐⭐ Good</option>
+              <option value="3">⭐⭐⭐ Okay</option>
+              <option value="2">⭐⭐ Needs work</option>
+              <option value="1">⭐ Not good</option>
+            </select>
+          </label>
 
-        <div class="flex items-center gap-4">
-          <button type="button" id="submit-feedback" class="btn-primary">Submit Feedback</button>
-          <span id="feedback-status" class="text-sm text-gray-600 dark:text-gray-300"></span>
+          <label class="block">
+            <span class="text-sm font-semibold">Feedback type</span>
+            <select
+              name="type"
+              id="type"
+              class="mt-1 block w-full rounded border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm"
+            >
+              <option value="">Select type</option>
+              <option value="bug">Bug / Something broken</option>
+              <option value="idea">Feature request / Idea</option>
+              <option value="ux">Design / UX feedback</option>
+              <option value="content">Content / Accuracy</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
         </div>
+
+        <!-- Free text -->
+        <label class="block">
+          <span class="text-sm font-semibold">Your feedback <span class="text-red-500">*</span></span>
+          <textarea
+            name="feedback"
+            id="feedback-text"
+            rows="6"
+            required
+            class="mt-1 block w-full rounded border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm"
+            placeholder="Share your thoughts (what you liked, what was confusing, any issues, ideas, etc.)"
+          ></textarea>
+        </label>
+
+        <!-- Optional contact -->
+        <label class="block">
+          <span class="text-sm font-semibold">
+            Email (optional)
+            <span class="text-xs font-normal text-gray-500 dark:text-gray-400">
+              Only if you want us to follow up.
+            </span>
+          </span>
+          <input
+            type="email"
+            name="email"
+            id="email"
+            class="mt-1 block w-full rounded border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 text-sm"
+            placeholder="you@domain.com"
+          >
+        </label>
+
+        <div class="flex items-center gap-4 pt-2">
+          <button
+            type="button"
+            id="submit-feedback"
+            class="btn-primary"
+          >
+            Submit Feedback
+          </button>
+          <span
+            id="feedback-status"
+            class="text-sm text-gray-600 dark:text-gray-300"
+            role="status"
+          ></span>
+        </div>
+
+        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+          Note: This demo stores feedback <strong>only in your browser (localStorage)</strong>.
+          No data is sent to a server yet.
+        </p>
       </form>
     </section>
   </main>
@@ -95,20 +191,76 @@
   </footer>
 
   <script>
-    document.getElementById('submit-feedback')?.addEventListener('click', () => {
-      const status = document.getElementById('feedback-status');
-      status.textContent = 'Thanks — your feedback was recorded locally. (No backend configured)';
-      setTimeout(() => status.textContent = '', 4000);
-    });
+    // Theme toggle (same pattern as other pages)
+    (function initTheme() {
+      const saved = localStorage.getItem('theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
 
-    const btn = document.getElementById('theme-toggle');
-    btn?.addEventListener('click', () => {
+    const themeBtn = document.getElementById('theme-toggle');
+    themeBtn?.addEventListener('click', () => {
       const current = document.documentElement.getAttribute('data-theme') || 'light';
       const next = current === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('theme', next);
     });
-    (function(){ const saved = localStorage.getItem('theme'); if (saved) document.documentElement.setAttribute('data-theme', saved); })();
+
+    // Feedback logic (localStorage only)
+    const submitBtn = document.getElementById('submit-feedback');
+    const statusEl = document.getElementById('feedback-status');
+    const feedbackTextEl = document.getElementById('feedback-text');
+    const featureEl = document.getElementById('feature');
+    const ratingEl = document.getElementById('rating');
+    const typeEl = document.getElementById('type');
+    const emailEl = document.getElementById('email');
+
+    function setStatus(message, isError = false) {
+      if (!statusEl) return;
+      statusEl.textContent = message;
+      statusEl.classList.toggle('text-red-500', isError);
+      statusEl.classList.toggle('text-gray-600', !isError);
+      statusEl.classList.toggle('dark:text-red-300', isError);
+      statusEl.classList.toggle('dark:text-gray-300', !isError);
+      if (message) {
+        setTimeout(() => { statusEl.textContent = ''; }, 4000);
+      }
+    }
+
+    submitBtn?.addEventListener('click', () => {
+      const feedback = (feedbackTextEl?.value || '').trim();
+      if (!feedback) {
+        setStatus('Please enter your feedback before submitting.', true);
+        feedbackTextEl?.focus();
+        return;
+      }
+
+      const entry = {
+        feature: featureEl?.value || '',
+        rating: ratingEl?.value || '',
+        type: typeEl?.value || '',
+        feedback,
+        email: (emailEl?.value || '').trim(),
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        const key = 'edurise_feedback';
+        const existing = JSON.parse(localStorage.getItem(key) || '[]');
+        existing.unshift(entry);
+        localStorage.setItem(key, JSON.stringify(existing.slice(0, 100))); // keep last 100 entries
+
+        // Clear textarea (keep other fields so they can send multiple)
+        feedbackTextEl.value = '';
+
+        setStatus('Thanks — your feedback is saved locally in this browser. (No backend configured yet)');
+        console.log('📝 Saved feedback entry:', entry);
+      } catch (err) {
+        console.error('Error saving feedback:', err);
+        setStatus('Could not save feedback locally. Check console for details.', true);
+      }
+    });
   </script>
 </body>
 </html>

@@ -17,7 +17,12 @@
   <meta name="twitter:description" content="View and edit your profile, notification preferences, goals, and export your progress on Pathways." />
 
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"Person","name":"User profile","description":"Profile page for Pathways users to manage account and preferences."}
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "User profile",
+    "description": "Profile page for Pathways users to manage account and preferences."
+  }
   </script>
 
   <link rel="stylesheet" href="/css/tailwind-input.css">
@@ -31,21 +36,28 @@
     <!-- Hero Section -->
     <section class="text-center py-8 mb-8">
       <h1 class="text-5xl font-bold mb-2">Your Profile</h1>
-      <p class="text-xl text-gray-600 dark:text-gray-400">Manage your account, track progress, and set goals</p>
+      <p class="text-xl text-gray-600 dark:text-gray-400">
+        Manage your account, track progress, and set goals
+      </p>
     </section>
-    
+
     <div id="profile-content" class="space-y-6">
+      <!-- Loader -->
       <div id="profile-loading" class="text-center py-12">
-        <div class="spinner"></div>
+        <div class="spinner mx-auto mb-4"></div>
+        <p class="text-gray-600 dark:text-gray-400">Loading your profile...</p>
       </div>
-      
+
+      <!-- Actual profile UI -->
       <div id="profile-info" class="hidden space-y-6">
         <!-- Profile Photo & Basic Info -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <section class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div class="flex items-start gap-6">
             <div class="relative">
-              <img id="profile-photo" src="" alt="Profile" class="w-24 h-24 rounded-full object-cover border-4 border-gray-200 dark:border-gray-700">
-              <label for="photo-upload" class="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-2 cursor-pointer hover:bg-blue-700">
+              <img id="profile-photo" src="" alt="Profile"
+                   class="w-24 h-24 rounded-full object-cover border-4 border-gray-200 dark:border-gray-700">
+              <label for="photo-upload"
+                     class="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-2 cursor-pointer hover:bg-blue-700">
                 <span class="text-sm">📷</span>
                 <input type="file" id="photo-upload" accept="image/*" class="hidden">
               </label>
@@ -53,128 +65,177 @@
             <div class="flex-1">
               <h2 class="text-2xl font-bold mb-1" id="user-name-display"></h2>
               <p class="text-gray-600 dark:text-gray-400" id="user-email"></p>
-              <p class="text-sm text-gray-500 dark:text-gray-500 mt-1">Role: <span id="user-role"></span></p>
+              <p class="text-sm text-gray-500 dark:text-gray-500 mt-1">
+                Role: <span id="user-role"></span>
+              </p>
             </div>
           </div>
-        </div>
-        
+        </section>
+
         <!-- Editable Profile Fields -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <section class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h3 class="text-xl font-bold mb-4">Edit Profile</h3>
           <div class="space-y-4">
             <div>
               <label for="edit-name" class="block mb-2 font-semibold">Name</label>
-              <input type="text" id="edit-name" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
+              <input type="text" id="edit-name"
+                     class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600">
             </div>
             <div>
               <label for="edit-bio" class="block mb-2 font-semibold">Bio</label>
-              <textarea id="edit-bio" rows="3" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700" placeholder="Tell us about yourself..."></textarea>
+              <textarea id="edit-bio" rows="3"
+                        class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600"
+                        placeholder="Tell us about yourself..."></textarea>
             </div>
             <div>
               <label for="edit-preferred-field" class="block mb-2 font-semibold">Preferred Field</label>
-              <select id="edit-preferred-field" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
+              <select id="edit-preferred-field"
+                      class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600">
                 <option value="">Select a field</option>
                 <option value="Healthcare">Healthcare</option>
                 <option value="Technology">Technology</option>
                 <option value="Law">Law</option>
                 <option value="Education">Education</option>
                 <option value="Public Service">Public Service</option>
+                <option value="Business">Business</option>
+                <option value="Design">Design</option>
               </select>
             </div>
-            <button id="save-profile" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
-              Save Changes
-            </button>
-            <div id="profile-save-status" class="text-sm"></div>
+
+            <div>
+              <label for="edit-pledge" class="block mb-2 font-semibold">Study Pledge</label>
+              <textarea id="edit-pledge" rows="2"
+                        class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600"
+                        placeholder="e.g., I will study 1 hour every day."></textarea>
+            </div>
+            <div>
+              <label for="edit-motivation" class="block mb-2 font-semibold">Motivation</label>
+              <textarea id="edit-motivation" rows="2"
+                        class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600"
+                        placeholder="Why are you learning?"></textarea>
+            </div>
+            <div>
+              <label for="edit-study-habits" class="block mb-2 font-semibold">Study Habits</label>
+              <textarea id="edit-study-habits" rows="2"
+                        class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600"
+                        placeholder="Your routines, time, methods..."></textarea>
+            </div>
+            <div>
+              <label for="edit-resources" class="block mb-2 font-semibold">Favourite Resources</label>
+              <textarea id="edit-resources" rows="2"
+                        class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600"
+                        placeholder="Comma-separated links or titles"></textarea>
+            </div>
+
+            <div class="flex items-center gap-4 pt-2">
+              <button id="save-profile"
+                      class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+                💾 Save Profile
+              </button>
+              <div id="profile-save-status" class="text-sm"></div>
+            </div>
           </div>
-        </div>
-        
-        <!-- Export Progress -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h3 class="text-xl font-bold mb-4">Export Progress</h3>
-          <p class="text-gray-600 dark:text-gray-400 mb-4">Download your learning progress as a file</p>
-          <div class="flex gap-4">
-            <button id="export-csv" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold">
-              Export as CSV
-            </button>
-            <button id="export-pdf" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold">
-              Export as PDF
-            </button>
-          </div>
-        </div>
-        
-        <!-- Notification Preferences -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        </section>
+
+        <!-- Notifications -->
+        <section class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h3 class="text-xl font-bold mb-4">Notification Preferences</h3>
-          <div class="space-y-4">
-            <label class="flex items-center gap-2">
-              <input type="checkbox" id="notif-email" class="rounded">
-              <span>Email notifications</span>
+          <div class="space-y-3">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" id="notif-email" class="rounded w-4 h-4">
+              <span>Email notifications for important updates</span>
             </label>
-            <label class="flex items-center gap-2">
-              <input type="checkbox" id="notif-daily-reminder" class="rounded">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" id="notif-daily-reminder" class="rounded w-4 h-4">
               <span>Daily learning reminder</span>
             </label>
-            <label class="flex items-center gap-2">
-              <input type="checkbox" id="notif-weekly-reminder" class="rounded">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" id="notif-weekly-reminder" class="rounded w-4 h-4">
               <span>Weekly progress summary</span>
             </label>
-            <label class="flex items-center gap-2">
-              <input type="checkbox" id="notif-goal-reminder" class="rounded">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" id="notif-goal-reminder" class="rounded w-4 h-4">
               <span>Goal deadline reminders</span>
             </label>
-            <button id="save-notifications" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
-              Save Preferences
+          </div>
+          <div class="flex items-center gap-4 pt-4">
+            <button id="save-notifications"
+                    class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+              💾 Save Preferences
             </button>
             <div id="notif-save-status" class="text-sm"></div>
           </div>
-        </div>
-        
-        <!-- Goals -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        </section>
+
+        <!-- Goals Section -->
+        <section class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-xl font-bold">Your Goals</h3>
-            <button id="add-goal-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-semibold">
+            <button id="add-goal-btn"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
               + Add Goal
             </button>
           </div>
           <div id="goals-list" class="space-y-3">
-            <!-- Goals loaded here -->
+            <!-- goals injected here -->
           </div>
-        </div>
-        
-        <!-- Add Goal Modal -->
-        <div id="goal-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-            <h3 class="text-2xl font-bold mb-4">Add New Goal</h3>
-            <div class="space-y-4">
-              <div>
-                <label class="block mb-2 font-semibold">Title</label>
-                <input type="text" id="goal-title" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700" required>
-              </div>
-              <div>
-                <label class="block mb-2 font-semibold">Description</label>
-                <textarea id="goal-description" rows="3" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700"></textarea>
-              </div>
-              <div>
-                <label class="block mb-2 font-semibold">Type</label>
-                <select id="goal-type" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
-                  <option value="short">Short Term</option>
-                  <option value="long">Long Term</option>
-                </select>
-              </div>
-              <div>
-                <label class="block mb-2 font-semibold">Target Date (optional)</label>
-                <input type="date" id="goal-date" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
-              </div>
-              <div class="flex gap-4">
-                <button id="save-goal" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
-                  Save
-                </button>
-                <button id="cancel-goal" class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold">
-                  Cancel
-                </button>
-              </div>
-            </div>
+        </section>
+
+        <!-- Export Section -->
+        <section class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h3 class="text-xl font-bold mb-4">Export Profile & Progress</h3>
+          <div class="flex flex-wrap gap-3">
+            <button id="export-csv"
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold">
+              📄 Export CSV
+            </button>
+            <button id="export-pdf"
+                    class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold">
+              📑 Print / Save as PDF
+            </button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Goal Modal -->
+    <div id="goal-modal"
+         class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4 p-6">
+        <h3 class="text-2xl font-bold mb-4">Add New Goal</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block mb-2 font-semibold">Title</label>
+            <input type="text" id="goal-title"
+                   class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
+          </div>
+          <div>
+            <label class="block mb-2 font-semibold">Description (optional)</label>
+            <textarea id="goal-description" rows="3"
+                      class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700"></textarea>
+          </div>
+          <div>
+            <label class="block mb-2 font-semibold">Type</label>
+            <select id="goal-type"
+                    class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
+              <option value="short">Short Term</option>
+              <option value="long">Long Term</option>
+            </select>
+          </div>
+          <div>
+            <label class="block mb-2 font-semibold">Target Date (optional)</label>
+            <input type="date" id="goal-date"
+                   class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
+          </div>
+          <div class="flex gap-3 pt-2">
+            <button id="save-goal"
+                    class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+              Save Goal
+            </button>
+            <button id="cancel-goal"
+                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold">
+              Cancel
+            </button>
           </div>
         </div>
       </div>
@@ -183,146 +244,165 @@
 
   <div data-include="footer"></div>
   <script src="/js/include.js" defer></script>
+  <script src="/js/session.js" defer></script>
 
   <script>
-    // Use localStorage-based auth without ES modules
     const PROFILE_KEY = 'user_profile';
     const GOALS_KEY = 'user_goals';
-    
+
     let currentUser = null;
     let currentGoals = [];
-    
-    // Initialize on page load
-    function initPage() {
-      const userStr = localStorage.getItem('currentUser');
-      if (!userStr) {
-        window.location.href = '/auth.html';
-        return;
+
+    function getCurrentUser() {
+      // Prefer global sessionManager if present
+      if (window.sessionManager && typeof window.sessionManager.getUser === 'function') {
+        return window.sessionManager.getUser();
       }
-      
+      const raw = localStorage.getItem('currentUser');
+      if (!raw) return null;
       try {
-        currentUser = JSON.parse(userStr);
-        loadProfile();
-        loadGoals();
-        setupEventListeners();
-        
-        document.getElementById('profile-loading').classList.add('hidden');
-        document.getElementById('profile-info').classList.remove('hidden');
-      } catch (error) {
-        console.error('Error loading profile:', error);
-        document.getElementById('profile-loading').innerHTML = '<p class="text-red-600">Error loading profile. Please refresh.</p>';
+        return JSON.parse(raw);
+      } catch {
+        return null;
       }
     }
-    
+
     function getProfile() {
-      const profiles = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
-      return profiles[currentUser.uid] || {};
+      const allProfiles = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
+      return allProfiles[currentUser.uid] || {};
     }
-    
-    function saveProfile(profile) {
-      const profiles = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
-      profiles[currentUser.uid] = { ...profiles[currentUser.uid], ...profile };
-      localStorage.setItem(PROFILE_KEY, JSON.stringify(profiles));
+
+    function saveProfile(partial) {
+      const allProfiles = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
+      const existing = allProfiles[currentUser.uid] || {};
+      allProfiles[currentUser.uid] = { ...existing, ...partial };
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(allProfiles));
     }
-    
+
     function getGoals() {
       const allGoals = JSON.parse(localStorage.getItem(GOALS_KEY) || '{}');
       return allGoals[currentUser.uid] || [];
     }
-    
+
     function saveGoals(goals) {
       const allGoals = JSON.parse(localStorage.getItem(GOALS_KEY) || '{}');
       allGoals[currentUser.uid] = goals;
       localStorage.setItem(GOALS_KEY, JSON.stringify(allGoals));
     }
-    
-    function generateAvatarUrl(name) {
-      return 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name || 'User') + '&background=0D8ABC&color=fff&size=128';
+
+    function hideLoaderShowProfile() {
+      document.getElementById('profile-loading').classList.add('hidden');
+      document.getElementById('profile-info').classList.remove('hidden');
     }
-    
-    function loadProfile() {
+
+    async function loadProfile() {
       const userData = getProfile();
-      
-      // Display info
-      document.getElementById('user-name-display').textContent = userData.name || currentUser.name || currentUser.email.split('@')[0];
-      document.getElementById('user-email').textContent = currentUser.email;
+      const displayName =
+        userData.name ||
+        currentUser.name ||
+        currentUser.displayName ||
+        (currentUser.email ? currentUser.email.split('@')[0] : 'User');
+
+      document.getElementById('user-name-display').textContent = displayName;
+      document.getElementById('user-email').textContent = currentUser.email || '';
       document.getElementById('user-role').textContent = userData.role || 'Student';
-      
-      // Profile photo with generated avatar
-      const photoUrl = userData.photoURL || generateAvatarUrl(userData.name || currentUser.name || currentUser.email);
+
+      const photoUrl =
+        userData.photoURL ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}`;
       document.getElementById('profile-photo').src = photoUrl;
-      
-      // Editable fields
-      document.getElementById('edit-name').value = userData.name || currentUser.name || '';
+
+      document.getElementById('edit-name').value = userData.name || '';
       document.getElementById('edit-bio').value = userData.bio || '';
       document.getElementById('edit-preferred-field').value = userData.preferredField || '';
-      
-      // Notification preferences
+      document.getElementById('edit-pledge').value = userData.pledge || '';
+      document.getElementById('edit-motivation').value = userData.motivation || '';
+      document.getElementById('edit-study-habits').value = userData.studyHabits || '';
+      document.getElementById('edit-resources').value = (userData.resources || []).join(', ');
+
       const notifs = userData.notifications || {};
-      document.getElementById('notif-email').checked = notifs.email !== false;
-      document.getElementById('notif-daily-reminder').checked = notifs.dailyReminder !== false;
-      document.getElementById('notif-weekly-reminder').checked = notifs.weeklyReminder || false;
-      document.getElementById('notif-goal-reminder').checked = notifs.goalReminder !== false;
+      document.getElementById('notif-email').checked = !!notifs.email;
+      document.getElementById('notif-daily-reminder').checked = !!notifs.dailyReminder;
+      document.getElementById('notif-weekly-reminder').checked = !!notifs.weeklyReminder;
+      document.getElementById('notif-goal-reminder').checked = !!notifs.goalReminder;
     }
-    
-    function loadGoals() {
+
+    async function loadGoals() {
       currentGoals = getGoals();
       const container = document.getElementById('goals-list');
       container.innerHTML = '';
-      
+
       if (currentGoals.length === 0) {
-        container.innerHTML = '<p class="text-gray-600 dark:text-gray-400">No goals yet. Add one to get started!</p>';
+        container.innerHTML =
+          '<p class="text-gray-600 dark:text-gray-400">No goals yet. Add one to get started!</p>';
         return;
       }
-      
+
       currentGoals.forEach((goal, idx) => {
         const div = document.createElement('div');
-        div.className = `p-4 border rounded-lg ${goal.completed ? 'bg-gray-100 dark:bg-gray-700 opacity-75' : 'bg-white dark:bg-gray-700'}`;
+        div.className =
+          'p-4 border rounded-lg ' +
+          (goal.completed ? 'bg-gray-100 dark:bg-gray-700 opacity-75' : 'bg-white dark:bg-gray-700');
         div.innerHTML = `
           <div class="flex items-start justify-between">
             <div class="flex-1">
               <div class="flex items-center gap-2 mb-2">
-                <input type="checkbox" ${goal.completed ? 'checked' : ''} data-goal-index="${idx}" class="goal-checkbox rounded">
+                <input type="checkbox" ${
+                  goal.completed ? 'checked' : ''
+                } data-goal-index="${idx}" class="goal-checkbox rounded">
                 <h4 class="font-bold ${goal.completed ? 'line-through' : ''}">${goal.title}</h4>
-                <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">${goal.type === 'long' ? 'Long Term' : 'Short Term'}</span>
+                <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">
+                  ${goal.type === 'long' ? 'Long Term' : 'Short Term'}
+                </span>
               </div>
-              ${goal.description ? `<p class="text-sm text-gray-600 dark:text-gray-400 mb-2">${goal.description}</p>` : ''}
-              ${goal.targetDate ? `<p class="text-xs text-gray-500">Target: ${new Date(goal.targetDate).toLocaleDateString()}</p>` : ''}
+              ${
+                goal.description
+                  ? `<p class="text-sm text-gray-600 dark:text-gray-400 mb-2">${goal.description}</p>`
+                  : ''
+              }
+              ${
+                goal.targetDate
+                  ? `<p class="text-xs text-gray-500">Target: ${new Date(
+                      goal.targetDate
+                    ).toLocaleDateString()}</p>`
+                  : ''
+              }
             </div>
-            <button data-goal-index="${idx}" class="goal-delete text-red-600 hover:text-red-800 ml-2">🗑️</button>
+            <button data-goal-index="${idx}"
+                    class="goal-delete text-red-600 hover:text-red-800 ml-2">🗑️</button>
           </div>
         `;
         container.appendChild(div);
       });
-      
-      // Add event listeners
-      document.querySelectorAll('.goal-checkbox').forEach(cb => {
+
+      // Checkboxes
+      container.querySelectorAll('.goal-checkbox').forEach((cb) => {
         cb.addEventListener('change', (e) => {
-          const idx = parseInt(e.target.dataset.goalIndex);
+          const idx = parseInt(e.target.dataset.goalIndex, 10);
           currentGoals[idx].completed = e.target.checked;
           saveGoals(currentGoals);
           loadGoals();
         });
       });
-      
-      document.querySelectorAll('.goal-delete').forEach(btn => {
+
+      // Delete buttons
+      container.querySelectorAll('.goal-delete').forEach((btn) => {
         btn.addEventListener('click', (e) => {
-          if (confirm('Delete this goal?')) {
-            const idx = parseInt(e.target.dataset.goalIndex);
-            currentGoals.splice(idx, 1);
-            saveGoals(currentGoals);
-            loadGoals();
-          }
+          if (!confirm('Delete this goal?')) return;
+          const idx = parseInt(e.target.dataset.goalIndex, 10);
+          currentGoals.splice(idx, 1);
+          saveGoals(currentGoals);
+          loadGoals();
         });
       });
     }
-    
+
     function setupEventListeners() {
       // Photo upload
       document.getElementById('photo-upload').addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        
+
         const reader = new FileReader();
         reader.onload = (event) => {
           const photoUrl = event.target.result;
@@ -330,79 +410,128 @@
           profile.photoURL = photoUrl;
           saveProfile(profile);
           document.getElementById('profile-photo').src = photoUrl;
-          alert('✓ Photo updated!');
+          alert('Photo updated (stored locally)!');
         };
         reader.readAsDataURL(file);
       });
-      
+
       // Save profile
       document.getElementById('save-profile').addEventListener('click', () => {
         const profile = {
           name: document.getElementById('edit-name').value,
           bio: document.getElementById('edit-bio').value,
-          preferredField: document.getElementById('edit-preferred-field').value
+          preferredField: document.getElementById('edit-preferred-field').value,
+          pledge: document.getElementById('edit-pledge').value,
+          motivation: document.getElementById('edit-motivation').value,
+          studyHabits: document.getElementById('edit-study-habits').value,
+          resources: document
+            .getElementById('edit-resources')
+            .value.split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
         };
-        
+
         saveProfile(profile);
         const statusDiv = document.getElementById('profile-save-status');
         statusDiv.textContent = '✓ Saved successfully!';
         statusDiv.className = 'text-sm text-green-600';
         setTimeout(() => {
           statusDiv.textContent = '';
-          statusDiv.className = '';
+          statusDiv.className = 'text-sm';
         }, 2000);
       });
-      
+
       // Export CSV
       document.getElementById('export-csv').addEventListener('click', () => {
         const profile = getProfile();
         const stats = JSON.parse(localStorage.getItem('gamification_stats') || '{}');
-        
+
         let csv = 'User Profile Export\n';
         csv += 'Name,' + (profile.name || 'N/A') + '\n';
         csv += 'Email,' + (currentUser.email || 'N/A') + '\n';
         csv += 'Role,' + (profile.role || 'Student') + '\n';
-        csv += 'Bio,' + (profile.bio || 'N/A') + '\n';
+        csv += 'Bio,"' + (profile.bio || 'N/A') + '"\n';
+        csv += 'Pledge,"' + (profile.pledge || '') + '"\n';
+        csv += 'Motivation,"' + (profile.motivation || '') + '"\n';
+        csv += 'Study Habits,"' + (profile.studyHabits || '') + '"\n';
+        csv += 'Resources,"' + ((profile.resources || []).join('; ') || '') + '"\n';
         csv += '\n\nGamification Stats\n';
         csv += 'Level,' + (stats.level || 1) + '\n';
         csv += 'Total XP,' + (stats.totalXP || 0) + '\n';
         csv += 'Streak,' + (stats.streak || 0) + '\n';
         csv += 'Tasks Completed,' + (stats.tasksCompleted || 0) + '\n';
-        
+
         const blob = new Blob([csv], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'pathways_profile_' + new Date().toISOString().split('T')[0] + '.csv';
+        a.download =
+          'pathways_profile_' + new Date().toISOString().split('T')[0] + '.csv';
         a.click();
         window.URL.revokeObjectURL(url);
       });
-      
-      // Export PDF
+
+      // Export “PDF” (print dialog)
       document.getElementById('export-pdf').addEventListener('click', () => {
         const profile = getProfile();
         const stats = JSON.parse(localStorage.getItem('gamification_stats') || '{}');
-        
+
         const win = window.open('', '', 'height=600,width=800');
-        win.document.write('<html><head><title>Profile Export</title><style>body{font-family:Arial;margin:20px;color:#333;} h1{color:#0ea5e9;} h2{margin-top:20px;color:#0ea5e9;border-bottom:2px solid #0ea5e9;padding-bottom:10px;} p{margin:5px 0;} strong{color:#1e40af;}</style></head><body>');
+        win.document.write('<html><head><title>Profile Export</title>');
+        win.document.write(
+          '<style>body{font-family:Arial;margin:20px;color:#333;} h1{color:#0ea5e9;} h2{margin-top:20px;color:#0ea5e9;border-bottom:2px solid #0ea5e9;padding-bottom:10px;} p{margin:5px 0;} strong{color:#1e40af;}</style>'
+        );
+        win.document.write('</head><body>');
         win.document.write('<h1>🎓 Pathways - Profile & Progress Report</h1>');
-        win.document.write('<p><em>Generated: ' + new Date().toLocaleString() + '</em></p>');
+        win.document.write(
+          '<p><em>Generated: ' + new Date().toLocaleString() + '</em></p>'
+        );
         win.document.write('<h2>📋 User Profile</h2>');
-        win.document.write('<p><strong>Name:</strong> ' + (profile.name || 'N/A') + '</p>');
-        win.document.write('<p><strong>Email:</strong> ' + (currentUser.email || 'N/A') + '</p>');
-        win.document.write('<p><strong>Bio:</strong> ' + (profile.bio || 'N/A') + '</p>');
-        win.document.write('<p><strong>Preferred Field:</strong> ' + (profile.preferredField || 'Not specified') + '</p>');
+        win.document.write(
+          '<p><strong>Name:</strong> ' + (profile.name || 'N/A') + '</p>'
+        );
+        win.document.write(
+          '<p><strong>Email:</strong> ' + (currentUser.email || 'N/A') + '</p>'
+        );
+        win.document.write(
+          '<p><strong>Bio:</strong> ' + (profile.bio || 'N/A') + '</p>'
+        );
+        win.document.write(
+          '<p><strong>Pledge:</strong> ' + (profile.pledge || '') + '</p>'
+        );
+        win.document.write(
+          '<p><strong>Motivation:</strong> ' + (profile.motivation || '') + '</p>'
+        );
+        win.document.write(
+          '<p><strong>Study Habits:</strong> ' + (profile.studyHabits || '') + '</p>'
+        );
+        win.document.write(
+          '<p><strong>Resources:</strong> ' +
+            ((profile.resources || []).join(', ') || '') +
+            '</p>'
+        );
         win.document.write('<h2>📊 Learning Statistics</h2>');
-        win.document.write('<p><strong>Level:</strong> ' + (stats.level || 1) + '</p>');
-        win.document.write('<p><strong>Total XP:</strong> ' + (stats.totalXP || 0) + '</p>');
-        win.document.write('<p><strong>Current Streak:</strong> ' + (stats.streak || 0) + ' days</p>');
-        win.document.write('<p><strong>Tasks Completed:</strong> ' + (stats.tasksCompleted || 0) + '</p>');
-        win.document.write('<p><strong>Pomodoro Sessions:</strong> ' + (stats.pomodoroSessions || 0) + '</p>');
+        win.document.write(
+          '<p><strong>Level:</strong> ' + (stats.level || 1) + '</p>'
+        );
+        win.document.write(
+          '<p><strong>Total XP:</strong> ' + (stats.totalXP || 0) + '</p>'
+        );
+        win.document.write(
+          '<p><strong>Current Streak:</strong> ' +
+            (stats.streak || 0) +
+            ' days</p>'
+        );
+        win.document.write(
+          '<p><strong>Tasks Completed:</strong> ' +
+            (stats.tasksCompleted || 0) +
+            '</p>'
+        );
         win.document.write('</body></html>');
         win.document.close();
         setTimeout(() => win.print(), 500);
       });
-      
+
       // Save notifications
       document.getElementById('save-notifications').addEventListener('click', () => {
         const profile = getProfile();
@@ -418,16 +547,16 @@
         statusDiv.className = 'text-sm text-green-600';
         setTimeout(() => {
           statusDiv.textContent = '';
-          statusDiv.className = '';
+          statusDiv.className = 'text-sm';
         }, 2000);
       });
-      
+
       // Goal modal
       document.getElementById('add-goal-btn').addEventListener('click', () => {
         document.getElementById('goal-modal').classList.remove('hidden');
         document.getElementById('goal-modal').classList.add('flex');
       });
-      
+
       document.getElementById('cancel-goal').addEventListener('click', () => {
         document.getElementById('goal-modal').classList.add('hidden');
         document.getElementById('goal-modal').classList.remove('flex');
@@ -436,14 +565,14 @@
         document.getElementById('goal-type').value = 'short';
         document.getElementById('goal-date').value = '';
       });
-      
+
       document.getElementById('save-goal').addEventListener('click', () => {
         const title = document.getElementById('goal-title').value.trim();
         if (!title) {
           alert('Please enter a goal title');
           return;
         }
-        
+
         const targetDate = document.getElementById('goal-date').value;
         currentGoals.push({
           id: Date.now(),
@@ -454,239 +583,31 @@
           completed: false,
           createdAt: new Date().toISOString()
         });
-        
+
         saveGoals(currentGoals);
         document.getElementById('cancel-goal').click();
         loadGoals();
       });
     }
-    
-    // Start initialization when DOM is ready
+
+    function initPage() {
+      currentUser = getCurrentUser();
+      if (!currentUser || (!currentUser.uid && !currentUser.email)) {
+        // Not logged in
+        window.location.href = '/auth.html';
+        return;
+      }
+      loadProfile();
+      loadGoals();
+      setupEventListeners();
+      hideLoaderShowProfile();
+    }
+
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initPage);
     } else {
       initPage();
     }
   </script>
-    
-    function getGoals() {
-      const allGoals = JSON.parse(localStorage.getItem(GOALS_KEY) || '{}');
-      return allGoals[currentUser.uid] || [];
-    }
-    
-    function saveGoals(goals) {
-      const allGoals = JSON.parse(localStorage.getItem(GOALS_KEY) || '{}');
-      allGoals[currentUser.uid] = goals;
-      localStorage.setItem(GOALS_KEY, JSON.stringify(allGoals));
-    }
-    
-    async function loadProfile() {
-      const userData = getProfile();
-      
-      // Display info
-      document.getElementById('user-name-display').textContent = userData.name || currentUser.displayName || 'User';
-      document.getElementById('user-email').textContent = currentUser.email;
-      document.getElementById('user-role').textContent = userData.role || 'Student';
-      
-      // Profile photo
-      const photoUrl = userData.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(userData.name || 'User');
-      document.getElementById('profile-photo').src = photoUrl;
-      
-      // Editable fields
-      document.getElementById('edit-name').value = userData.name || currentUser.displayName || '';
-      document.getElementById('edit-bio').value = userData.bio || '';
-      document.getElementById('edit-preferred-field').value = userData.preferredField || '';
-      
-      // Notification preferences
-      const notifs = userData.notifications || {};
-      document.getElementById('notif-email').checked = notifs.email || false;
-      document.getElementById('notif-daily-reminder').checked = notifs.dailyReminder || false;
-      document.getElementById('notif-weekly-reminder').checked = notifs.weeklyReminder || false;
-      document.getElementById('notif-goal-reminder').checked = notifs.goalReminder || false;
-    }
-    
-    async function loadGoals() {
-      currentGoals = getGoals();
-      const container = document.getElementById('goals-list');
-      container.innerHTML = '';
-      
-      if (currentGoals.length === 0) {
-        container.innerHTML = '<p class="text-gray-600 dark:text-gray-400">No goals yet. Add one to get started!</p>';
-        return;
-      }
-      
-      currentGoals.forEach((goal, idx) => {
-        const div = document.createElement('div');
-        div.className = `p-4 border rounded-lg ${goal.completed ? 'bg-gray-100 dark:bg-gray-700 opacity-75' : 'bg-white dark:bg-gray-700'}`;
-        div.innerHTML = `
-          <div class="flex items-start justify-between">
-            <div class="flex-1">
-              <div class="flex items-center gap-2 mb-2">
-                <input type="checkbox" ${goal.completed ? 'checked' : ''} data-goal-index="${idx}" class="goal-checkbox rounded">
-                <h4 class="font-bold ${goal.completed ? 'line-through' : ''}">${goal.title}</h4>
-                <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">${goal.type === 'long' ? 'Long Term' : 'Short Term'}</span>
-              </div>
-              ${goal.description ? `<p class="text-sm text-gray-600 dark:text-gray-400 mb-2">${goal.description}</p>` : ''}
-              ${goal.targetDate ? `<p class="text-xs text-gray-500">Target: ${new Date(goal.targetDate).toLocaleDateString()}</p>` : ''}
-            </div>
-            <button data-goal-index="${idx}" class="goal-delete text-red-600 hover:text-red-800 ml-2">🗑️</button>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-      
-      // Add event listeners
-      document.querySelectorAll('.goal-checkbox').forEach(cb => {
-        cb.addEventListener('change', async (e) => {
-          const idx = parseInt(e.target.dataset.goalIndex);
-          currentGoals[idx].completed = e.target.checked;
-          saveGoals(currentGoals);
-          await loadGoals();
-        });
-      });
-      
-      document.querySelectorAll('.goal-delete').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          if (confirm('Delete this goal?')) {
-            const idx = parseInt(e.target.dataset.goalIndex);
-            currentGoals.splice(idx, 1);
-            saveGoals(currentGoals);
-            await loadGoals();
-          }
-        });
-      });
-    }
-    
-    // Photo upload (simulate - just use default avatar)
-    document.getElementById('photo-upload').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const photoUrl = event.target.result;
-        const profile = getProfile();
-        profile.photoURL = photoUrl;
-        saveProfile(profile);
-        document.getElementById('profile-photo').src = photoUrl;
-        alert('Photo updated (stored locally)!');
-      };
-      reader.readAsDataURL(file);
-    });
-    
-    // Save profile
-    document.getElementById('save-profile').addEventListener('click', () => {
-      const profile = {
-        name: document.getElementById('edit-name').value,
-        bio: document.getElementById('edit-bio').value,
-        preferredField: document.getElementById('edit-preferred-field').value
-      };
-      
-      saveProfile(profile);
-      document.getElementById('profile-save-status').textContent = '✓ Saved!';
-      document.getElementById('profile-save-status').className = 'text-sm text-green-600';
-      alert('Profile updated!');
-    });
-    
-    // Export CSV
-    document.getElementById('export-csv').addEventListener('click', () => {
-      const profile = getProfile();
-      const stats = JSON.parse(localStorage.getItem('gamification_stats') || '{}');
-      
-      let csv = 'User Profile Export\n';
-      csv += 'Name,' + (profile.name || 'N/A') + '\n';
-      csv += 'Email,' + (currentUser.email || 'N/A') + '\n';
-      csv += 'Role,' + (profile.role || 'Student') + '\n';
-      csv += 'Bio,' + (profile.bio || 'N/A') + '\n';
-      csv += '\n\nGamification Stats\n';
-      csv += 'Level,' + (stats.level || 1) + '\n';
-      csv += 'Total XP,' + (stats.totalXP || 0) + '\n';
-      csv += 'Streak,' + (stats.streak || 0) + '\n';
-      csv += 'Tasks Completed,' + (stats.tasksCompleted || 0) + '\n';
-      
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'profile_export.csv';
-      a.click();
-      window.URL.revokeObjectURL(url);
-    });
-    
-    // Export PDF (simple version)
-    document.getElementById('export-pdf').addEventListener('click', () => {
-      const profile = getProfile();
-      const stats = JSON.parse(localStorage.getItem('gamification_stats') || '{}');
-      
-      const win = window.open('', '', 'height=600,width=800');
-      win.document.write('<html><head><title>Profile Export</title></head><body>');
-      win.document.write('<h1>Pathways - Profile & Progress</h1>');
-      win.document.write('<h2>User Profile</h2>');
-      win.document.write('<p><strong>Name:</strong> ' + (profile.name || 'N/A') + '</p>');
-      win.document.write('<p><strong>Email:</strong> ' + (currentUser.email || 'N/A') + '</p>');
-      win.document.write('<p><strong>Bio:</strong> ' + (profile.bio || 'N/A') + '</p>');
-      win.document.write('<h2>Learning Stats</h2>');
-      win.document.write('<p><strong>Level:</strong> ' + (stats.level || 1) + '</p>');
-      win.document.write('<p><strong>Total XP:</strong> ' + (stats.totalXP || 0) + '</p>');
-      win.document.write('<p><strong>Streak:</strong> ' + (stats.streak || 0) + ' days</p>');
-      win.document.write('<p><strong>Tasks Completed:</strong> ' + (stats.tasksCompleted || 0) + '</p>');
-      win.document.write('</body></html>');
-      win.document.close();
-      win.print();
-    });
-    
-    // Save notification preferences
-    document.getElementById('save-notifications').addEventListener('click', () => {
-      const profile = getProfile();
-      profile.notifications = {
-        email: document.getElementById('notif-email').checked,
-        dailyReminder: document.getElementById('notif-daily-reminder').checked,
-        weeklyReminder: document.getElementById('notif-weekly-reminder').checked,
-        goalReminder: document.getElementById('notif-goal-reminder').checked
-      };
-      saveProfile(profile);
-      alert('Notification preferences saved!');
-    });
-    
-    // Goal modal
-    document.getElementById('add-goal-btn').addEventListener('click', () => {
-      document.getElementById('goal-modal').classList.remove('hidden');
-      document.getElementById('goal-modal').classList.add('flex');
-    });
-    
-    document.getElementById('cancel-goal').addEventListener('click', () => {
-      document.getElementById('goal-modal').classList.add('hidden');
-      document.getElementById('goal-modal').classList.remove('flex');
-      document.getElementById('goal-title').value = '';
-      document.getElementById('goal-description').value = '';
-      document.getElementById('goal-type').value = 'short';
-      document.getElementById('goal-date').value = '';
-    });
-    
-    document.getElementById('save-goal').addEventListener('click', () => {
-      const title = document.getElementById('goal-title').value.trim();
-      if (!title) {
-        alert('Please enter a goal title');
-        return;
-      }
-      
-      const targetDate = document.getElementById('goal-date').value;
-      currentGoals.push({
-        id: Date.now(),
-        title,
-        description: document.getElementById('goal-description').value,
-        type: document.getElementById('goal-type').value,
-        targetDate: targetDate ? new Date(targetDate).toISOString() : null,
-        completed: false,
-        createdAt: new Date().toISOString()
-      });
-      
-      saveGoals(currentGoals);
-      alert('Goal added!');
-      document.getElementById('cancel-goal').click();
-      loadGoals();
-    });
-  </script>
 </body>
 </html>
-

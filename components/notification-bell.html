@@ -1,21 +1,113 @@
 <!-- Notification Bell Component -->
-<div class="relative">
-  <button id="notification-bell" class="relative p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
-    <span class="text-2xl">🔔</span>
-    <span id="notification-badge" class="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+<div class="relative select-none">
+
+  <!-- Bell Button -->
+  <button id="notification-bell"
+    class="relative p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
+    aria-label="Show Notifications">
+
+    <span class="text-2xl material-symbols-outlined">notifications</span>
+
+    <!-- Badge -->
+    <span id="notification-badge"
+      class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">
+      0
+    </span>
   </button>
-  
+
   <!-- Notification Dropdown -->
-  <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
+  <div id="notification-dropdown"
+    class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl z-50 max-h-96 overflow-y-auto border border-gray-200 dark:border-gray-700 transition-all duration-200 origin-top-right">
+
+    <!-- Header -->
     <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-      <h3 class="font-bold">Notifications</h3>
+      <h3 class="font-bold text-gray-800 dark:text-gray-200">Notifications</h3>
     </div>
+
+    <!-- Notifications -->
     <div id="notification-list" class="divide-y divide-gray-200 dark:divide-gray-700">
-      <!-- Notifications loaded here -->
+      <!-- Items inserted dynamically -->
     </div>
+
+    <!-- Footer -->
     <div class="p-4 border-t border-gray-200 dark:border-gray-700 text-center">
-      <a href="/notifications.html" class="text-blue-600 dark:text-blue-400 hover:underline text-sm">View All</a>
+      <a href="/notifications.html" class="text-blue-600 dark:text-blue-400 hover:underline text-sm">
+        View All
+      </a>
     </div>
+        
   </div>
 </div>
 
+<!-- JS Component Logic -->
+<script>
+(function () {
+
+  const bell = document.getElementById('notification-bell');
+  const dropdown = document.getElementById('notification-dropdown');
+  const badge = document.getElementById('notification-badge');
+  const list = document.getElementById('notification-list');
+
+  // Sample Notifications (Replace with backend later)
+  const notifications = [
+    { text: "🎉 Welcome to EduRise!", time: "Just now" },
+    { text: "Your profile was updated successfully.", time: "10 min ago" },
+    { text: "New AI Mentor tips available.", time: "1 hr ago" }
+  ];
+
+  /* -------------------
+     LOAD NOTIFICATIONS
+  --------------------*/
+  function loadNotifications() {
+    list.innerHTML = "";
+
+    if (notifications.length === 0) {
+      list.innerHTML = `
+        <div class="p-4 text-gray-500 dark:text-gray-400 text-sm text-center">
+          No notifications.
+        </div>
+      `;
+      badge.classList.add("hidden");
+      return;
+    }
+
+    // Update badge
+    badge.textContent = notifications.length;
+    badge.classList.remove("hidden");
+
+    // Render each notification
+    notifications.forEach((n) => {
+      const item = document.createElement("div");
+      item.className = "p-4 hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer";
+      item.innerHTML = `
+        <p class="text-sm text-gray-800 dark:text-gray-200">${n.text}</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${n.time}</p>
+      `;
+      list.appendChild(item);
+    });
+  }
+
+  /* -------------------
+     TOGGLE DROPDOWN
+  --------------------*/
+  bell.addEventListener("click", (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle("hidden");
+  });
+
+  /* -------------------
+    CLOSE WHEN OUTSIDE
+  --------------------*/
+  document.addEventListener("click", (e) => {
+    if (!dropdown.contains(e.target) && !bell.contains(e.target)) {
+      dropdown.classList.add("hidden");
+    }
+  });
+
+  /* -------------------
+     INIT COMPONENT
+  --------------------*/
+  loadNotifications();
+
+})();
+</script>

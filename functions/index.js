@@ -2,108 +2,130 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 admin.initializeApp();
 
-// Rate limiting map (in production, use Redis or Firestore)
+// -----------------------------
+// Rate Limiting (memory)
+// -----------------------------
 const rateLimitMap = new Map();
 
-// Helper: Parse plan from text if JSON parsing fails
+function checkRateLimit(uid) {
+  const now = Date.now();
+  const windowMs = 60 * 1000; // 1 minute
+  const maxRequests = 10;
+
+  const existing = rateLimitMap.get(uid) || [];
+  const recent = existing.filter(t => now - t < windowMs);
+
+  if (recent.length >= maxRequests) {
+    throw new functions.https.HttpsError(
+      "resource-exhausted",
+      "Rate limit exceeded. Try again later."
+    );
+  }
+
+  recent.push(now);
+  rateLimitMap.set(uid, recent);
+}
+
+// -----------------------------
+// Helpers
+// -----------------------------
+
+// Fallback plan parser
 function parsePlanFromText(text) {
   const weeks = [];
   const weekMatches = text.match(/week\s+(\d+)/gi);
-  
-  if (weekMatches) {
-    weekMatches.forEach((match, idx) => {
+
+  if (weekMatches && weekMatches.length) {
+    weekMatches.forEach((_, i) => {
       weeks.push({
-        week: idx + 1,
-        goals: [],
-        tasks: []
+        week: i + 1,
+        goals: ["Review weekly content"],
+        tasks: [
+          {
+            title: "Weekly study blocks",
+            minutes: 300,
+            description: "Follow structured learning tasks"
+          }
+        ]
       });
     });
   } else {
-    // Default 6 weeks
+    // Default 6-week fallback
     for (let i = 1; i <= 6; i++) {
       weeks.push({
         week: i,
         goals: ["Complete weekly objectives"],
         tasks: [
-          { title: "Weekly learning tasks", minutes: 300, description: "Follow the learning plan" }
+          {
+            title: "Study tasks",
+            minutes: 300,
+            description: "Follow the recommended plan"
+          }
         ]
       });
     }
   }
-  
   return { weeks };
 }
 
-// Helper: Rate limit check
-function checkRateLimit(uid) {
-  const now = Date.now();
-  const windowMs = 60 * 1000; // 1 minute
-  const maxRequests = 10;
-  
-  if (!rateLimitMap.has(uid)) {
-    rateLimitMap.set(uid, []);
+// Extract JSON from mixed text reliably
+function extractJson(text) {
+  try {
+    // Match first { ... }
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) return null;
+    return JSON.parse(match[0]);
+  } catch {
+    return null;
   }
-  
-  const requests = rateLimitMap.get(uid);
-  const recentRequests = requests.filter(time => now - time < windowMs);
-  
-  if (recentRequests.length >= maxRequests) {
-    throw new functions.https.HttpsError(
-      "resource-exhausted",
-      "Rate limit exceeded. Please try again later."
-    );
-  }
-  
-  recentRequests.push(now);
-  rateLimitMap.set(uid, recentRequests);
 }
 
-// AI Dispatch Callable Function
-exports.aiDispatch = functions.https.onCall(async (data, context) => {
+// -----------------------------
+// AI Dispatch Callable
+// -----------------------------
+exports.aiDispatch = functions.runWith({ timeoutSeconds: 45 }).https.onCall(async (data, context) => {
   if (!context.auth) {
-    throw new functions.https.HttpsError(
-      "unauthenticated",
-      "Sign in required"
-    );
+    throw new functions.https.HttpsError("unauthenticated", "Sign-in required.");
   }
-  
+
   const { task, input, context: ctx } = data || {};
-  
-  if (!task || !input) {
-    throw new functions.https.HttpsError(
-      "invalid-argument",
-      "task and input are required"
-    );
+  if (!task || typeof input !== "string") {
+    throw new functions.https.HttpsError("invalid-argument", "task and input required.");
   }
-  
-  // Rate limiting
+
+  // Rate limit
   checkRateLimit(context.auth.uid);
-  
-  const geminiApiKey = functions.config().gemini?.api_key || process.env.GEMINI_API_KEY;
+
+  // API Key resolution
+  const geminiApiKey =
+    functions.config().gemini?.api_key || process.env.GEMINI_API_KEY;
+
   if (!geminiApiKey) {
-    throw new functions.https.HttpsError(
-      "internal",
-      "Gemini API key not configured"
-    );
+    throw new functions.https.HttpsError("internal", "Gemini API key missing.");
   }
-  
-  // Get user context for personalized responses
+
+  // Personalized context
   const userProgress = ctx?.userProgress || {};
-  const userContextStr = userProgress.completedRoles?.length > 0 
-    ? `The user has experience with: ${userProgress.completedRoles.join(', ')}. `
-    : '';
-  
-  // Build prompt based on task type
+  const userContextStr =
+    userProgress?.completedRoles?.length
+      ? `The user has completed roles: ${userProgress.completedRoles.join(", ")}. `
+      : "";
+
+  // Base system prompt
+  const systemContext =
+    "You are Pathways' AI Career Mentor. Be accurate, friendly, structured, and helpful. ";
+
+  // Prompt builder
   let prompt = "";
-  let systemContext = "You are Pathways' AI career mentor. Be helpful, concise, and encouraging. ";
-  
   switch (task) {
     case "qna":
-      prompt = `${systemContext}${userContextStr}Answer this question about careers, skills, or learning: ${input}. Provide a clear, structured answer.`;
+      prompt = `${systemContext}${userContextStr}Answer simply and clearly: ${input}`;
       break;
+
     case "plan":
-      prompt = `${systemContext}Create a detailed 6-week learning plan for: ${input}. 
-Return ONLY valid JSON in this exact format:
+      prompt = `${systemContext}Create a 6-week detailed learning plan for: ${input}. 
+Return ONLY JSON in this exact format:
+
 {
   "weeks": [
     {
@@ -115,222 +137,203 @@ Return ONLY valid JSON in this exact format:
     }
   ]
 }
-Make it practical and actionable.`;
+
+Provide actionable steps and realistic timing.`;
       break;
+
     case "explain":
-      prompt = `${systemContext}Explain this skill or concept in simple, beginner-friendly terms: ${input}. 
-Break it down into:
+      prompt = `${systemContext}Explain this skill at beginner level: ${input}.
+Use this structure:
 1. What it is
-2. Why it's important
+2. Why it matters
 3. Key concepts
-4. How to get started
-Use examples and analogies.`;
+4. Steps to get started
+Use simple examples.`;
       break;
+
     case "recommend":
-      prompt = `${systemContext}${userContextStr}Recommend 3-5 career paths based on: ${input}. 
-For each career, provide:
+      prompt = `${systemContext}${userContextStr}Recommend 3–5 career paths based on: ${input}.
+For each, include:
 - Title
-- Description
-- Key skills needed
-- Requirements (education, experience)
-- Salary range (if known)
-- Growth prospects
+- Summary
+- Key skills
+- Requirements
+- Salary range
+- Growth
 Return as structured text or JSON.`;
       break;
+
     case "compare":
-      prompt = `${systemContext}Compare these careers: ${input}. 
-Create a detailed comparison covering:
-- Education requirements
-- Skills needed
-- Job outlook
-- Salary ranges
+      prompt = `${systemContext}Compare these careers: ${input}.
+Include:
+- Education
+- Skills
+- Salary
 - Work-life balance
-- Career progression
-Use a clear, structured format.`;
+- Career growth
+Keep concise and structured.`;
       break;
+
     default:
       prompt = `${systemContext}${userContextStr}${input}`;
   }
-  
+
   try {
-    // Call Gemini API
+    // Fetch Gemini API
     const { default: fetch } = await import("node-fetch");
+
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${geminiApiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [{
-            role: "user",
-            parts: [{ text: prompt }]
-          }]
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          safetySettings: [
+            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_LOW_AND_ABOVE" }
+          ]
         })
       }
     );
-    
+
     if (!response.ok) {
-      throw new Error(`Gemini API error: ${response.statusText}`);
+      throw new Error(`Gemini API error: ${response.status} ${response.statusText}`);
     }
-    
+
     const json = await response.json();
-    const text = json.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
-    
-    // Process response based on task type
-    let answer = { answer: text };
-    
+    const text = json?.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
+
+    const answer = { answer: text };
+
+    // -----------------------------
+    // PLAN: Extract JSON or fallback
+    // -----------------------------
     if (task === "plan") {
-      try {
-        // Try to extract JSON from response
-        let jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          const parsed = JSON.parse(jsonMatch[0]);
-          if (parsed.weeks && Array.isArray(parsed.weeks)) {
-            answer.plan = parsed;
-          } else {
-            // If structure is wrong, try to fix it
-            answer.plan = { weeks: parsed.weeks || [] };
-          }
-        } else {
-          // If no JSON, create a structured response from text
-          answer.plan = parsePlanFromText(text);
-        }
-      } catch (e) {
-        console.error("Plan parsing error:", e);
+      const parsed = extractJson(text);
+      if (parsed?.weeks) {
+        answer.plan = parsed;
+      } else {
         answer.plan = parsePlanFromText(text);
       }
-    } else if (task === "recommend") {
-      try {
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          const parsed = JSON.parse(jsonMatch[0]);
-          if (Array.isArray(parsed)) {
-            answer.recommendations = parsed;
-          } else if (parsed.recommendations) {
-            answer.recommendations = parsed.recommendations;
-          } else {
-            answer.recommendations = [parsed];
-          }
-        }
-      } catch (e) {
-        // If JSON parsing fails, return text
+    }
+
+    // -----------------------------
+    // RECOMMEND: Extract JSON array or fallback
+    // -----------------------------
+    if (task === "recommend") {
+      const parsed = extractJson(text);
+      if (Array.isArray(parsed)) {
+        answer.recommendations = parsed;
+      } else if (parsed?.recommendations) {
+        answer.recommendations = parsed.recommendations;
+      } else {
         answer.recommendations = null;
       }
     }
-    
+
     // Log usage
     await admin.firestore().collection("aiUsage").add({
       uid: context.auth.uid,
       task,
       timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
-    
+
     return answer;
   } catch (error) {
-    console.error("AI Dispatch error:", error);
+    console.error("AI Dispatch Error:", error);
     throw new functions.https.HttpsError(
       "internal",
-      error.message || "AI service error"
+      error.message || "AI service failure"
     );
   }
 });
 
-// Admin: Create Role
-exports.adminCreateRole = functions.https.onCall(async (data, context) => {
+// -----------------------------
+// ADMIN FUNCTIONS
+// -----------------------------
+async function requireAdmin(context) {
   if (!context.auth) {
     throw new functions.https.HttpsError("unauthenticated", "Sign in required");
   }
-  
-  // Check admin role (would need custom claims in production)
-  const userDoc = await admin.firestore().doc(`users/${context.auth.uid}`).get();
-  if (userDoc.data()?.role !== "ADMIN") {
+
+  const doc = await admin.firestore().doc(`users/${context.auth.uid}`).get();
+  if (!doc.exists || doc.data()?.role !== "ADMIN") {
     throw new functions.https.HttpsError("permission-denied", "Admin only");
   }
-  
-  const { slug, roleData } = data;
+}
+
+exports.adminCreateRole = functions.https.onCall(async (data, context) => {
+  await requireAdmin(context);
+
+  const { slug, roleData } = data || {};
   if (!slug || !roleData) {
     throw new functions.https.HttpsError("invalid-argument", "slug and roleData required");
   }
-  
+
   await admin.firestore().doc(`roles/${slug}`).set({
     ...roleData,
     createdBy: context.auth.uid,
     createdAt: admin.firestore.FieldValue.serverTimestamp()
   });
-  
+
   return { success: true };
 });
 
-// Admin: Upsert Stage
 exports.adminUpsertStage = functions.https.onCall(async (data, context) => {
-  if (!context.auth) {
-    throw new functions.https.HttpsError("unauthenticated", "Sign in required");
+  await requireAdmin(context);
+
+  const { roleSlug, stage } = data || {};
+  if (!roleSlug || !stage?.id) {
+    throw new functions.https.HttpsError("invalid-argument", "roleSlug and stage.id required");
   }
-  
-  const userDoc = await admin.firestore().doc(`users/${context.auth.uid}`).get();
-  if (userDoc.data()?.role !== "ADMIN") {
-    throw new functions.https.HttpsError("permission-denied", "Admin only");
-  }
-  
-  const { roleSlug, stage } = data;
-  if (!roleSlug || !stage) {
-    throw new functions.https.HttpsError("invalid-argument", "roleSlug and stage required");
-  }
-  
+
   await admin.firestore()
     .doc(`roles/${roleSlug}/stages/${stage.id}`)
     .set(stage, { merge: true });
-  
+
   return { success: true };
 });
 
-// Admin: Upsert Task
 exports.adminUpsertTask = functions.https.onCall(async (data, context) => {
-  if (!context.auth) {
-    throw new functions.https.HttpsError("unauthenticated", "Sign in required");
+  await requireAdmin(context);
+
+  const { roleSlug, stageId, task } = data || {};
+  if (!roleSlug || !stageId || !task?.id) {
+    throw new functions.https.HttpsError("invalid-argument", "roleSlug, stageId, task.id required");
   }
-  
-  const userDoc = await admin.firestore().doc(`users/${context.auth.uid}`).get();
-  if (userDoc.data()?.role !== "ADMIN") {
-    throw new functions.https.HttpsError("permission-denied", "Admin only");
-  }
-  
-  const { roleSlug, stageId, task } = data;
-  if (!roleSlug || !stageId || !task) {
-    throw new functions.https.HttpsError("invalid-argument", "roleSlug, stageId, and task required");
-  }
-  
+
   await admin.firestore()
     .doc(`roles/${roleSlug}/stages/${stageId}/tasks/${task.id}`)
     .set(task, { merge: true });
-  
+
   return { success: true };
 });
 
+// -----------------------------
 // Mentor: Propose Draft
+// -----------------------------
 exports.mentorProposeDraft = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError("unauthenticated", "Sign in required");
   }
-  
-  const userDoc = await admin.firestore().doc(`users/${context.auth.uid}`).get();
-  const role = userDoc.data()?.role;
+
+  const doc = await admin.firestore().doc(`users/${context.auth.uid}`).get();
+  const role = doc.data()?.role;
+
   if (role !== "MENTOR" && role !== "ADMIN") {
     throw new functions.https.HttpsError("permission-denied", "Mentor or Admin only");
   }
-  
-  const draft = data;
-  if (!draft) {
+
+  if (!data) {
     throw new functions.https.HttpsError("invalid-argument", "draft required");
   }
-  
+
   await admin.firestore().collection("drafts").add({
-    ...draft,
+    ...data,
     createdBy: context.auth.uid,
     status: "PENDING",
     createdAt: admin.firestore.FieldValue.serverTimestamp()
   });
-  
+
   return { success: true };
 });
-

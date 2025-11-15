@@ -11,6 +11,8 @@
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
   <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Header -->
   <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
     <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
       <a href="/index.html" class="text-2xl font-bold text-blue-600 dark:text-blue-400">EduRise</a>
@@ -21,43 +23,185 @@
         <a href="/forum.html" class="hover:text-blue-600 dark:hover:text-blue-400">Forum</a>
         <a href="/profile.html" class="hover:text-blue-600 dark:hover:text-blue-400">Profile</a>
         <a href="/auth.html" class="btn-primary">Sign Up</a>
-        <button id="theme-toggle" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700" aria-label="Toggle theme">🌙</button>
+        <button
+          id="theme-toggle"
+          class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+          aria-label="Toggle theme"
+        >
+          🌙
+        </button>
       </div>
     </nav>
   </header>
 
-  <main id="main-content" class="container mx-auto px-4 py-12">
-    <h1 class="text-3xl font-bold mb-6">Gallery</h1>
-    <p class="text-gray-600 dark:text-gray-300 mb-8">Moments from our community — workshops, student projects, and events.</p>
+  <!-- Main -->
+  <main id="main-content" class="container mx-auto px-4 py-12 max-w-6xl">
+    <section class="mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold mb-3">Gallery</h1>
+      <p class="text-gray-600 dark:text-gray-300 max-w-2xl">
+        Moments from our community — workshops, student projects, and events.  
+        These are sample entries to inspire what you can showcase later.
+      </p>
+    </section>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      <!-- Placeholder images -->
-      <div class="rounded overflow-hidden shadow bg-white dark:bg-gray-800">
-        <img src="/public/robots.txt" alt="Placeholder image" class="w-full h-48 object-cover opacity-0"> <!-- small invisible placeholder so layout holds if no images -->
-        <div class="p-4">
-          <h3 class="font-semibold">Student Project Showcase</h3>
-          <p class="text-sm text-gray-600 dark:text-gray-300">Highlights from recent capstone projects.</p>
-        </div>
+    <!-- Filters -->
+    <section class="mb-8">
+      <div class="flex flex-wrap items-center gap-2">
+        <button
+          class="gallery-filter px-3 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white"
+          data-filter="all"
+        >
+          All
+        </button>
+        <button
+          class="gallery-filter px-3 py-1.5 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
+          data-filter="projects"
+        >
+          Student Projects
+        </button>
+        <button
+          class="gallery-filter px-3 py-1.5 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
+          data-filter="workshops"
+        >
+          Workshops
+        </button>
+        <button
+          class="gallery-filter px-3 py-1.5 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
+          data-filter="community"
+        >
+          Community
+        </button>
+      </div>
+    </section>
+
+    <!-- Gallery Grid -->
+    <section aria-label="EduRise gallery items">
+      <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Card 1 -->
+        <article
+          class="gallery-card rounded-xl overflow-hidden shadow bg-white dark:bg-gray-800 flex flex-col"
+          data-category="projects"
+        >
+          <div class="h-40 bg-gradient-to-br from-indigo-500 via-blue-500 to-sky-400 flex items-center justify-center text-5xl">
+            🎓
+          </div>
+          <div class="p-4 flex-1 flex flex-col">
+            <h3 class="font-semibold text-lg mb-1">Student Project Showcase</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 flex-1">
+              Highlights from recent capstone projects — portfolios, apps, and creative experiments.
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              Category: <span class="font-medium">Student Projects</span>
+            </p>
+          </div>
+        </article>
+
+        <!-- Card 2 -->
+        <article
+          class="gallery-card rounded-xl overflow-hidden shadow bg-white dark:bg-gray-800 flex flex-col"
+          data-category="workshops"
+        >
+          <div class="h-40 bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 flex items-center justify-center text-5xl">
+            🧑‍🏫
+          </div>
+          <div class="p-4 flex-1 flex flex-col">
+            <h3 class="font-semibold text-lg mb-1">Career Workshop</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 flex-1">
+              Snapshots from expert-led sessions on resumes, interviews, and real-world career advice.
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              Category: <span class="font-medium">Workshops</span>
+            </p>
+          </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article
+          class="gallery-card rounded-xl overflow-hidden shadow bg-white dark:bg-gray-800 flex flex-col"
+          data-category="community"
+        >
+          <div class="h-40 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 flex items-center justify-center text-5xl">
+            🤝
+          </div>
+          <div class="p-4 flex-1 flex flex-col">
+            <h3 class="font-semibold text-lg mb-1">Community Meetup</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 flex-1">
+              Students, mentors and volunteers connecting over goals, struggles, and wins.
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              Category: <span class="font-medium">Community</span>
+            </p>
+          </div>
+        </article>
+
+        <!-- Card 4 -->
+        <article
+          class="gallery-card rounded-xl overflow-hidden shadow bg-white dark:bg-gray-800 flex flex-col"
+          data-category="projects"
+        >
+          <div class="h-40 bg-gradient-to-br from-purple-500 via-fuchsia-500 to-pink-500 flex items-center justify-center text-5xl">
+            💻
+          </div>
+          <div class="p-4 flex-1 flex flex-col">
+            <h3 class="font-semibold text-lg mb-1">Code Lab Sessions</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 flex-1">
+              Weekly practice labs where learners debug, pair-program and review each other's work.
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              Category: <span class="font-medium">Student Projects</span>
+            </p>
+          </div>
+        </article>
+
+        <!-- Card 5 -->
+        <article
+          class="gallery-card rounded-xl overflow-hidden shadow bg-white dark:bg-gray-800 flex flex-col"
+          data-category="workshops"
+        >
+          <div class="h-40 bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700 flex items-center justify-center text-5xl">
+            📚
+          </div>
+          <div class="p-4 flex-1 flex flex-col">
+            <h3 class="font-semibold text-lg mb-1">Exam Readiness Camp</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 flex-1">
+              Focused sessions on study techniques, time management and last-minute revision strategies.
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              Category: <span class="font-medium">Workshops</span>
+            </p>
+          </div>
+        </article>
+
+        <!-- Card 6 -->
+        <article
+          class="gallery-card rounded-xl overflow-hidden shadow bg-white dark:bg-gray-800 flex flex-col"
+          data-category="community"
+        >
+          <div class="h-40 bg-gradient-to-br from-lime-400 via-green-500 to-emerald-600 flex items-center justify-center text-5xl">
+            🌱
+          </div>
+          <div class="p-4 flex-1 flex flex-col">
+            <h3 class="font-semibold text-lg mb-1">Parent & Student Meet</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 flex-1">
+              Conversations about support at home, scholarship options, and long-term goals.
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              Category: <span class="font-medium">Community</span>
+            </p>
+          </div>
+        </article>
       </div>
 
-      <div class="rounded overflow-hidden shadow bg-white dark:bg-gray-800">
-        <div class="p-4">
-          <h3 class="font-semibold">Career Workshop</h3>
-          <p class="text-sm text-gray-600 dark:text-gray-300">Snapshots from guest speaker sessions.</p>
-        </div>
-      </div>
-
-      <div class="rounded overflow-hidden shadow bg-white dark:bg-gray-800">
-        <div class="p-4">
-          <h3 class="font-semibold">Community Meetup</h3>
-          <p class="text-sm text-gray-600 dark:text-gray-300">Students and mentors connecting.</p>
-        </div>
-      </div>
-    </div>
-
-    <p class="mt-8 text-sm text-gray-600 dark:text-gray-300">Want to contribute photos? Email <a href="mailto:hello@edurise.example" class="text-blue-600">hello@edurise.example</a></p>
+      <p class="mt-10 text-sm text-gray-600 dark:text-gray-300">
+        Want to contribute photos? Email
+        <a href="mailto:hello@edurise.example" class="text-blue-600 dark:text-blue-400 underline-offset-2 hover:underline">
+          hello@edurise.example
+        </a>
+      </p>
+    </section>
   </main>
 
+  <!-- Footer -->
   <footer class="bg-gray-800 dark:bg-gray-900 text-gray-300 py-8 mt-16">
     <div class="container mx-auto px-4">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -97,6 +241,14 @@
   </footer>
 
   <script>
+    // Theme toggle
+    (function initTheme() {
+      const saved = localStorage.getItem('theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+
     const btn = document.getElementById('theme-toggle');
     btn?.addEventListener('click', () => {
       const current = document.documentElement.getAttribute('data-theme') || 'light';
@@ -104,7 +256,34 @@
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('theme', next);
     });
-    (function(){ const saved = localStorage.getItem('theme'); if (saved) document.documentElement.setAttribute('data-theme', saved); })();
+
+    // Simple filter logic
+    const filterButtons = document.querySelectorAll('.gallery-filter');
+    const cards = document.querySelectorAll('.gallery-card');
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const filter = btn.getAttribute('data-filter') || 'all';
+
+        // active styles
+        filterButtons.forEach(b => {
+          b.classList.remove('bg-blue-600', 'text-white');
+          b.classList.add('bg-gray-200', 'dark:bg-gray-800');
+        });
+        btn.classList.add('bg-blue-600', 'text-white');
+        btn.classList.remove('bg-gray-200', 'dark:bg-gray-800');
+
+        // filter cards
+        cards.forEach(card => {
+          const category = card.getAttribute('data-category');
+          if (filter === 'all' || category === filter) {
+            card.classList.remove('hidden');
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+      });
+    });
   </script>
 </body>
 </html>

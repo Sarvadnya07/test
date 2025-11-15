@@ -17,7 +17,12 @@
   <meta name="twitter:description" content="Role-specific discussion boards to ask questions, share resources, and connect with peers pursuing the same career path." />
 
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"DiscussionForumPosting","name":"Discussion Board - Pathways","description":"Role-specific discussion boards to ask questions, share resources, and connect with peers pursuing the same career path."}
+  {
+    "@context":"https://schema.org",
+    "@type":"DiscussionForumPosting",
+    "name":"Discussion Board - Pathways",
+    "description":"Role-specific discussion boards to ask questions, share resources, and connect with peers pursuing the same career path."
+  }
   </script>
 
   <link rel="stylesheet" href="/css/tailwind-input.css">
@@ -25,49 +30,97 @@
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
   <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Simple header (this page-specific, not include.js) -->
   <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
     <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
       <a href="/" class="text-2xl font-bold text-blue-600 dark:text-blue-400">Pathways</a>
       <div class="flex items-center gap-4">
         <a href="/roles.html" class="hover:text-blue-600 dark:hover:text-blue-400">Roles</a>
-        <span id="auth-status"></span>
-        <button id="theme-toggle" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">🌙</button>
+        <a href="/ai.html" class="hover:text-blue-600 dark:hover:text-blue-400">AI Mentor</a>
+        <span id="auth-status" class="text-sm text-gray-700 dark:text-gray-200"></span>
+        <button id="theme-toggle" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700" aria-label="Toggle theme">
+          🌙
+        </button>
       </div>
     </nav>
   </header>
 
-  <main class="container mx-auto px-4 py-8 max-w-4xl">
+  <main id="main-content" class="container mx-auto px-4 py-8 max-w-4xl">
     <div class="mb-6">
       <h1 class="text-4xl font-bold mb-2" id="role-title">Discussion Board</h1>
-      <p class="text-gray-600 dark:text-gray-400" id="role-subtitle">Share experiences and ask questions</p>
+      <p class="text-gray-600 dark:text-gray-400" id="role-subtitle">
+        Share experiences and ask questions
+      </p>
+      <p id="discussion-meta" class="mt-1 text-sm text-gray-500 dark:text-gray-400"></p>
     </div>
     
-    <button id="new-post-btn" class="mb-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
-      + New Post
-    </button>
+    <div class="flex items-center justify-between mb-4">
+      <button
+        id="new-post-btn"
+        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+      >
+        + New Post
+      </button>
+      <span id="posts-count" class="text-sm text-gray-600 dark:text-gray-400"></span>
+    </div>
+
+    <!-- Loading / status -->
+    <div id="posts-status" class="mb-4 text-sm text-gray-500 dark:text-gray-400">
+      Loading posts…
+    </div>
     
     <div id="posts-list" class="space-y-4">
       <!-- Posts loaded here -->
     </div>
     
     <!-- New Post Modal -->
-    <div id="post-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div
+      id="post-modal"
+      class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+      aria-hidden="true"
+    >
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 p-6">
-        <h3 class="text-2xl font-bold mb-4">Create New Post</h3>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-2xl font-bold">Create New Post</h3>
+          <button
+            id="close-post-modal"
+            class="text-gray-500 hover:text-gray-800 dark:hover:text-gray-100 text-2xl leading-none"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
         <div class="space-y-4">
           <div>
-            <label class="block mb-2 font-semibold">Title</label>
-            <input type="text" id="post-title" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700">
+            <label class="block mb-2 font-semibold" for="post-title">Title</label>
+            <input
+              type="text"
+              id="post-title"
+              class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700"
+              placeholder="Summarize your question or topic"
+            >
           </div>
           <div>
-            <label class="block mb-2 font-semibold">Content</label>
-            <textarea id="post-content" rows="6" class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700"></textarea>
+            <label class="block mb-2 font-semibold" for="post-content">Content</label>
+            <textarea
+              id="post-content"
+              rows="6"
+              class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700"
+              placeholder="Describe your question, context, and what you’ve tried..."
+            ></textarea>
           </div>
           <div class="flex gap-4">
-            <button id="submit-post" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+            <button
+              id="submit-post"
+              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+            >
               Post
             </button>
-            <button id="cancel-post" class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold">
+            <button
+              id="cancel-post"
+              class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold"
+            >
               Cancel
             </button>
           </div>
@@ -78,113 +131,245 @@
 
   <script type="module">
     import { initUI, showToast } from '/js/ui.js';
-    import { watchAuthState } from '/js/auth.js';
+    import { watchAuthState, signOutUser } from '/js/auth.js';
     import { getRolePosts, createPost, watchRolePosts, createReply, getPostReplies } from '/js/discussions.js';
     import { getRole } from '/js/roles.js';
     
-    initUI();
-    
+    // Basic UI init (if your ui.js does header/toasts etc.)
+    if (typeof initUI === 'function') {
+      initUI();
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     const roleSlug = urlParams.get('role');
-    
+
     if (!roleSlug) {
+      // No role specified → send user to roles listing
       window.location.href = '/roles.html';
     }
-    
+
     let currentPostId = null;
-    
+    let postsCache = [];
+
+    const postsListEl = document.getElementById('posts-list');
+    const postsStatusEl = document.getElementById('posts-status');
+    const postsCountEl = document.getElementById('posts-count');
+
+    // Simple HTML escape to avoid XSS in user-generated content
+    function escapeHtml(str = '') {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Auth + initial data
     watchAuthState(async (user) => {
+      const authStatus = document.getElementById('auth-status');
+
       if (!user) {
+        // Not logged in → redirect to auth
+        if (authStatus) {
+          authStatus.textContent = 'Redirecting to sign in…';
+        }
         window.location.href = '/auth.html';
         return;
       }
-      
-      // Load role info
-      const role = await getRole(roleSlug);
-      if (role) {
-        document.getElementById('role-title').textContent = `${role.title} Discussion`;
-        document.getElementById('role-subtitle').textContent = `Discuss ${role.title} career path with the community`;
+
+      // Update auth status UI
+      if (authStatus) {
+        const name = user.displayName || user.name || (user.email ? user.email.split('@')[0] : 'Learner');
+        authStatus.innerHTML = `
+          <span class="hidden sm:inline">Hi, ${escapeHtml(name)}</span>
+          <button id="signout-btn" class="ml-2 text-xs text-red-600 hover:underline">Sign out</button>
+        `;
+        const signoutBtn = document.getElementById('signout-btn');
+        if (signoutBtn) {
+          signoutBtn.addEventListener('click', async () => {
+            try {
+              await signOutUser();
+              window.location.href = '/auth.html';
+            } catch (err) {
+              console.error('Sign out error:', err);
+              showToast?.('Could not sign out. Please try again.', 'error');
+            }
+          });
+        }
       }
-      
-      // Watch for posts
+
+      // Load role info
+      try {
+        const role = await getRole(roleSlug);
+        if (role) {
+          document.getElementById('role-title').textContent = `${role.title} Discussion`;
+          document.getElementById('role-subtitle').textContent =
+            `Discuss the ${role.title} career path with the community`;
+          const meta = document.getElementById('discussion-meta');
+          if (meta) {
+            meta.textContent = role.summary
+              ? role.summary
+              : 'Ask questions, share resources, and support other learners.';
+          }
+        }
+      } catch (err) {
+        console.warn('Error loading role info:', err);
+      }
+
+      // Show "loading" while we wait for first snapshot
+      postsStatusEl.textContent = 'Loading posts…';
+
+      // Live updates for posts
       watchRolePosts(roleSlug, (posts) => {
-        renderPosts(posts);
+        postsCache = posts || [];
+        renderPosts(postsCache);
       });
     });
     
-    function renderPosts(posts) {
-      const list = document.getElementById('posts-list');
-      list.innerHTML = '';
-      
-      if (posts.length === 0) {
-        list.innerHTML = '<p class="text-center text-gray-600 dark:text-gray-400 py-8">No posts yet. Be the first to post!</p>';
+    function renderPosts(posts = []) {
+      postsListEl.innerHTML = '';
+
+      if (postsCountEl) {
+        postsCountEl.textContent = posts.length
+          ? `${posts.length} post${posts.length === 1 ? '' : 's'}`
+          : 'No posts yet';
+      }
+
+      if (!posts.length) {
+        postsStatusEl.textContent = '';
+        postsListEl.innerHTML =
+          '<p class="text-center text-gray-600 dark:text-gray-400 py-8">No posts yet. Be the first to start a discussion!</p>';
         return;
       }
-      
+
+      postsStatusEl.textContent = '';
+
       posts.forEach(post => {
         const div = document.createElement('div');
         div.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-6';
+        const safeTitle = escapeHtml(post.title || '');
+        const safeContent = escapeHtml(post.content || '');
+        const authorName = escapeHtml(post.authorName || 'Anonymous');
+        const replyCount = post.replyCount || 0;
+
         div.innerHTML = `
-          <h3 class="text-xl font-bold mb-2">${post.title}</h3>
-          <p class="text-gray-700 dark:text-gray-300 mb-4">${post.content}</p>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-4 text-sm text-gray-500">
-              <span>${post.authorName || 'Anonymous'}</span>
+          <h3 class="text-xl font-bold mb-2 break-words">${safeTitle}</h3>
+          <p class="text-gray-700 dark:text-gray-300 mb-4 whitespace-pre-line break-words">${safeContent}</p>
+          <div class="flex items-center justify-between text-sm text-gray-500">
+            <div class="flex items-center gap-3">
+              <span>${authorName}</span>
               <span>•</span>
-              <span>${post.replyCount || 0} replies</span>
+              <span>${replyCount} repl${replyCount === 1 ? 'y' : 'ies'}</span>
             </div>
-            <button data-post-id="${post.id}" class="view-replies px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+            <button
+              data-post-id="${post.id}"
+              class="view-replies px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+            >
               View Replies
             </button>
           </div>
         `;
-        list.appendChild(div);
+        postsListEl.appendChild(div);
       });
       
-      // Add event listeners
+      // Attach handlers after rendering
       document.querySelectorAll('.view-replies').forEach(btn => {
         btn.addEventListener('click', () => showReplies(btn.dataset.postId));
       });
     }
     
-    // New post
-    document.getElementById('new-post-btn').addEventListener('click', () => {
-      document.getElementById('post-modal').classList.remove('hidden');
-      document.getElementById('post-modal').classList.add('flex');
+    // New post modal helpers
+    const postModal = document.getElementById('post-modal');
+    const newPostBtn = document.getElementById('new-post-btn');
+    const cancelPostBtn = document.getElementById('cancel-post');
+    const closePostModalBtn = document.getElementById('close-post-modal');
+    const submitPostBtn = document.getElementById('submit-post');
+    const postTitleInput = document.getElementById('post-title');
+    const postContentInput = document.getElementById('post-content');
+
+    function openPostModal() {
+      if (!postModal) return;
+      postModal.classList.remove('hidden');
+      postModal.classList.add('flex');
+      postModal.setAttribute('aria-hidden', 'false');
+      postTitleInput?.focus();
+    }
+
+    function closePostModal() {
+      if (!postModal) return;
+      postModal.classList.add('hidden');
+      postModal.classList.remove('flex');
+      postModal.setAttribute('aria-hidden', 'true');
+      if (postTitleInput) postTitleInput.value = '';
+      if (postContentInput) postContentInput.value = '';
+    }
+
+    newPostBtn?.addEventListener('click', openPostModal);
+    cancelPostBtn?.addEventListener('click', closePostModal);
+    closePostModalBtn?.addEventListener('click', closePostModal);
+
+    // Close modal on overlay click
+    postModal?.addEventListener('click', (e) => {
+      if (e.target === postModal) {
+        closePostModal();
+      }
     });
-    
-    document.getElementById('cancel-post').addEventListener('click', () => {
-      document.getElementById('post-modal').classList.add('hidden');
-      document.getElementById('post-modal').classList.remove('flex');
-    });
-    
-    document.getElementById('submit-post').addEventListener('click', async () => {
-      const title = document.getElementById('post-title').value.trim();
-      const content = document.getElementById('post-content').value.trim();
+
+    // Submit new post
+    submitPostBtn?.addEventListener('click', async () => {
+      const title = (postTitleInput?.value || '').trim();
+      const content = (postContentInput?.value || '').trim();
       
       if (!title || !content) {
-        showToast('Please fill in all fields', 'error');
+        showToast?.('Please fill in both title and content.', 'error');
         return;
       }
-      
+
+      submitPostBtn.disabled = true;
+      submitPostBtn.textContent = 'Posting…';
+
       try {
         await createPost(roleSlug, title, content);
-        showToast('Post created!', 'success');
-        document.getElementById('cancel-post').click();
-        document.getElementById('post-title').value = '';
-        document.getElementById('post-content').value = '';
+        showToast?.('Post created!', 'success');
+        closePostModal();
       } catch (error) {
-        showToast(error.message, 'error');
+        console.error('Create post error:', error);
+        showToast?.(error.message || 'Failed to create post. Please try again.', 'error');
+      } finally {
+        submitPostBtn.disabled = false;
+        submitPostBtn.textContent = 'Post';
       }
     });
     
+    // Replies (right now: simple toast with count; you can expand to a modal or inline thread later)
     async function showReplies(postId) {
       currentPostId = postId;
-      const replies = await getPostReplies(postId);
-      // Show replies in a modal or expand section
-      showToast(`${replies.length} replies`, 'info');
+      try {
+        const replies = await getPostReplies(postId);
+        showToast?.(`${replies.length} repl${replies.length === 1 ? 'y' : 'ies'} (UI coming soon)`, 'info');
+        // TODO: Replace with actual UI (modal or inline thread) if needed
+      } catch (err) {
+        console.error('Error loading replies:', err);
+        showToast?.('Could not load replies. Please try again.', 'error');
+      }
     }
+
+    // Theme toggle with persistence
+    const themeBtn = document.getElementById('theme-toggle');
+    (function initTheme() {
+      const saved = localStorage.getItem('theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+
+    themeBtn?.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    });
   </script>
 </body>
 </html>
-

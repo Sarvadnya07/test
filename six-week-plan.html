@@ -4,30 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>6-Week Learning Plan - EduRise</title>
-  <link rel="stylesheet" href="/css/tailwind-input.css">
-  <link rel="stylesheet" href="/css/styles.css">
-  <script src="/js/config.js"></script>
+
+  <!-- Load config FIRST (must be first script) -->
+  <script src="./js/config.js" defer></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/tailwind-input.css">
+  <link rel="stylesheet" href="./css/styles.css">
 </head>
+
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+
   <div data-include="header"></div>
 
   <main class="container mx-auto px-4 py-8 max-w-4xl">
     <div class="mb-8">
       <h1 class="text-4xl font-bold mb-2">6-Week Learning Plan Generator</h1>
-      <p class="text-lg text-gray-600 dark:text-gray-400">Get a personalized 6-week learning plan for any topic</p>
+      <p class="text-lg text-gray-600 dark:text-gray-400">
+        Get a personalized 6-week learning plan for any topic
+      </p>
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
       <div class="mb-4">
-        <label for="topic-input" class="block mb-2 font-semibold">What would you like to learn?</label>
+        <label for="topic-input" class="block mb-2 font-semibold">
+          What would you like to learn?
+        </label>
         <input 
           type="text" 
           id="topic-input" 
           class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700"
-          placeholder="e.g., Web Development, Data Science, Python Programming"
-        >
+          placeholder="e.g., Web Development, Data Science, Python Programming">
       </div>
-      <button id="generate-plan" class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+
+      <button
+        id="generate-plan"
+        class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+      >
         Generate 6-Week Plan
       </button>
     </div>
@@ -36,13 +49,15 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-2xl font-bold">Your 6-Week Plan</h2>
-          <button id="export-plan" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          <button
+            id="export-plan"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
             Export PDF
           </button>
         </div>
-        <div id="plan-content" class="space-y-6">
-          <!-- Plan content loaded here -->
-        </div>
+
+        <div id="plan-content" class="space-y-6"></div>
       </div>
     </div>
 
@@ -53,12 +68,34 @@
   </main>
 
   <div data-include="footer"></div>
-  <script src="/js/include.js" defer></script>
-  <script src="/js/gemini.js"></script>
-  <script src="/js/export-pdf.js"></script>
+
+  <!-- JS -->
+  <script src="./js/include.js" defer></script>
+  <script src="./js/gemini.js"></script>
+  <script src="./js/export-pdf.js"></script>
+
   <script>
-    document.getElementById('generate-plan').addEventListener('click', async () => {
-      const topic = document.getElementById('topic-input').value.trim();
+    // Ensure Gemini is ready
+    function ensureGeminiReady() {
+      return new Promise(function(resolve) {
+        function check() {
+          if (window.GeminiAPI) {
+            window.GeminiAPI.init();
+            if (window.GeminiAPI.isConfigured()) {
+              console.log("Gemini OK");
+              resolve(true);
+              return;
+            }
+          }
+          setTimeout(check, 100);
+        }
+        check();
+      });
+    }
+
+    // Generate plan click handler
+    document.getElementById('generate-plan').addEventListener('click', async function () {
+      var topic = document.getElementById('topic-input').value.trim();
       if (!topic) {
         alert('Please enter a topic');
         return;
@@ -68,90 +105,106 @@
       document.getElementById('plan-result').classList.add('hidden');
 
       try {
-        let planText = '';
-        
-        // Try Gemini API first
-        if (window.GeminiAPI && window.GeminiAPI.isConfigured()) {
-          planText = await window.GeminiAPI.generateLearningPlan(topic);
+        var planText = "";
+
+        if (await ensureGeminiReady()) {
+          console.log("Using Gemini API to generate plan...");
+          try {
+            planText = await GeminiAPI.generateLearningPlan(topic);
+            console.log("Gemini API response received");
+          } catch (err) {
+            console.warn("Gemini API error:", err);
+            planText = generateFallbackPlan(topic);
+          }
         } else {
-          // Fallback plan
+          console.warn("Gemini API not configured — using fallback");
           planText = generateFallbackPlan(topic);
         }
 
         displayPlan(planText, topic);
-      } catch (error) {
-        console.error('Error generating plan:', error);
-        // Use fallback
+
+      } catch (err) {
+        console.error("Error generating plan:", err);
         displayPlan(generateFallbackPlan(topic), topic);
       } finally {
         document.getElementById('loading').classList.add('hidden');
       }
     });
 
+    // Fallback plan (ASCII only, no template literals)
     function generateFallbackPlan(topic) {
-      return `6-Week Learning Plan: ${topic}
+      var text = "";
+      text += "6-Week Learning Plan: " + topic + "\\n\\n";
 
-Week 1: Foundations
-- Learn core concepts and terminology
-- Set up your development environment
-- Complete introductory tutorials
-- Build a simple "Hello World" project
+      text += "Week 1 - Foundations\\n";
+      text += "- Understand basic concepts and terminology\\n";
+      text += "- Set up your environment\\n";
+      text += "- Complete beginner tutorials\\n";
+      text += "- Build a simple Hello World project\\n\\n";
 
-Week 2-3: Core Skills
-- Deep dive into fundamental concepts
-- Practice with exercises and challenges
-- Build 2-3 small projects
-- Join online communities for support
+      text += "Week 2 - Core Concepts (Part 1)\\n";
+      text += "- Learn essential fundamentals\\n";
+      text += "- Practice with small exercises\\n";
+      text += "- Build 1-2 small projects\\n\\n";
 
-Week 4: Intermediate Topics
-- Explore more advanced concepts
-- Work on a medium-sized project
-- Read documentation and best practices
-- Start building your portfolio
+      text += "Week 3 - Core Concepts (Part 2)\\n";
+      text += "- Continue deeper learning\\n";
+      text += "- Work on intermediate challenges\\n";
+      text += "- Study common tools and workflows\\n\\n";
 
-Week 5: Real-World Application
-- Build a complete project from scratch
-- Apply all learned concepts
-- Get feedback from peers or mentors
-- Document your learning journey
+      text += "Week 4 - Intermediate Topics\\n";
+      text += "- Explore more advanced concepts\\n";
+      text += "- Build a medium-sized project\\n";
+      text += "- Read official documentation\\n\\n";
 
-Week 6: Mastery & Next Steps
-- Refine your projects
-- Explore advanced topics
-- Plan your next learning goals
-- Share your work with the community
+      text += "Week 5 - Real-World Application\\n";
+      text += "- Build an end-to-end project\\n";
+      text += "- Apply everything learned\\n";
+      text += "- Optimize and refactor your code\\n\\n";
 
-Recommended: 8-10 hours per week for best results.`;
+      text += "Week 6 - Mastery Phase\\n";
+      text += "- Polish portfolio projects\\n";
+      text += "- Learn advanced patterns\\n";
+      text += "- Plan next learning goals\\n";
+      text += "- Share your projects online\\n\\n";
+
+      text += "Recommended Time: 8-10 hours per week.";
+      return text;
     }
 
+    // Display plan + PDF export
     function displayPlan(planText, topic) {
-      const content = document.getElementById('plan-content');
-      const weeks = planText.split(/\n\n/);
-      
-      content.innerHTML = '';
-      weeks.forEach((week, index) => {
+      var content = document.getElementById("plan-content");
+      var weeks = planText.split(/\\n\\n/);
+
+      content.innerHTML = "";
+
+      weeks.forEach(function(week) {
         if (!week.trim()) return;
-        const weekDiv = document.createElement('div');
-        weekDiv.className = 'border-l-4 border-blue-600 pl-4 py-2';
-        weekDiv.innerHTML = `<div class="whitespace-pre-line">${escapeHtml(week)}</div>`;
+
+        var weekDiv = document.createElement("div");
+        weekDiv.className = "border-l-4 border-blue-600 pl-4 py-2";
+        weekDiv.innerHTML =
+          '<div class="whitespace-pre-line">' + escapeHtml(week) + '</div>';
         content.appendChild(weekDiv);
       });
 
-      document.getElementById('plan-result').classList.remove('hidden');
-      
-      // Export button
-      document.getElementById('export-plan').onclick = () => {
+      document.getElementById("plan-result").classList.remove("hidden");
+
+      document.getElementById("export-plan").onclick = function () {
         if (window.exportToPDF) {
-          window.exportToPDF('#plan-result', `6-Week Plan: ${topic}`);
+          window.exportToPDF("#plan-result", "6-Week Plan - " + topic);
         }
       };
     }
 
+    // Escape HTML
     function escapeHtml(text) {
-      const div = document.createElement('div');
+      var div = document.createElement("div");
       div.textContent = text;
       return div.innerHTML;
     }
   </script>
+
 </body>
 </html>

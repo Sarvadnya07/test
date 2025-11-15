@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Learn Library - Pathways</title>
+  <meta name="description" content="Curated courses, articles, videos, and tools mapped to your Pathways career roles. Explore the Learn Library to accelerate your journey." />
+
+  <link rel="icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/tailwind-input.css">
   <link rel="stylesheet" href="/css/styles.css">
 </head>
@@ -13,166 +16,292 @@
 
   <main id="main-content" class="container mx-auto px-4 py-8">
     <!-- Hero Section -->
-    <section class="text-center py-16 mb-12">
-      <h1 class="text-5xl font-bold mb-4 text-gray-900 dark:text-white">Learn Library</h1>
+    <section class="text-center py-16 mb-12" aria-labelledby="learn-hero-title">
+      <h1 id="learn-hero-title" class="text-5xl font-bold mb-4 text-gray-900 dark:text-white">
+        Learn Library
+      </h1>
       <p class="text-xl text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto">
-        Curated resources, courses, articles, and videos to accelerate your learning journey. Find everything you need to master your chosen career path.
+        Curated resources, courses, articles, and videos to accelerate your learning journey.
+        Find everything you need to master your chosen career path.
       </p>
       <div class="flex gap-4 justify-center flex-wrap">
-        <a href="/roles.html" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">Browse Roles</a>
-        <a href="#resources" class="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-800 font-semibold">Explore Resources</a>
+        <a href="/roles.html"
+           class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+          Browse Roles
+        </a>
+        <a href="#resources"
+           class="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-800 font-semibold">
+          Explore Resources
+        </a>
       </div>
     </section>
 
     <!-- Why Learn Library -->
-    <section class="mb-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <section class="mb-12 grid grid-cols-1 md:grid-cols-3 gap-6" aria-label="Why Learn Library">
       <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 rounded-lg p-6">
         <div class="text-3xl mb-2">📚</div>
         <h3 class="font-bold text-lg mb-2">Curated Resources</h3>
-        <p class="text-sm text-gray-700 dark:text-gray-300">Handpicked from industry leaders and verified experts for quality and relevance.</p>
+        <p class="text-sm text-gray-700 dark:text-gray-300">
+          Handpicked from industry leaders and verified experts for quality and relevance.
+        </p>
       </div>
       <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900 dark:to-green-800 rounded-lg p-6">
         <div class="text-3xl mb-2">🎯</div>
         <h3 class="font-bold text-lg mb-2">Role-Aligned Learning</h3>
-        <p class="text-sm text-gray-700 dark:text-gray-300">Resources mapped to specific roles and stages in your career roadmap.</p>
+        <p class="text-sm text-gray-700 dark:text-gray-300">
+          Resources mapped to specific roles and stages in your career roadmap.
+        </p>
       </div>
       <div class="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 rounded-lg p-6">
         <div class="text-3xl mb-2">⚡</div>
         <h3 class="font-bold text-lg mb-2">Learn at Your Pace</h3>
-        <p class="text-sm text-gray-700 dark:text-gray-300">From quick tutorials to comprehensive courses, choose your learning style.</p>
+        <p class="text-sm text-gray-700 dark:text-gray-300">
+          From quick tutorials to comprehensive courses, choose your learning style.
+        </p>
       </div>
     </section>
 
     <!-- Resource Categories -->
-    <section id="resources" class="mb-12">
-      <h2 class="text-3xl font-bold mb-8 text-center">Browse by Category</h2>
+    <section id="resources" class="mb-12" aria-labelledby="resource-categories-title">
+      <h2 id="resource-categories-title" class="text-3xl font-bold mb-8 text-center">
+        Browse by Category
+      </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <button class="p-4 border-2 border-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 text-left transition">
+        <button type="button"
+                class="p-4 border-2 border-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 text-left transition"
+                data-category="video">
           <div class="text-2xl mb-2">🎬</div>
           <h3 class="font-bold">Video Tutorials</h3>
           <p class="text-sm text-gray-600 dark:text-gray-400">15+ hours</p>
         </button>
-        <button class="p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-left transition">
+
+        <button type="button"
+                class="p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-left transition"
+                data-category="article">
           <div class="text-2xl mb-2">📖</div>
-          <h3 class="font-bold">Articles & Guides</h3>
+          <h3 class="font-bold">Articles &amp; Guides</h3>
           <p class="text-sm text-gray-600 dark:text-gray-400">200+ resources</p>
         </button>
-        <button class="p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-left transition">
+
+        <button type="button"
+                class="p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-left transition"
+                data-category="course">
           <div class="text-2xl mb-2">🎓</div>
           <h3 class="font-bold">Online Courses</h3>
           <p class="text-sm text-gray-600 dark:text-gray-400">50+ courses</p>
         </button>
-        <button class="p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-left transition">
+
+        <button type="button"
+                class="p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-left transition"
+                data-category="tool">
           <div class="text-2xl mb-2">🔧</div>
-          <h3 class="font-bold">Tools & Platforms</h3>
+          <h3 class="font-bold">Tools &amp; Platforms</h3>
           <p class="text-sm text-gray-600 dark:text-gray-400">30+ tools</p>
         </button>
       </div>
     </section>
 
     <!-- Sample Resources Grid -->
-    <section class="mb-12">
-      <h2 class="text-3xl font-bold mb-8">Featured Resources</h2>
+    <section class="mb-12" aria-labelledby="featured-resources-title">
+      <h2 id="featured-resources-title" class="text-3xl font-bold mb-8">
+        Featured Resources
+      </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition overflow-hidden">
-          <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-32 flex items-center justify-center text-white text-4xl">📚</div>
+        <!-- Resource card 1 -->
+        <article class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition overflow-hidden"
+                 data-type="video" data-level="beginner" data-role="python">
+          <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-32 flex items-center justify-center text-white text-4xl">
+            📚
+          </div>
           <div class="p-6">
             <h3 class="font-bold text-lg mb-2">Getting Started with Python</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Beginner-friendly guide to Python programming fundamentals</p>
-            <div class="flex gap-2 mb-4">
-              <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">Video</span>
-              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">1 hour</span>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Beginner-friendly guide to Python programming fundamentals
+            </p>
+            <div class="flex gap-2 mb-4 flex-wrap">
+              <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">
+                Video
+              </span>
+              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">
+                1 hour
+              </span>
+              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">
+                Beginner
+              </span>
             </div>
-            <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-sm">Learn more →</a>
+            <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-sm">
+              Learn more →
+            </a>
           </div>
-        </div>
+        </article>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition overflow-hidden">
-          <div class="bg-gradient-to-r from-green-500 to-green-600 h-32 flex items-center justify-center text-white text-4xl">💼</div>
+        <!-- Resource card 2 -->
+        <article class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition overflow-hidden"
+                 data-type="article" data-level="all" data-role="career">
+          <div class="bg-gradient-to-r from-green-500 to-green-600 h-32 flex items-center justify-center text-white text-4xl">
+            💼
+          </div>
           <div class="p-6">
             <h3 class="font-bold text-lg mb-2">Career Transition Roadmap</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Step-by-step guide to switching careers successfully</p>
-            <div class="flex gap-2 mb-4">
-              <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">Article</span>
-              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">15 min read</span>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Step-by-step guide to switching careers successfully
+            </p>
+            <div class="flex gap-2 mb-4 flex-wrap">
+              <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">
+                Article
+              </span>
+              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">
+                15 min read
+              </span>
             </div>
-            <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-sm">Read article →</a>
+            <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-sm">
+              Read article →
+            </a>
           </div>
-        </div>
+        </article>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition overflow-hidden">
-          <div class="bg-gradient-to-r from-purple-500 to-purple-600 h-32 flex items-center justify-center text-white text-4xl">🎓</div>
+        <!-- Resource card 3 -->
+        <article class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition overflow-hidden"
+                 data-type="course" data-level="intermediate" data-role="web-dev">
+          <div class="bg-gradient-to-r from-purple-500 to-purple-600 h-32 flex items-center justify-center text-white text-4xl">
+            🎓
+          </div>
           <div class="p-6">
             <h3 class="font-bold text-lg mb-2">Complete Web Development Course</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Comprehensive course covering frontend, backend, and deployment</p>
-            <div class="flex gap-2 mb-4">
-              <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">Course</span>
-              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">40 hours</span>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Comprehensive course covering frontend, backend, and deployment
+            </p>
+            <div class="flex gap-2 mb-4 flex-wrap">
+              <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">
+                Course
+              </span>
+              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">
+                40 hours
+              </span>
+              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">
+                Intermediate
+              </span>
             </div>
-            <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-sm">View course →</a>
+            <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-sm">
+              View course →
+            </a>
           </div>
-        </div>
+        </article>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition overflow-hidden">
-          <div class="bg-gradient-to-r from-orange-500 to-orange-600 h-32 flex items-center justify-center text-white text-4xl">🔧</div>
+        <!-- Resource card 4 -->
+        <article class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition overflow-hidden"
+                 data-type="guide" data-level="beginner" data-role="dev-tools">
+          <div class="bg-gradient-to-r from-orange-500 to-orange-600 h-32 flex items-center justify-center text-white text-4xl">
+            🔧
+          </div>
           <div class="p-6">
             <h3 class="font-bold text-lg mb-2">Essential Tools for Developers</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Learn the industry-standard tools every developer should know</p>
-            <div class="flex gap-2 mb-4">
-              <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">Guide</span>
-              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">20 min</span>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Learn the industry-standard tools every developer should know
+            </p>
+            <div class="flex gap-2 mb-4 flex-wrap">
+              <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">
+                Guide
+              </span>
+              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">
+                20 min
+              </span>
             </div>
-            <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-sm">Explore tools →</a>
+            <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-sm">
+              Explore tools →
+            </a>
           </div>
-        </div>
+        </article>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition overflow-hidden">
-          <div class="bg-gradient-to-r from-red-500 to-red-600 h-32 flex items-center justify-center text-white text-4xl">📊</div>
+        <!-- Resource card 5 -->
+        <article class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition overflow-hidden"
+                 data-type="course" data-level="beginner" data-role="data">
+          <div class="bg-gradient-to-r from-red-500 to-red-600 h-32 flex items-center justify-center text-white text-4xl">
+            📊
+          </div>
           <div class="p-6">
             <h3 class="font-bold text-lg mb-2">Data Analytics Fundamentals</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Master the basics of data analysis and visualization</p>
-            <div class="flex gap-2 mb-4">
-              <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">Course</span>
-              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">25 hours</span>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Master the basics of data analysis and visualization
+            </p>
+            <div class="flex gap-2 mb-4 flex-wrap">
+              <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">
+                Course
+              </span>
+              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">
+                25 hours
+              </span>
             </div>
-            <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-sm">Enroll now →</a>
+            <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-sm">
+              Enroll now →
+            </a>
           </div>
-        </div>
+        </article>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition overflow-hidden">
-          <div class="bg-gradient-to-r from-teal-500 to-teal-600 h-32 flex items-center justify-center text-white text-4xl">💡</div>
-          <div class="p-6">
-            <h3 class="font-bold text-lg mb-2">Innovation & Problem Solving</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Learn creative thinking and systematic problem-solving techniques</p>
-            <div class="flex gap-2 mb-4">
-              <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">Workshop</span>
-              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">12 hours</span>
-            </div>
-            <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-sm">Join workshop →</a>
+        <!-- Resource card 6 -->
+        <article class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition overflow-hidden"
+                 data-type="workshop" data-level="all" data-role="soft-skills">
+          <div class="bg-gradient-to-r from-teal-500 to-teal-600 h-32 flex items-center justify-center text-white text-4xl">
+            💡
           </div>
-        </div>
+          <div class="p-6">
+            <h3 class="font-bold text-lg mb-2">Innovation &amp; Problem Solving</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Learn creative thinking and systematic problem-solving techniques
+            </p>
+            <div class="flex gap-2 mb-4 flex-wrap">
+              <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">
+                Workshop
+              </span>
+              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">
+                12 hours
+              </span>
+            </div>
+            <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-sm">
+              Join workshop →
+            </a>
+          </div>
+        </article>
       </div>
     </section>
 
     <!-- FAQ Section -->
-    <section class="mb-12 bg-white dark:bg-gray-800 rounded-lg p-8">
-      <h2 class="text-3xl font-bold mb-8 text-center">Common Questions</h2>
+    <section class="mb-12 bg-white dark:bg-gray-800 rounded-lg p-8" aria-labelledby="learn-faq-title">
+      <h2 id="learn-faq-title" class="text-3xl font-bold mb-8 text-center">Common Questions</h2>
       <div class="max-w-3xl mx-auto space-y-6">
         <details class="border-l-4 border-blue-600 pl-6 py-3">
-          <summary class="font-bold cursor-pointer hover:text-blue-600">Are these resources free?</summary>
-          <p class="text-gray-600 dark:text-gray-400 mt-2">Most resources are free or have free tiers. Premium resources are clearly marked with a Pro badge. We curate only the best quality content for value.</p>
+          <summary class="font-bold cursor-pointer hover:text-blue-600">
+            Are these resources free?
+          </summary>
+          <p class="text-gray-600 dark:text-gray-400 mt-2">
+            Most resources are free or have free tiers. Premium resources are clearly marked with a Pro badge.
+            We curate only the best quality content for value.
+          </p>
         </details>
         <details class="border-l-4 border-blue-600 pl-6 py-3">
-          <summary class="font-bold cursor-pointer hover:text-blue-600">How do I find resources for my role?</summary>
-          <p class="text-gray-600 dark:text-gray-400 mt-2">Select your role from the Roles page, and all resources will be filtered to match your chosen career path and skill level.</p>
+          <summary class="font-bold cursor-pointer hover:text-blue-600">
+            How do I find resources for my role?
+          </summary>
+          <p class="text-gray-600 dark:text-gray-400 mt-2">
+            Select your role from the Roles page, and all resources will be filtered to match your chosen career path
+            and skill level.
+          </p>
         </details>
         <details class="border-l-4 border-blue-600 pl-6 py-3">
-          <summary class="font-bold cursor-pointer hover:text-blue-600">Can I suggest new resources?</summary>
-          <p class="text-gray-600 dark:text-gray-400 mt-2">Yes! Visit our Forum or contact us with your suggestions. We review and add high-quality resources regularly.</p>
+          <summary class="font-bold cursor-pointer hover:text-blue-600">
+            Can I suggest new resources?
+          </summary>
+          <p class="text-gray-600 dark:text-gray-400 mt-2">
+            Yes! Visit our Forum or contact us with your suggestions. We review and add high-quality resources regularly.
+          </p>
         </details>
         <details class="border-l-4 border-blue-600 pl-6 py-3">
-          <summary class="font-bold cursor-pointer hover:text-blue-600">How often is the library updated?</summary>
-          <p class="text-gray-600 dark:text-gray-400 mt-2">We add new resources weekly and review existing ones monthly to keep everything current and relevant.</p>
+          <summary class="font-bold cursor-pointer hover:text-blue-600">
+            How often is the library updated?
+          </summary>
+          <p class="text-gray-600 dark:text-gray-400 mt-2">
+            We add new resources weekly and review existing ones monthly to keep everything current and relevant.
+          </p>
         </details>
       </div>
     </section>
@@ -180,10 +309,18 @@
     <!-- CTA Section -->
     <section class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg p-8 text-center mb-12">
       <h2 class="text-3xl font-bold mb-4">Ready to Start Learning?</h2>
-      <p class="text-lg mb-6 max-w-2xl mx-auto">Pick a role, find resources aligned with your goals, and start your journey today.</p>
+      <p class="text-lg mb-6 max-w-2xl mx-auto">
+        Pick a role, find resources aligned with your goals, and start your journey today.
+      </p>
       <div class="flex gap-4 justify-center flex-wrap">
-        <a href="/roles.html" class="px-6 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-100 font-semibold">Browse Roles</a>
-        <a href="/dashboard.html" class="px-6 py-3 border-2 border-white text-white rounded-lg hover:bg-white hover:bg-opacity-10 font-semibold">Go to Dashboard</a>
+        <a href="/roles.html"
+           class="px-6 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-100 font-semibold">
+          Browse Roles
+        </a>
+        <a href="/dashboard.html"
+           class="px-6 py-3 border-2 border-white text-white rounded-lg hover:bg-white hover:bg-opacity-10 font-semibold">
+          Go to Dashboard
+        </a>
       </div>
     </section>
   </main>
@@ -198,4 +335,3 @@
   </script>
 </body>
 </html>
-

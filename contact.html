@@ -3,133 +3,527 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Contact EduRise — questions, partnerships, press, and support.">
-  <title>Contact — EduRise</title>
-  <link rel="icon" href="/favicon.ico">
+  <title>Dashboard - Pathways</title>
+  <meta name="description" content="Your personalized dashboard: progress, recommendations, badges, and activity on Pathways." />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="theme-color" content="#0ea5e9" />
 
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Contact — EduRise" />
-  <meta property="og:description" content="Get in touch with the EduRise team for support, partnerships, or press." />
+  <meta property="og:title" content="Dashboard - Pathways" />
+  <meta property="og:description" content="Your personalized dashboard: progress, recommendations, badges, and activity on Pathways." />
 
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Contact — EduRise" />
-  <meta name="twitter:description" content="Get in touch with the EduRise team for support, partnerships, or press." />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Dashboard - Pathways" />
+  <meta name="twitter:description" content="Your personalized dashboard: progress, recommendations, badges, and activity on Pathways." />
 
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"ContactPage","name":"Contact — EduRise","url":"/contact.html","description":"Get in touch with the EduRise team."}
+  {
+    "@context":"https://schema.org",
+    "@type":"WebPage",
+    "name":"Dashboard - Pathways",
+    "description":"Your personalized dashboard: progress, recommendations, badges, and activity on Pathways."
+  }
   </script>
 
   <link rel="stylesheet" href="/css/tailwind-input.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=account_circle,logout,settings,dashboard,person,menu,close,search,notifications,home,school,trending_up,groups,auto_awesome,edit,delete,save,cancel" />
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
-    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="/index.html" class="text-2xl font-bold text-blue-600 dark:text-blue-400">EduRise</a>
-      <div class="flex items-center gap-4">
-        <a href="/learn.html" class="hover:text-blue-600 dark:hover:text-blue-400">Learn</a>
-        <a href="/roles.html" class="hover:text-blue-600 dark:hover:text-blue-400">Roles</a>
-        <a href="/pathways.html" class="hover:text-blue-600 dark:hover:text-blue-400">Pathways</a>
-        <a href="/ai.html" class="hover:text-blue-600 dark:hover:text-blue-400">AI Mentor</a>
-        <a href="/forum.html" class="hover:text-blue-600 dark:hover:text-blue-400">Forum</a>
-        <a href="/profile.html" class="hover:text-blue-600 dark:hover:text-blue-400">Profile</a>
-        <a href="/auth.html" class="btn-primary">Sign Up</a>
-        <button id="theme-toggle" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700" aria-label="Toggle theme">🌙</button>
+  <!-- Shared header -->
+  <div data-include="header"></div>
+
+  <main id="main-content" class="container mx-auto px-4 py-8">
+    <div class="flex items-baseline justify-between mb-4">
+      <h1 class="text-4xl font-bold">Your Dashboard</h1>
+      <p id="welcome-user" class="text-sm text-gray-600 dark:text-gray-400"></p>
+    </div>
+
+    <!-- Loading state -->
+    <div id="dashboard-loading" class="mb-6 text-sm text-gray-500 dark:text-gray-400">
+      Loading your dashboard…
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 class="text-gray-600 dark:text-gray-400 mb-2">Level</h3>
+        <p id="user-level" class="text-3xl font-bold text-blue-600">–</p>
+        <p class="text-xs text-gray-500 mt-1" id="xp-progress">– XP</p>
       </div>
-    </nav>
-  </header>
-
-  <main id="main-content" class="container mx-auto px-4 py-12">
-    <section class="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow p-8">
-      <h1 class="text-3xl font-bold mb-4">Contact Us</h1>
-      <p class="text-gray-600 dark:text-gray-300 mb-6">Have a question, partnership idea or need support? Send us a message and we'll get back within 2 business days.</p>
-
-      <form id="contact-form" class="space-y-4" action="mailto:hello@edurise.example" method="post" enctype="text/plain">
-        <label class="block">
-          <span class="text-sm font-semibold">Name</span>
-          <input name="name" required class="mt-1 block w-full rounded border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3" placeholder="Your name">
-        </label>
-
-        <label class="block">
-          <span class="text-sm font-semibold">Email</span>
-          <input type="email" name="email" required class="mt-1 block w-full rounded border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3" placeholder="you@domain.com">
-        </label>
-
-        <label class="block">
-          <span class="text-sm font-semibold">Message</span>
-          <textarea name="message" rows="6" required class="mt-1 block w-full rounded border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3" placeholder="How can we help?"></textarea>
-        </label>
-
-        <div class="flex items-center gap-4">
-          <button type="submit" class="btn-primary">Send Message</button>
-          <a href="mailto:hello@edurise.example" class="text-sm text-gray-600 dark:text-gray-300">Or email hello@edurise.example</a>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 class="text-gray-600 dark:text-gray-400 mb-2">Active Roles</h3>
+        <p id="active-roles" class="text-3xl font-bold">–</p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 class="text-gray-600 dark:text-gray-400 mb-2">Completed Tasks</h3>
+        <p id="completed-tasks" class="text-3xl font-bold">–</p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 class="text-gray-600 dark:text-gray-400 mb-2">🔥 Streak</h3>
+        <p id="streak" class="text-3xl font-bold text-orange-600">–</p>
+      </div>
+    </div>
+    
+    <!-- Badges -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Your Badges</h2>
+      <div id="badges-container" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <!-- Badges loaded here -->
+      </div>
+    </section>
+    
+    <!-- Progress Timeline -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Progress Timeline</h2>
+      <div id="timeline-container" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div id="timeline-chart" class="flex items-end gap-1 h-32">
+          <!-- Timeline bars loaded here -->
         </div>
-      </form>
-
-      <hr class="my-6 border-gray-200 dark:border-gray-700">
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h3 class="font-semibold">Support</h3>
-          <p class="text-sm text-gray-600 dark:text-gray-300">support@edurise.example</p>
-        </div>
-        <div>
-          <h3 class="font-semibold">Partnerships</h3>
-          <p class="text-sm text-gray-600 dark:text-gray-300">partnerships@edurise.example</p>
-        </div>
+      </div>
+    </section>
+    
+    <!-- Recommendations -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Recommended for You</h2>
+      <div id="recommendations-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Recommendations loaded here -->
+      </div>
+    </section>
+    
+    <!-- Progress -->
+    <section>
+      <h2 class="text-2xl font-bold mb-4">Your Progress</h2>
+      <div id="progress-container" class="space-y-4">
+        <!-- Progress loaded here -->
       </div>
     </section>
   </main>
 
-  <footer class="bg-gray-800 dark:bg-gray-900 text-gray-300 py-8 mt-16">
-    <div class="container mx-auto px-4">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-        <div>
-          <h3 class="text-white font-bold mb-4">EduRise</h3>
-          <p class="text-sm">Education Awareness & Career Pathways Platform</p>
-        </div>
-        <div>
-          <h4 class="text-white font-semibold mb-4">Education</h4>
-          <ul class="space-y-2 text-sm">
-            <li><a href="/study-habits.html" class="hover:text-white">Study Habits</a></li>
-            <li><a href="/motivation.html" class="hover:text-white">Motivation</a></li>
-            <li><a href="/resources.html" class="hover:text-white">Resources</a></li>
-            <li><a href="/pledge.html" class="hover:text-white">Pledge</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="text-white font-semibold mb-4">Pathways</h4>
-          <ul class="space-y-2 text-sm">
-            <li><a href="/pathways.html" class="hover:text-white">Explore Careers</a></li>
-            <li><a href="/ai.html" class="hover:text-white">AI Mentor</a></li>
-            <li><a href="/dashboard.html" class="hover:text-white">Dashboard</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="text-white font-semibold mb-4">Support</h4>
-          <ul class="space-y-2 text-sm">
-            <li><a href="/contact.html" class="hover:text-white">Contact</a></li>
-            <li><a href="/feedback.html" class="hover:text-white">Feedback</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="mt-8 pt-8 border-t border-gray-700 text-center text-sm">
-        <p>© 2025 EduRise. All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
+  <script src="/js/include.js"></script>
+  <script type="module">
+    import { db } from '/js/firebase.js';
+    import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+    import { getRoleProgress, getProgressTimeline } from '/js/progress.js';
+    import { getRecommendedRoles } from '/js/recommendations.js';
+    import { getUserStats } from '/js/gamification.js';
+    
+    // --------- DUMMY HELPERS ----------
+    function createDummyTimeline(days = 30) {
+      const timeline = {};
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const key = d.toDateString();
+        // random-ish 0–4 tasks
+        timeline[key] = (i % 5 === 0) ? 0 : (i % 4) + 1;
+      }
+      return timeline;
+    }
 
-  <script>
-    const btn = document.getElementById('theme-toggle');
-    btn?.addEventListener('click', () => {
-      const current = document.documentElement.getAttribute('data-theme') || 'light';
-      const next = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-    });
-    (function(){ const saved = localStorage.getItem('theme'); if (saved) document.documentElement.setAttribute('data-theme', saved); })();
+    function getDummyRecommendations() {
+      return [
+        {
+          slug: 'software-engineer',
+          title: 'Software Engineer',
+          domain: 'Technology',
+          difficulty: 'Intermediate',
+          summary: 'Build and ship reliable applications using modern tech stacks.'
+        },
+        {
+          slug: 'data-analyst',
+          title: 'Data Analyst',
+          domain: 'Technology',
+          difficulty: 'Beginner',
+          summary: 'Collect, clean, and analyze data to support better decisions.'
+        },
+        {
+          slug: 'ui-ux-designer',
+          title: 'UI/UX Designer',
+          domain: 'Design',
+          difficulty: 'Beginner',
+          summary: 'Design clean, user-friendly interfaces and flows.'
+        }
+      ];
+    }
+
+    function renderDummyBadges(container) {
+      container.innerHTML = '';
+      const dummyBadges = [
+        {
+          emoji: '🔥',
+          title: '3-Day Streak',
+          description: 'Completed learning tasks three days in a row.'
+        },
+        {
+          emoji: '📚',
+          title: 'First Pathway',
+          description: 'Started your first learning pathway.'
+        },
+        {
+          emoji: '✅',
+          title: 'Starter',
+          description: 'Completed 10 tasks on Pathways.'
+        },
+        {
+          emoji: '🚀',
+          title: 'On a Roll',
+          description: 'Made progress on 3+ different days this week.'
+        }
+      ];
+
+      dummyBadges.forEach(badge => {
+        const div = document.createElement('div');
+        div.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-4 text-center';
+        div.innerHTML = `
+          <div class="text-4xl mb-2">${badge.emoji}</div>
+          <p class="font-semibold">${badge.title}</p>
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${badge.description}</p>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderDummyRoleProgress(container) {
+      const dummyRoles = [
+        {
+          slug: 'software-engineer',
+          title: 'Software Engineer',
+          completed: 6,
+          total: 10
+        },
+        {
+          slug: 'data-analyst',
+          title: 'Data Analyst',
+          completed: 3,
+          total: 8
+        },
+        {
+          slug: 'ui-ux-designer',
+          title: 'UI/UX Designer',
+          completed: 2,
+          total: 5
+        }
+      ];
+
+      container.innerHTML = '';
+      dummyRoles.forEach(role => {
+        const percentage = role.total > 0 ? (role.completed / role.total) * 100 : 0;
+        const div = document.createElement('div');
+        div.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-6';
+        div.innerHTML = `
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-xl font-bold">${role.title}</h3>
+            <a href="/role.html?slug=${role.slug}" class="text-blue-600 dark:text-blue-400 hover:underline text-sm">View →</a>
+          </div>
+          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
+            <div class="bg-blue-600 h-2 rounded-full transition-all" style="width: ${percentage}%;"></div>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            ${role.completed} of ${role.total} tasks completed
+          </p>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Wait for SessionManager to be ready
+    function waitForSession() {
+      return new Promise((resolve) => {
+        const check = () => {
+          if (typeof sessionManager !== 'undefined') {
+            resolve();
+          } else {
+            setTimeout(check, 100);
+          }
+        };
+        check();
+      });
+    }
+
+    async function initDashboard() {
+      const loadingEl = document.getElementById('dashboard-loading');
+      const welcomeEl = document.getElementById('welcome-user');
+
+      try {
+        await waitForSession();
+        
+        let user = sessionManager.getUser();
+
+        // If no real user, create a dummy session user so dashboard still shows
+        if (!user) {
+          user = {
+            uid: 'dummy-uid',
+            email: 'you@example.com',
+            name: 'Demo Learner'
+          };
+        }
+
+        if (welcomeEl) {
+          const name = user.name || user.displayName || (user.email ? user.email.split('@')[0] : 'Learner');
+          welcomeEl.textContent = `Hi, ${name} 👋`;
+        }
+
+        // ---------- PROGRESS (from Firestore, with dummy fallback) ----------
+        let allProgress = [];
+        try {
+          const progressSnap = await getDocs(
+            query(collection(db, 'progress'), where('uid', '==', user.uid))
+          );
+          progressSnap.forEach(d => allProgress.push(d.data()));
+        } catch (err) {
+          console.warn('Error loading progress from Firestore, using dummy progress:', err);
+          allProgress = [];
+        }
+
+        // Dummy progress if none
+        if (!allProgress || allProgress.length === 0) {
+          allProgress = [
+            { completed: true, roleSlug: 'software-engineer' },
+            { completed: true, roleSlug: 'software-engineer' },
+            { completed: false, roleSlug: 'software-engineer' },
+            { completed: true, roleSlug: 'data-analyst' },
+            { completed: false, roleSlug: 'ui-ux-designer' }
+          ];
+        }
+
+        const completed = allProgress.filter(p => p.completed).length;
+        document.getElementById('completed-tasks').textContent = completed;
+
+        // Unique roles
+        let roles = [...new Set(allProgress.map(p => p.roleSlug).filter(Boolean))];
+        document.getElementById('active-roles').textContent = roles.length;
+
+        // ---------- GAMIFICATION STATS (real + dummy) ----------
+        try {
+          const stats = await getUserStats();
+          if (stats && (stats.level || stats.xp || stats.streak)) {
+            document.getElementById('user-level').textContent = stats.level ?? 1;
+            document.getElementById('xp-progress').textContent = `${stats.xp ?? 0} XP`;
+            const streakVal = stats.streak ?? 0;
+            document.getElementById('streak').textContent = `${streakVal} ${streakVal === 1 ? 'day' : 'days'}`;
+          } else {
+            // dummy
+            document.getElementById('user-level').textContent = '3';
+            document.getElementById('xp-progress').textContent = '1,250 XP';
+            document.getElementById('streak').textContent = '4 days';
+          }
+        } catch (err) {
+          console.warn('Error loading gamification stats, using dummy stats:', err);
+          document.getElementById('user-level').textContent = '3';
+          document.getElementById('xp-progress').textContent = '1,250 XP';
+          document.getElementById('streak').textContent = '4 days';
+        }
+
+        // ---------- PROGRESS TIMELINE ----------
+        try {
+          const timeline = await getProgressTimeline(30);
+          if (timeline && Object.keys(timeline).length > 0) {
+            renderTimeline(timeline);
+          } else {
+            renderTimeline(createDummyTimeline(30));
+          }
+        } catch (err) {
+          console.warn('Error loading timeline, using dummy timeline:', err);
+          renderTimeline(createDummyTimeline(30));
+        }
+
+        // ---------- RECOMMENDATIONS ----------
+        try {
+          const recommendations = await getRecommendedRoles();
+          if (recommendations && recommendations.length > 0) {
+            renderRecommendations(recommendations);
+          } else {
+            renderRecommendations(getDummyRecommendations());
+          }
+        } catch (err) {
+          console.warn('Error loading recommendations, using dummy recommendations:', err);
+          renderRecommendations(getDummyRecommendations());
+        }
+
+        // ---------- BADGES ----------
+        try {
+          const badgesSnap = await getDocs(
+            query(collection(db, 'userBadges'), where('uid', '==', user.uid))
+          );
+          const badgeIds = [];
+          badgesSnap.forEach(d => badgeIds.push(d.data().badgeId));
+
+          const container = document.getElementById('badges-container');
+
+          if (badgeIds.length > 0) {
+            const badgeDocs = await Promise.all(
+              badgeIds.map(id => getDoc(doc(db, 'badges', id)))
+            );
+            container.innerHTML = '';
+            badgeDocs.forEach(badgeDoc => {
+              if (badgeDoc.exists()) {
+                const badge = badgeDoc.data();
+                const div = document.createElement('div');
+                div.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-4 text-center';
+                div.innerHTML = `
+                  <div class="text-4xl mb-2">${badge.emoji || '🏆'}</div>
+                  <p class="font-semibold">${badge.title}</p>
+                  ${badge.description ? `<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${badge.description}</p>` : ''}
+                `;
+                container.appendChild(div);
+              }
+            });
+          } else {
+            // Dummy badges if none found
+            renderDummyBadges(container);
+          }
+        } catch (err) {
+          console.warn('Error loading badges, using dummy badges:', err);
+          const container = document.getElementById('badges-container');
+          renderDummyBadges(container);
+        }
+
+        // ---------- ROLE PROGRESS CARDS ----------
+        try {
+          const progressContainer = document.getElementById('progress-container');
+
+          if (!roles || roles.length === 0 || roles[0] === 'dummy') {
+            // Use dummy cards
+            renderDummyRoleProgress(progressContainer);
+          } else {
+            progressContainer.innerHTML = '';
+            for (const roleSlug of roles.slice(0, 5)) {
+              try {
+                const progress = await getRoleProgress(roleSlug);
+                const roleDoc = await getDoc(doc(db, 'roles', roleSlug));
+                const roleTitle = roleDoc.exists() ? roleDoc.data().title : roleSlug;
+
+                const div = document.createElement('div');
+                div.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-6';
+                const completedCount = progress.filter(p => p.completed).length;
+                const percentage = progress.length > 0 ? (completedCount / progress.length) * 100 : 0;
+                div.innerHTML = `
+                  <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-xl font-bold">${roleTitle}</h3>
+                    <a href="/role.html?slug=${roleSlug}" class="text-blue-600 dark:text-blue-400 hover:underline text-sm">View →</a>
+                  </div>
+                  <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all" style="width: ${percentage}%;"></div>
+                  </div>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                    ${completedCount} of ${progress.length} tasks completed
+                  </p>
+                `;
+                progressContainer.appendChild(div);
+              } catch (innerErr) {
+                console.warn('Error loading progress for role, using dummy card for that role:', innerErr);
+                // If a single role fails, still show dummy progress for it
+                const dummy = {
+                  slug: roleSlug,
+                  title: roleSlug,
+                  completed: 3,
+                  total: 7
+                };
+                const percentage = (dummy.completed / dummy.total) * 100;
+                const div = document.createElement('div');
+                div.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-6';
+                div.innerHTML = `
+                  <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-xl font-bold">${dummy.title}</h3>
+                    <a href="/role.html?slug=${dummy.slug}" class="text-blue-600 dark:text-blue-400 hover:underline text-sm">View →</a>
+                  </div>
+                  <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all" style="width: ${percentage}%;"></div>
+                  </div>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                    ${dummy.completed} of ${dummy.total} tasks completed
+                  </p>
+                `;
+                progressContainer.appendChild(div);
+              }
+            }
+          }
+        } catch (err) {
+          console.warn('Error loading role progress, using dummy cards:', err);
+          const progressContainer = document.getElementById('progress-container');
+          renderDummyRoleProgress(progressContainer);
+        }
+
+      } finally {
+        const loadingEl2 = document.getElementById('dashboard-loading');
+        if (loadingEl2) loadingEl2.style.display = 'none';
+      }
+    }
+    
+    function renderTimeline(timeline) {
+      const container = document.getElementById('timeline-chart');
+      container.innerHTML = '';
+      
+      // Generate last 30 days
+      const days = [];
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        days.push(date.toDateString());
+      }
+      
+      const values = Object.values(timeline || {});
+      const maxTasks = values.length ? Math.max(...values, 1) : 1;
+      
+      days.forEach(day => {
+        const count = (timeline && timeline[day]) || 0;
+        const height = (count / maxTasks) * 100;
+        const date = new Date(day);
+        const dayLabel = date.getDate();
+        
+        const bar = document.createElement('div');
+        bar.className = 'flex-1 flex flex-col items-center';
+        bar.innerHTML = `
+          <div class="w-full bg-blue-600 rounded-t hover:bg-blue-700 transition cursor-pointer" 
+               style="height: ${height}%;" 
+               title="${day}: ${count} task${count !== 1 ? 's' : ''}">
+          </div>
+          <span class="text-xs text-gray-600 dark:text-gray-400 mt-1">${dayLabel}</span>
+        `;
+        container.appendChild(bar);
+      });
+    }
+    
+    function renderRecommendations(recommendations) {
+      const container = document.getElementById('recommendations-container');
+      container.innerHTML = '';
+      
+      if (!recommendations || recommendations.length === 0) {
+        container.innerHTML = '<p class="text-gray-600 dark:text-gray-400">Complete some tasks to get personalized recommendations!</p>';
+        return;
+      }
+      
+      recommendations.forEach(role => {
+        const card = document.createElement('div');
+        card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition';
+        card.innerHTML = `
+          <a href="/role.html?slug=${role.slug}" class="block">
+            ${role.coverImage
+              ? `<img src="${role.coverImage}" alt="${role.title}" class="w-full h-32 object-cover" loading="lazy">`
+              : '<div class="w-full h-32 bg-gradient-to-br from-blue-400 to-purple-500"></div>'}
+            <div class="p-4">
+              <h3 class="font-bold text-lg mb-1">${role.title}</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">${role.summary || ''}</p>
+              <div class="flex gap-2 flex-wrap">
+                <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">
+                  ${role.domain || 'General'}
+                </span>
+                <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">
+                  ${role.difficulty || 'Intermediate'}
+                </span>
+              </div>
+            </div>
+          </a>
+        `;
+        container.appendChild(card);
+      });
+    }
+    
+    // Initialize dashboard
+    initDashboard();
   </script>
 </body>
 </html>

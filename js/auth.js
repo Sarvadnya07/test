@@ -1,78 +1,115 @@
 import { auth, googleProvider } from "./firebase.js";
-import { 
-  signInWithEmailAndPassword, 
+import {
+  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
   signOut,
   onAuthStateChanged,
   updateProfile
 } from "firebase/auth";
+
 import { db } from "./firebase.js";
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 
+// ----------------------------------------
+// Helper: build safe user object
+// ----------------------------------------
+async function buildUserWithRole(user) {
+  if (!user) return null;
+
+  try {
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    const data = userDoc.exists() ? userDoc.data() : {};
+
+    return {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName || data?.name || "User",
+      photoURL: user.photoURL || data?.photoURL || null,
+      role: data?.role || "STUDENT"
+    };
+  } catch (err) {
+    console.warn("Failed to fetch user role:", err.message);
+    return {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName || "User",
+      photoURL: user.photoURL || null,
+      role: "STUDENT"
+    };
+  }
+}
+
+// ----------------------------------------
 // Auth state observer
+// ----------------------------------------
 export function watchAuthState(callback) {
   return onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      // Get user role from Firestore
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      const userData = userDoc.data();
-      callback({
-        ...user,
-        role: userData?.role || "STUDENT"
-      });
-    } else {
+    if (!user) {
       callback(null);
+      return;
     }
+
+    const safeUser = await buildUserWithRole(user);
+    callback(safeUser);
   });
 }
 
-// Sign in with email/password
+// ----------------------------------------
+// Email Sign-In
+// ----------------------------------------
 export async function signInEmail(email, password) {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return { user: userCredential.user, error: null };
+    const safeUser = await buildUserWithRole(userCredential.user);
+    return { user: safeUser, error: null };
   } catch (error) {
     return { user: null, error: error.message };
   }
 }
 
-// Sign up with email/password
+// ----------------------------------------
+// Email Sign-Up
+// ----------------------------------------
 export async function signUpEmail(email, password, name) {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    
-    // Update profile
+    const user = userCredential.user;
+
+    // Update Firebase Auth profile
     if (name) {
-      await updateProfile(userCredential.user, { displayName: name });
+      await updateProfile(user, { displayName: name }).catch(() => {});
     }
-    
-    // Create user document in Firestore
-    await setDoc(doc(db, "users", userCredential.user.uid), {
-      email: userCredential.user.email,
-      name: name || userCredential.user.displayName || "User",
-      photoURL: userCredential.user.photoURL || null,
+
+    // Ensure Firestore doc exists
+    await setDoc(doc(db, "users", user.uid), {
+      email: user.email,
+      name: name || user.displayName || "User",
+      photoURL: user.photoURL || null,
       role: "STUDENT",
       createdAt: serverTimestamp()
     });
-    
-    return { user: userCredential.user, error: null };
+
+    const safeUser = await buildUserWithRole(user);
+    return { user: safeUser, error: null };
   } catch (error) {
     return { user: null, error: error.message };
   }
 }
 
-// Sign in with Google
+// ----------------------------------------
+// Google Sign-In
+// ----------------------------------------
 export async function signInGoogle() {
   try {
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
-    
-    // Check if user document exists
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    if (!userDoc.exists()) {
-      // Create user document
-      await setDoc(doc(db, "users", user.uid), {
+
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
+
+    if (!snap.exists()) {
+      await setDoc(userRef, {
         email: user.email,
         name: user.displayName || "User",
         photoURL: user.photoURL || null,
@@ -80,14 +117,17 @@ export async function signInGoogle() {
         createdAt: serverTimestamp()
       });
     }
-    
-    return { user, error: null };
+
+    const safeUser = await buildUserWithRole(user);
+    return { user: safeUser, error: null };
   } catch (error) {
     return { user: null, error: error.message };
   }
 }
 
-// Sign out
+// ----------------------------------------
+// Sign Out
+// ----------------------------------------
 export async function signOutUser() {
   try {
     await signOut(auth);
@@ -97,14 +137,29 @@ export async function signOutUser() {
   }
 }
 
-// Get current user
+// ----------------------------------------
+// Get Current User
+// ----------------------------------------
 export function getCurrentUser() {
-  return auth.currentUser;
+  const u = auth.currentUser;
+  if (!u) return null;
+
+  return {
+    uid: u.uid,
+    email: u.email,
+    displayName: u.displayName || "User",
+    photoURL: u.photoURL || null
+  };
 }
 
-// Get user role
+// ----------------------------------------
+// Get user role explicitly
+// ----------------------------------------
 export async function getUserRole(uid) {
-  const userDoc = await getDoc(doc(db, "users", uid));
-  return userDoc.data()?.role || "STUDENT";
+  try {
+    const ref = await getDoc(doc(db, "users", uid));
+    return ref.exists() ? ref.data().role || "STUDENT" : "STUDENT";
+  } catch {
+    return "STUDENT";
+  }
 }
-

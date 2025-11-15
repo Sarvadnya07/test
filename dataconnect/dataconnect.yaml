@@ -1,13 +1,26 @@
 specVersion: "v1"
-serviceId: "pathwaystest"
-location: "asia-east1"
+
+serviceId: "pathwaystest"   # Your service name
+location: "asia-east1"      # Region for Data Connect
+
 schema:
-  source: "./schema"
+  source: "./schema"         # Directory containing your .schema files
+
   datasource:
     postgresql:
-      database: "fdcdb"
+      database: "fdcdb"      # Your actual Postgres DB name
+
       cloudSql:
-        instanceId: "pathwaystest-fdc"
-        # schemaValidation: "STRICT"     # STRICT mode makes Postgres schema match Data Connect exactly.
-        # schemaValidation: "COMPATIBLE" # COMPATIBLE mode makes Postgres schema compatible with Data Connect.
+        instanceId: "pathwaystest-fdc"  # Cloud SQL Instance (Postgres)
+        # Optional:
+        # enableIamAuthn: true         # Recommended for secure access
+
+        # Schema validation modes:
+        # STRICT mode enforces exact 1:1 matching between Data Connect and Postgres
+        # schemaValidation: "STRICT"
+        #
+        # COMPATIBLE mode allows extra fields or differences in Postgres
+        # schemaValidation: "COMPATIBLE"
+
+# Optional: if you later add custom connectors
 connectorDirs: []

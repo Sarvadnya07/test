@@ -3,22 +3,52 @@
 @tailwind utilities;
 
 @layer components {
+
+  /* ============================================
+     Card Component
+     Clean, modern, responsive
+  ============================================ */
   .card {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow p-6;
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 transition duration-200;
   }
 
+
+  /* ============================================
+     Buttons
+     Enhanced hover, focus, active states
+  ============================================ */
+
   .btn-primary {
-    @apply px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition;
+    @apply px-6 py-3 bg-blue-600 text-white rounded-lg font-medium 
+           hover:bg-blue-700 active:bg-blue-800
+           focus:outline-none focus:ring-2 focus:ring-blue-400
+           transition duration-200;
   }
 
   .btn-secondary {
-    @apply px-6 py-3 border-2 rounded hover:bg-opacity-10 transition;
+    @apply px-6 py-3 border-2 border-gray-300 dark:border-gray-600 
+           rounded-lg font-medium
+           hover:bg-gray-100 dark:hover:bg-gray-700
+           focus:outline-none focus:ring-2 focus:ring-gray-400
+           transition duration-200;
   }
 
+
+  /* ============================================
+     Skip Link
+     Proper accessibility helper
+  ============================================ */
   .skip-link {
-    @apply sr-only focus:not-sr-only;
+    @apply sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 
+           focus:bg-blue-600 focus:text-white focus:px-4 focus:py-2
+           focus:rounded focus:z-50;
   }
 
+
+  /* ============================================
+     Container
+     Consistent max-width across project
+  ============================================ */
   .container {
     @apply mx-auto px-4 max-w-7xl;
   }

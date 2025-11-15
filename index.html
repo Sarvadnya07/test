@@ -16,7 +16,13 @@
   <meta name="twitter:description" content="Unlock your potential through structured learning, study habits, and clear career pathways." />
 
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"WebSite","name":"EduRise","url":"/","description":"Education awareness and career pathways platform."}
+  {
+    "@context":"https://schema.org",
+    "@type":"WebSite",
+    "name":"EduRise",
+    "url":"/",
+    "description":"Education awareness and career pathways platform."
+  }
   </script>
 
   <link rel="stylesheet" href="/css/tailwind-input.css">
@@ -26,69 +32,231 @@
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
   <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Global header (inserted by include.js) -->
   <div data-include="header"></div>
 
   <main id="main-content">
     <!-- Hero Section -->
-    <section class="bg-gradient-to-br from-blue-600 to-purple-600 text-white py-20">
-      <div class="container mx-auto px-4 text-center">
-        <h1 class="text-5xl md:text-6xl font-bold mb-6">Why Education Matters</h1>
-        <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">Unlock your potential through structured learning, study habits, and clear career pathways. Start your journey today.</p>
-        <div class="flex gap-4 justify-center flex-wrap">
-          <a href="/study-habits.html" class="btn-primary bg-white text-blue-600 hover:bg-gray-100 inline-block">Learn Study Habits</a>
-          <a href="/pathways.html" class="btn-secondary border-white text-white hover:bg-white/10 inline-block">Explore Careers</a>
-        </div>
-      </div>
-    </section>
+    <!-- HERO SECTION -->
+<section class="bg-gradient-to-br from-blue-600 to-purple-700 text-white py-20 md:py-24">
+  <div class="container mx-auto px-4 text-center">
+
+    <!-- Static prefix + typewriter text -->
+    <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
+      <span>Build Your Future with </span>
+      <span id="typewriter" class="border-r-2 border-white pr-1"></span>
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="text-lg md:text-2xl max-w-3xl mx-auto mb-10 text-white/90 font-light">
+      Structured learning, powerful study habits, and clear career pathways — all in one place.
+    </p>
+
+    <!-- CTA Buttons -->
+    <div class="flex flex-wrap justify-center gap-4 mt-4">
+      <a href="/pathways.html"
+         class="px-8 py-3 bg-white text-blue-700 font-semibold rounded-lg shadow hover:bg-gray-100 transition">
+        Explore Pathways
+      </a>
+      <a href="/ai.html"
+         class="px-8 py-3 border border-white text-white font-semibold rounded-lg hover:bg-white/10 transition">
+        Ask the AI Mentor
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- TYPEWRITER SCRIPT (place before </body>) -->
+<script>
+  (function () {
+    const el = document.getElementById('typewriter');
+    if (!el) return;
+
+    // Texts to animate – you can add more phrases here
+    const texts = [
+      'Clarity & Consistency',
+      'Confidence & Direction',
+      'Discipline Every Day'
+    ];
+
+    let textIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+
+    const typingSpeed = 80;     // typing speed in ms
+    const deletingSpeed = 40;   // deleting speed in ms
+    const pauseBetweenWords = 1200; // pause after full word in ms
+
+    function type() {
+      const current = texts[textIndex];
+      
+      if (!isDeleting) {
+        // typing forward
+        el.textContent = current.substring(0, charIndex + 1);
+        charIndex++;
+
+        if (charIndex === current.length) {
+          // word finished, pause then start deleting
+          setTimeout(() => {
+            isDeleting = true;
+            type();
+          }, pauseBetweenWords);
+          return;
+        }
+      } else {
+        // deleting
+        el.textContent = current.substring(0, charIndex - 1);
+        charIndex--;
+
+        if (charIndex === 0) {
+          isDeleting = false;
+          textIndex = (textIndex + 1) % texts.length;
+        }
+      }
+
+      const delay = isDeleting ? deletingSpeed : typingSpeed;
+      setTimeout(type, delay);
+    }
+
+    // Start animation after a tiny delay so layout is ready
+    setTimeout(type, 300);
+  })();
+</script>
+
+
 
     <!-- Stats Section -->
-    <section class="py-16 bg-gray-100 dark:bg-gray-800">
+    <section class="py-14 bg-gray-100 dark:bg-gray-900/60">
       <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-          <div>
-            <div class="text-4xl font-bold text-blue-600 mb-2">1000+</div>
-            <div class="text-gray-600 dark:text-gray-400">Students</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-center">
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-5">
+            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">
+              Learners
+            </div>
+            <div class="text-3xl md:text-4xl font-bold text-blue-600 mb-1">1000+</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400">students reached</div>
           </div>
-          <div>
-            <div class="text-4xl font-bold text-blue-600 mb-2">50+</div>
-            <div class="text-gray-600 dark:text-gray-400">Career Paths</div>
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-5">
+            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">
+              Career Paths
+            </div>
+            <div class="text-3xl md:text-4xl font-bold text-blue-600 mb-1">50+</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400">structured roadmaps</div>
           </div>
-          <div>
-            <div class="text-4xl font-bold text-blue-600 mb-2">500+</div>
-            <div class="text-gray-600 dark:text-gray-400">Resources</div>
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-5">
+            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">
+              Resources
+            </div>
+            <div class="text-3xl md:text-4xl font-bold text-blue-600 mb-1">500+</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400">curated videos &amp; guides</div>
           </div>
-          <div>
-            <div class="text-4xl font-bold text-blue-600 mb-2">24/7</div>
-            <div class="text-gray-600 dark:text-gray-400">AI Support</div>
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-5">
+            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">
+              AI Support
+            </div>
+            <div class="text-3xl md:text-4xl font-bold text-blue-600 mb-1">24/7</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400">ask questions anytime</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Features -->
+    <!-- What We Offer -->
     <section class="py-16">
-      <div class="container mx-auto px-4">
-        <h2 class="text-4xl font-bold text-center mb-12">What We Offer</h2>
+      <div class="container mx-auto px-4 max-w-6xl">
+        <div class="text-center mb-10">
+          <h2 class="text-3xl md:text-4xl font-bold mb-3">What We Offer</h2>
+          <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-sm md:text-base">
+            EduRise combines education awareness, daily discipline, and long-term career clarity
+            into one simple platform.
+          </p>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="card">
+          <!-- Study Habits -->
+          <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1 p-6 flex flex-col">
             <div class="text-4xl mb-4">📚</div>
             <h3 class="text-2xl font-bold mb-2">Study Habits</h3>
-            <p class="text-gray-600 dark:text-gray-400">Learn effective study techniques, time management, and printable trackers to maximize your learning.</p>
-            <a href="/study-habits.html" class="text-blue-600 dark:text-blue-400 hover:underline mt-4 inline-block">Learn More →</a>
+            <p class="text-gray-600 dark:text-gray-400 text-sm md:text-base flex-1">
+              Learn practical study techniques, time-blocking, revision strategies, and use printable
+              planners to stay consistent during school, college, or entrance exam prep.
+            </p>
+            <a href="/study-habits.html" class="text-blue-600 dark:text-blue-400 hover:underline mt-4 inline-flex items-center gap-1 text-sm md:text-base">
+              Learn More
+              <span aria-hidden="true">→</span>
+            </a>
           </div>
 
-          <div class="card">
+          <!-- Career Pathways -->
+          <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1 p-6 flex flex-col">
             <div class="text-4xl mb-4">🗺️</div>
             <h3 class="text-2xl font-bold mb-2">Career Pathways</h3>
-            <p class="text-gray-600 dark:text-gray-400">Explore structured roadmaps for careers like Doctor, Engineer, Lawyer, and more with clear stages and tasks.</p>
-            <a href="/pathways.html" class="text-blue-600 dark:text-blue-400 hover:underline mt-4 inline-block">Explore →</a>
+            <p class="text-gray-600 dark:text-gray-400 text-sm md:text-base flex-1">
+              Explore structured roadmaps for careers like Doctor, Engineer, Lawyer, Police, Designer,
+              and more — with clear stages, checkpoints, and recommended resources.
+            </p>
+            <a href="/pathways.html" class="text-blue-600 dark:text-blue-400 hover:underline mt-4 inline-flex items-center gap-1 text-sm md:text-base">
+              Explore Pathways
+              <span aria-hidden="true">→</span>
+            </a>
           </div>
 
-          <div class="card">
+          <!-- AI Mentor -->
+          <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1 p-6 flex flex-col">
             <div class="text-4xl mb-4">🤖</div>
             <h3 class="text-2xl font-bold mb-2">AI Mentor</h3>
-            <p class="text-gray-600 dark:text-gray-400">Get personalized study plans, career guidance, and answers to your questions powered by the AI assistant.</p>
-            <a href="/ai.html" class="text-blue-600 dark:text-blue-400 hover:underline mt-4 inline-block">Try AI →</a>
+            <p class="text-gray-600 dark:text-gray-400 text-sm md:text-base flex-1">
+              Ask career questions, generate personalized 6-week learning plans, and get simple
+              explanations of any topic using the EduRise AI Assistant.
+            </p>
+            <a href="/ai.html" class="text-blue-600 dark:text-blue-400 hover:underline mt-4 inline-flex items-center gap-1 text-sm md:text-base">
+              Try the AI Assistant
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How EduRise Works -->
+    <section class="py-16 bg-gray-100 dark:bg-gray-900/70">
+      <div class="container mx-auto px-4 max-w-5xl">
+        <div class="text-center mb-10">
+          <h2 class="text-3xl md:text-4xl font-bold mb-3">How EduRise Works</h2>
+          <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-sm md:text-base">
+            Simple steps to move from confusion to clarity.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5 flex flex-col">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold">1</span>
+              <h3 class="font-bold text-lg">Choose your focus</h3>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400 flex-1">
+              Start with study habits, a specific career path, or just explore options if you’re unsure.
+            </p>
+          </div>
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5 flex flex-col">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold">2</span>
+              <h3 class="font-bold text-lg">Follow clear steps</h3>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400 flex-1">
+              Use checklists, stages, and tasks to move forward week by week — no guesswork.
+            </p>
+          </div>
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5 flex flex-col">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold">3</span>
+              <h3 class="font-bold text-lg">Get support when stuck</h3>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400 flex-1">
+              Ask the AI Mentor, explore resources, or revisit basics whenever you feel confused.
+            </p>
           </div>
         </div>
       </div>
@@ -96,14 +264,22 @@
 
     <!-- CTA -->
     <section class="py-16 bg-blue-600 text-white">
-      <div class="container mx-auto px-4 text-center">
-        <h2 class="text-3xl font-bold mb-4">Ready to Start Your Journey?</h2>
-        <p class="text-xl mb-8">Join thousands of students building their future</p>
-        <a href="/auth.html" class="btn-primary bg-white text-blue-600 hover:bg-gray-100 inline-block">Get Started Free</a>
+      <div class="container mx-auto px-4 text-center max-w-3xl">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Ready to Start Your Journey?</h2>
+        <p class="text-lg md:text-xl mb-8 text-blue-100">
+          Join thousands of students who are turning confusion into a clear, actionable plan — one step at a time.
+        </p>
+        <a href="/auth.html" class="btn-primary bg-white text-blue-600 hover:bg-gray-100 inline-block">
+          Get Started Free
+        </a>
+        <p class="mt-3 text-xs text-blue-100">
+          No credit card required. You can switch careers or paths anytime.
+        </p>
       </div>
     </section>
   </main>
 
+  <!-- Global footer (inserted by include.js) -->
   <div data-include="footer"></div>
 
   <script src="/js/include.js" defer></script>

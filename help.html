@@ -17,7 +17,12 @@
   <meta name="twitter:description" content="Help, frequently asked questions, and guides to using Pathways — learn how to get started, track progress, and use the AI assistant." />
 
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"FAQPage","name":"Help & FAQ - Pathways","description":"Help, frequently asked questions, and guides to using Pathways."}
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "name": "Help & FAQ - Pathways",
+    "description": "Help, frequently asked questions, and guides to using Pathways."
+  }
   </script>
 
   <link rel="stylesheet" href="/css/tailwind-input.css">
@@ -25,12 +30,23 @@
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
   <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Header -->
   <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
     <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
       <a href="/" class="text-2xl font-bold text-blue-600 dark:text-blue-400">Pathways</a>
       <div class="flex items-center gap-4">
         <a href="/roles.html" class="hover:text-blue-600 dark:hover:text-blue-400">Roles</a>
-        <button id="theme-toggle" class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">🌙</button>
+        <a href="/ai.html" class="hover:text-blue-600 dark:hover:text-blue-400 hidden sm:inline">AI Assistant</a>
+        <a href="/dashboard.html" class="hover:text-blue-600 dark:hover:text-blue-400 hidden sm:inline">Dashboard</a>
+        <button
+          id="theme-toggle"
+          class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+          aria-label="Toggle theme"
+          type="button"
+        >
+          🌙
+        </button>
       </div>
     </nav>
   </header>
@@ -38,11 +54,39 @@
   <main id="main-content" class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Hero Section -->
     <section class="text-center py-12 mb-12">
-      <h1 class="text-5xl font-bold mb-4">Help & FAQ</h1>
-      <p class="text-xl text-gray-600 dark:text-gray-400 mb-6">Find answers to common questions and get support</p>
-      <div class="flex gap-4 justify-center">
-        <a href="/forum.html" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">Go to Forum</a>
-        <a href="mailto:support@pathways.com" class="px-6 py-2 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-800 font-semibold">Contact Us</a>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Help & FAQ</h1>
+      <p class="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-6">
+        Find answers to common questions and get support
+      </p>
+      <div class="flex gap-4 justify-center flex-wrap">
+        <a
+          href="/forum.html"
+          class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+        >
+          Go to Forum
+        </a>
+        <a
+          href="mailto:support@pathways.com"
+          class="px-6 py-2 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-800 font-semibold"
+        >
+          Contact Us
+        </a>
+      </div>
+
+      <!-- FAQ Search -->
+      <div class="mt-10 max-w-xl mx-auto">
+        <label for="faq-search" class="block text-sm font-semibold mb-2">
+          🔍 Search in FAQs
+        </label>
+        <input
+          id="faq-search"
+          type="text"
+          placeholder="Type keywords, e.g. 'streak', 'AI Assistant', 'account'"
+          class="w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-sm"
+        />
+        <p id="faq-search-status" class="mt-2 text-xs text-gray-500 dark:text-gray-400 hidden">
+          Showing results for: <span class="font-medium"></span>
+        </p>
       </div>
     </section>
 
@@ -66,31 +110,55 @@
     </section>
     
     <!-- FAQ Section -->
-    <div class="space-y-8">
+    <div class="space-y-8" id="faq-container">
       <!-- Getting Started -->
       <section id="getting-started" class="bg-white dark:bg-gray-800 rounded-lg shadow p-8">
         <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
           <span class="text-2xl">🚀</span> Getting Started
         </h2>
         <div class="space-y-6">
-          <details class="border-l-4 border-blue-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-blue-600 transition">How do I get started with Pathways?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">Getting started is simple! First, sign up for an account using your email or Google. Then, browse available career roles that interest you, select one, and start tracking your progress as you complete tasks and milestones.</p>
+          <details class="faq-item border-l-4 border-blue-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-blue-600 transition">
+              How do I get started with Pathways?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              Getting started is simple! First, sign up for an account using your email or Google. Then,
+              browse available career roles that interest you, select one, and start tracking your progress as
+              you complete tasks and milestones.
+            </p>
           </details>
           
-          <details class="border-l-4 border-blue-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-blue-600 transition">What are career roles on Pathways?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">Career roles are structured learning paths that guide you through the steps to achieve a specific career goal. Each role includes stages (e.g., Foundation, Intermediate, Advanced), skills to develop, tasks to complete, and curated resources.</p>
+          <details class="faq-item border-l-4 border-blue-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-blue-600 transition">
+              What are career roles on Pathways?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              Career roles are structured learning paths that guide you through the steps to achieve a
+              specific career goal. Each role includes stages (e.g., Foundation, Intermediate, Advanced),
+              skills to develop, tasks to complete, and curated resources.
+            </p>
           </details>
           
-          <details class="border-l-4 border-blue-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-blue-600 transition">Can I follow multiple career roles at the same time?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">Yes! You can follow as many roles as you like. Your dashboard will show progress on all your active roles. However, we recommend focusing on 1–2 primary roles to maintain consistent progress.</p>
+          <details class="faq-item border-l-4 border-blue-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-blue-600 transition">
+              Can I follow multiple career roles at the same time?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              Yes! You can follow as many roles as you like. Your dashboard will show progress on all your
+              active roles. However, we recommend focusing on 1–2 primary roles to maintain consistent
+              progress.
+            </p>
           </details>
           
-          <details class="border-l-4 border-blue-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-blue-600 transition">Do I need any prior experience to start?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">No! Most roles are designed to be beginner-friendly. Each role starts with foundation-level tasks and gradually progresses to advanced topics. Select roles appropriate to your current skill level.</p>
+          <details class="faq-item border-l-4 border-blue-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-blue-600 transition">
+              Do I need any prior experience to start?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              No! Most roles are designed to be beginner-friendly. Each role starts with foundation-level
+              tasks and gradually progresses to advanced topics. Select roles appropriate to your current
+              skill level.
+            </p>
           </details>
         </div>
       </section>
@@ -101,29 +169,55 @@
           <span class="text-2xl">👤</span> Account & Profile
         </h2>
         <div class="space-y-6">
-          <details class="border-l-4 border-green-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-green-600 transition">How do I update my profile?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">Go to your Profile page from the navigation menu. There, you can edit your name, bio, preferred field, notification preferences, and upload a profile photo.</p>
+          <details class="faq-item border-l-4 border-green-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-green-600 transition">
+              How do I update my profile?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              Go to your Profile page from the navigation menu. There, you can edit your name, bio,
+              preferred field, notification preferences, and upload a profile photo.
+            </p>
           </details>
           
-          <details class="border-l-4 border-green-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-green-600 transition">Can I change my email address?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">To change your email, go to Account Settings and select "Change Email." You'll receive a verification email at both your current and new address for security.</p>
+          <details class="faq-item border-l-4 border-green-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-green-600 transition">
+              Can I change my email address?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              To change your email, go to Account Settings and select "Change Email." You'll receive a
+              verification email at both your current and new address for security.
+            </p>
           </details>
           
-          <details class="border-l-4 border-green-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-green-600 transition">How do I reset my password?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">Click "Forgot Password" on the sign-in page, enter your email, and follow the reset link sent to your inbox. For security, the link expires after 1 hour.</p>
+          <details class="faq-item border-l-4 border-green-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-green-600 transition">
+              How do I reset my password?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              Click "Forgot Password" on the sign-in page, enter your email, and follow the reset link sent
+              to your inbox. For security, the link expires after 1 hour.
+            </p>
           </details>
           
-          <details class="border-l-4 border-green-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-green-600 transition">How do I delete my account?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">You can request account deletion from Account Settings. Note: this action is permanent and will delete all your progress and data. We'll keep your email for a 30-day grace period in case you change your mind.</p>
+          <details class="faq-item border-l-4 border-green-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-green-600 transition">
+              How do I delete my account?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              You can request account deletion from Account Settings. Note: this action is permanent and will
+              delete all your progress and data. We'll keep your email for a 30-day grace period in case you
+              change your mind.
+            </p>
           </details>
           
-          <details class="border-l-4 border-green-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-green-600 transition">How do I manage notification preferences?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">Visit your Profile page and scroll to "Notification Preferences." You can toggle email notifications, daily reminders, weekly summaries, and goal deadline alerts.</p>
+          <details class="faq-item border-l-4 border-green-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-green-600 transition">
+              How do I manage notification preferences?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              Visit your Profile page and scroll to "Notification Preferences." You can toggle email
+              notifications, daily reminders, weekly summaries, and goal deadline alerts.
+            </p>
           </details>
         </div>
       </section>
@@ -134,29 +228,58 @@
           <span class="text-2xl">📊</span> Tracking Progress
         </h2>
         <div class="space-y-6">
-          <details class="border-l-4 border-purple-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-purple-600 transition">How do I track my progress?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">Your Dashboard shows a visual overview of all your active roles with progress bars. You can click into each role to see detailed progress by stage. The progress calendar also displays your activity over the last 30 days.</p>
+          <details class="faq-item border-l-4 border-purple-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-purple-600 transition">
+              How do I track my progress?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              Your Dashboard shows a visual overview of all your active roles with progress bars. You can
+              click into each role to see detailed progress by stage. The progress calendar also displays
+              your activity over the last 30 days.
+            </p>
           </details>
           
-          <details class="border-l-4 border-purple-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-purple-600 transition">What do the badges and levels mean?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">Badges represent milestones and achievements (e.g., "First Task Completed," "Week Streak"). Levels increase as you earn XP by completing tasks. Your level reflects your overall engagement and progress on the platform.</p>
+          <details class="faq-item border-l-4 border-purple-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-purple-600 transition">
+              What do the badges and levels mean?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              Badges represent milestones and achievements (e.g., "First Task Completed," "Week Streak").
+              Levels increase as you earn XP by completing tasks. Your level reflects your overall engagement
+              and progress on the platform.
+            </p>
           </details>
           
-          <details class="border-l-4 border-purple-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-purple-600 transition">How is my streak calculated?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">Your streak counts consecutive days on which you completed at least one task. If you miss a day, your streak resets to 0, but you can start a new one the next day. Streaks motivate consistent learning!</p>
+          <details class="faq-item border-l-4 border-purple-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-purple-600 transition">
+              How is my streak calculated?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              Your streak counts consecutive days on which you completed at least one task. If you miss a
+              day, your streak resets to 0, but you can start a new one the next day. Streaks motivate
+              consistent learning!
+            </p>
           </details>
           
-          <details class="border-l-4 border-purple-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-purple-600 transition">Can I export my progress?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">Yes! From your Profile page, you can export your progress as a CSV or PDF. This is useful for sharing achievements with mentors, employers, or for personal records.</p>
+          <details class="faq-item border-l-4 border-purple-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-purple-600 transition">
+              Can I export my progress?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              Yes! From your Profile page, you can export your progress as a CSV or PDF. This is useful for
+              sharing achievements with mentors, employers, or for personal records.
+            </p>
           </details>
           
-          <details class="border-l-4 border-purple-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-purple-600 transition">How do I set goals on Pathways?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">Go to your Profile page and scroll to "Your Goals." Click "+ Add Goal" to create a short-term or long-term goal with a description and target date. Goals help keep you motivated and organized.</p>
+          <details class="faq-item border-l-4 border-purple-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-purple-600 transition">
+              How do I set goals on Pathways?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              Go to your Profile page and scroll to "Your Goals." Click "+ Add Goal" to create a short-term
+              or long-term goal with a description and target date. Goals help keep you motivated and
+              organized.
+            </p>
           </details>
         </div>
       </section>
@@ -167,19 +290,36 @@
           <span class="text-2xl">🤖</span> AI Assistant
         </h2>
         <div class="space-y-6">
-          <details class="border-l-4 border-orange-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-orange-600 transition">What can the AI Assistant help me with?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">The AI Assistant (powered by Gemini) can answer career questions, generate learning plans, explain skills and concepts, recommend career paths based on your interests, and compare different careers to help you decide.</p>
+          <details class="faq-item border-l-4 border-orange-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-orange-600 transition">
+              What can the AI Assistant help me with?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              The AI Assistant (powered by Gemini) can answer career questions, generate learning plans,
+              explain skills and concepts, recommend career paths based on your interests, and compare
+              different careers to help you decide.
+            </p>
           </details>
           
-          <details class="border-l-4 border-orange-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-orange-600 transition">How do I use the AI Assistant?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">Visit the "AI Assistant" page from the main navigation. Choose a task type (Q&A, 6-Week Plan, Skill Explainer, etc.), and type your question in the chat. The AI will respond with personalized guidance.</p>
+          <details class="faq-item border-l-4 border-orange-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-orange-600 transition">
+              How do I use the AI Assistant?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              Visit the "AI Assistant" page from the main navigation. Choose a task type (Q&A, 6-Week Plan,
+              Skill Explainer, etc.), and type your question in the chat. The AI will respond with
+              personalized guidance.
+            </p>
           </details>
           
-          <details class="border-l-4 border-orange-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-orange-600 transition">Is there a limit to how many questions I can ask?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">No! You can ask unlimited questions. However, very long conversations may be truncated for performance. If needed, start a new conversation or export important responses.</p>
+          <details class="faq-item border-l-4 border-orange-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-orange-600 transition">
+              Is there a limit to how many questions I can ask?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              No! You can ask unlimited questions. However, very long conversations may be truncated for
+              performance. If needed, start a new conversation or export important responses.
+            </p>
           </details>
         </div>
       </section>
@@ -190,19 +330,35 @@
           <span class="text-2xl">📚</span> Learning Resources
         </h2>
         <div class="space-y-6">
-          <details class="border-l-4 border-red-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-red-600 transition">Where do I find learning resources?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">Visit the "Learn Library" from the main navigation. Resources are curated and organized by category (Videos, Articles, Courses, Tools). You can also find role-specific resources by viewing a particular role.</p>
+          <details class="faq-item border-l-4 border-red-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-red-600 transition">
+              Where do I find learning resources?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              Visit the "Learn Library" from the main navigation. Resources are curated and organized by
+              category (Videos, Articles, Courses, Tools). You can also find role-specific resources by
+              viewing a particular role.
+            </p>
           </details>
           
-          <details class="border-l-4 border-red-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-red-600 transition">Are the resources free?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">Most resources are free or have free tiers. Some premium resources are marked with a "Pro" badge. We carefully curate quality content that offers great value at all price points.</p>
+          <details class="faq-item border-l-4 border-red-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-red-600 transition">
+              Are the resources free?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              Most resources are free or have free tiers. Some premium resources are marked with a "Pro"
+              badge. We carefully curate quality content that offers great value at all price points.
+            </p>
           </details>
           
-          <details class="border-l-4 border-red-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-red-600 transition">Can I suggest new resources?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">Absolutely! Visit the Forum or email us with your suggestions. Our team reviews submissions and adds high-quality resources regularly. Credit is given to contributors.</p>
+          <details class="faq-item border-l-4 border-red-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-red-600 transition">
+              Can I suggest new resources?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              Absolutely! Visit the Forum or email us with your suggestions. Our team reviews submissions and
+              adds high-quality resources regularly. Credit is given to contributors.
+            </p>
           </details>
         </div>
       </section>
@@ -213,19 +369,36 @@
           <span class="text-2xl">💬</span> Community & Support
         </h2>
         <div class="space-y-6">
-          <details class="border-l-4 border-teal-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-teal-600 transition">What is the Forum?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">The Forum is a Q&A space where the Pathways community can ask questions, share experiences, and help each other. You can post questions about specific roles, learning resources, or career advice.</p>
+          <details class="faq-item border-l-4 border-teal-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-teal-600 transition">
+              What is the Forum?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              The Forum is a Q&A space where the Pathways community can ask questions, share experiences, and
+              help each other. You can post questions about specific roles, learning resources, or career
+              advice.
+            </p>
           </details>
           
-          <details class="border-l-4 border-teal-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-teal-600 transition">How do I report a problem or bug?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">If you encounter a bug or issue, please email us at support@pathways.com with a description, screenshots if possible, and your account email. Our team will investigate and get back to you within 24 hours.</p>
+          <details class="faq-item border-l-4 border-teal-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-teal-600 transition">
+              How do I report a problem or bug?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              If you encounter a bug or issue, please email us at support@pathways.com with a description,
+              screenshots if possible, and your account email. Our team will investigate and get back to you
+              within 24 hours.
+            </p>
           </details>
           
-          <details class="border-l-4 border-teal-600 pl-6 py-3 cursor-pointer">
-            <summary class="font-bold hover:text-teal-600 transition">How do I contact support?</summary>
-            <p class="text-gray-600 dark:text-gray-400 mt-3">You can reach our support team via email at support@pathways.com or through the Help section. Response times are typically 24–48 hours. For urgent issues, please mark your email as "URGENT."</p>
+          <details class="faq-item border-l-4 border-teal-600 pl-6 py-3 cursor-pointer">
+            <summary class="font-bold hover:text-teal-600 transition">
+              How do I contact support?
+            </summary>
+            <p class="text-gray-600 dark:text-gray-400 mt-3">
+              You can reach our support team via email at support@pathways.com or through the Help section.
+              Response times are typically 24–48 hours. For urgent issues, please mark your email as "URGENT."
+            </p>
           </details>
         </div>
       </section>
@@ -234,18 +407,79 @@
     <!-- Additional Help Section -->
     <section class="mt-12 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg p-8 text-center">
       <h2 class="text-2xl font-bold mb-4">Didn't find your answer?</h2>
-      <p class="mb-6">Our community is here to help! Ask your question in the Forum or reach out to our support team.</p>
+      <p class="mb-6">
+        Our community is here to help! Ask your question in the Forum or reach out to our support team.
+      </p>
       <div class="flex gap-4 justify-center flex-wrap">
-        <a href="/forum.html" class="px-6 py-2 bg-white text-blue-600 rounded-lg hover:bg-gray-100 font-semibold">Go to Forum</a>
-        <a href="mailto:support@pathways.com" class="px-6 py-2 border-2 border-white text-white rounded-lg hover:bg-white hover:bg-opacity-10 font-semibold">Email Support</a>
+        <a
+          href="/forum.html"
+          class="px-6 py-2 bg-white text-blue-600 rounded-lg hover:bg-gray-100 font-semibold"
+        >
+          Go to Forum
+        </a>
+        <a
+          href="mailto:support@pathways.com"
+          class="px-6 py-2 border-2 border-white text-white rounded-lg hover:bg-white hover:bg-opacity-10 font-semibold"
+        >
+          Email Support
+        </a>
       </div>
     </section>
   </main>
 
-  <script type="module">
-    import { initUI } from '/js/ui.js';
-    initUI();
+  <!-- Scripts -->
+  <script>
+    // Theme init
+    (function () {
+      const saved = localStorage.getItem('theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+
+    // Theme toggle
+    document.getElementById('theme-toggle')?.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    });
+
+    // FAQ search
+    (function () {
+      const input = document.getElementById('faq-search');
+      const status = document.getElementById('faq-search-status');
+      const statusText = status?.querySelector('span');
+      const items = Array.from(document.querySelectorAll('.faq-item'));
+
+      if (!input || items.length === 0) return;
+
+      input.addEventListener('input', () => {
+        const query = input.value.trim().toLowerCase();
+
+        if (!query) {
+          items.forEach(d => {
+            d.classList.remove('hidden');
+          });
+          if (status) status.classList.add('hidden');
+          return;
+        }
+
+        let matchCount = 0;
+
+        items.forEach(d => {
+          const text = d.innerText.toLowerCase();
+          const match = text.includes(query);
+          d.classList.toggle('hidden', !match);
+          if (match) matchCount++;
+        });
+
+        if (status && statusText) {
+          status.classList.remove('hidden');
+          statusText.textContent = `${query} (${matchCount} result${matchCount === 1 ? '' : 's'})`;
+        }
+      });
+    })();
   </script>
 </body>
 </html>
-

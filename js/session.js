@@ -23,18 +23,41 @@ class SessionManager {
       const sessionData = localStorage.getItem(SESSION_KEY);
       if (sessionData) {
         const user = JSON.parse(sessionData);
-        // Validate session hasn't expired
-        if (user.sessionStart && (Date.now() - user.sessionStart < SESSION_TIMEOUT)) {
+        // Validate session - if sessionStart exists, check timeout
+        // If sessionStart doesn't exist (legacy format), keep the session
+        if (user.sessionStart) {
+          // Check if session has expired
+          if (Date.now() - user.sessionStart < SESSION_TIMEOUT) {
+            this.user = user;
+            this.notifyListeners();
+          } else {
+            // Session expired
+            this.clearSession();
+          }
+        } else {
+          // Legacy format without sessionStart - keep it and add timestamp
+          // This handles users saved by auth.html or other methods
+          user.sessionStart = Date.now();
+          user.lastActivity = Date.now();
+          try {
+            localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+          } catch (e) {
+            console.warn('Could not update session timestamp:', e);
+          }
           this.user = user;
           this.notifyListeners();
-        } else {
-          // Session expired
-          this.clearSession();
         }
       }
     } catch (error) {
       console.error('Error initializing session:', error);
-      this.clearSession();
+      // Don't clear session on parse errors - might be corrupted but recoverable
+      // Only clear if it's completely invalid
+      try {
+        localStorage.removeItem(SESSION_KEY);
+      } catch (e) {
+        // Ignore errors clearing
+      }
+      this.user = null;
     }
   }
 

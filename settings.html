@@ -115,7 +115,7 @@
                   <button id="save-account" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition">
                     💾 Save Changes
                   </button>
-                  <div id="account-status-msg" class="text-sm"></div>
+                  <div id="account-status-msg" class="text-sm hidden"></div>
                 </div>
               </div>
             </div>
@@ -197,7 +197,7 @@
               <button id="save-learning" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition">
                 💾 Save Learning Preferences
               </button>
-              <div id="learning-status" class="text-sm"></div>
+              <div id="learning-status" class="text-sm hidden"></div>
             </div>
           </div>
         </section>
@@ -247,7 +247,7 @@
               <button id="save-notif" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition">
                 💾 Save Notification Settings
               </button>
-              <div id="notif-status" class="text-sm"></div>
+              <div id="notif-status" class="text-sm hidden"></div>
             </div>
           </div>
         </section>
@@ -299,7 +299,7 @@
               <button id="save-privacy" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition">
                 💾 Save Privacy Settings
               </button>
-              <div id="privacy-status" class="text-sm"></div>
+              <div id="privacy-status" class="text-sm hidden"></div>
             </div>
           </div>
         </section>
@@ -317,7 +317,7 @@
                     📥 Export as JSON
                   </button>
                   <button id="export-csv" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition">
-                    � Export as CSV
+                    📊 Export as CSV
                   </button>
                   <button id="backup-local" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold transition">
                     💾 Local Backup
@@ -340,7 +340,7 @@
                 </button>
               </div>
 
-              <div id="data-status" class="text-sm"></div>
+              <div id="data-status" class="text-sm hidden"></div>
             </div>
           </div>
         </section>
@@ -383,7 +383,7 @@
               <button id="save-accessibility" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition">
                 💾 Save Accessibility Settings
               </button>
-              <div id="accessibility-status" class="text-sm"></div>
+              <div id="accessibility-status" class="text-sm hidden"></div>
             </div>
           </div>
         </section>
@@ -408,7 +408,7 @@
                 <h3 class="font-bold text-orange-700 dark:text-orange-300 mb-2">🔓 Delete All Account Data</h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Permanently delete all your learning data, progress, and goals. This cannot be recovered.</p>
                 <button id="delete-all-data" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 font-semibold transition">
-                  � Delete All My Data
+                  🗑️ Delete All My Data
                 </button>
               </div>
 
@@ -434,14 +434,13 @@
     let currentUser = null;
 
     function initPage() {
-      // Check session
-      const user = localStorage.getItem('currentUser');
-      if (!user) {
+      const userStr = localStorage.getItem('currentUser');
+      if (!userStr) {
         window.location.href = '/auth.html';
         return;
       }
 
-      currentUser = JSON.parse(user);
+      currentUser = JSON.parse(userStr);
       loadSettings();
       setupNavigation();
       setupEventListeners();
@@ -449,14 +448,59 @@
 
     // ==================== HELPER FUNCTIONS ====================
     function getProfile() {
-      const profiles = JSON.parse(localStorage.getItem('user_profile') || '{}');
-      return profiles[currentUser.uid] || {};
+      // New format: "user_profile" map
+      const profilesMap = JSON.parse(localStorage.getItem('user_profile') || '{}');
+      if (profilesMap[currentUser.uid]) {
+        return profilesMap[currentUser.uid];
+      }
+
+      // Legacy format: "profile_<uid>"
+      const legacyStr = localStorage.getItem(`profile_${currentUser.uid}`);
+      if (legacyStr) {
+        try {
+          const legacy = JSON.parse(legacyStr);
+          // Normalize keys
+          return {
+            name: legacy.name,
+            email: legacy.email,
+            bio: legacy.bio || '',
+            field: legacy.preferredField || '',
+            notifications: legacy.notifications || {},
+            privacy: legacy.privacy || {},
+            accessibility: legacy.accessibility || {}
+          };
+        } catch (e) {
+          console.warn('Could not parse legacy profile format:', e);
+        }
+      }
+
+      return {};
     }
 
-    function saveProfile(data) {
-      const profiles = JSON.parse(localStorage.getItem('user_profile') || '{}');
-      profiles[currentUser.uid] = { ...profiles[currentUser.uid], ...data };
-      localStorage.setItem('user_profile', JSON.stringify(profiles));
+    function saveProfile(dataOrFullProfile) {
+      const existing = getProfile();
+      const nextProfile = {
+        ...existing,
+        ...dataOrFullProfile
+      };
+
+      // Save new map format
+      const profilesMap = JSON.parse(localStorage.getItem('user_profile') || '{}');
+      profilesMap[currentUser.uid] = nextProfile;
+      localStorage.setItem('user_profile', JSON.stringify(profilesMap));
+
+      // Save legacy format (for pages still using profile_<uid>)
+      const legacy = {
+        name: nextProfile.name || currentUser.name || currentUser.email,
+        email: currentUser.email,
+        bio: nextProfile.bio || '',
+        preferredField: nextProfile.field || '',
+        password: '',        // we never touch the stored password here
+        goals: nextProfile.goals || []
+      };
+      localStorage.setItem(`profile_${currentUser.uid}`, JSON.stringify(legacy));
+
+      return nextProfile;
     }
 
     function showStatus(elementId, message, isSuccess = true) {
@@ -480,16 +524,31 @@
       window.URL.revokeObjectURL(url);
     }
 
+    function applyTheme(theme) {
+      if (theme === 'auto') {
+        document.documentElement.removeAttribute('data-theme');
+      } else {
+        document.documentElement.setAttribute('data-theme', theme);
+      }
+    }
+
     // ==================== LOAD SETTINGS ====================
     function loadSettings() {
       const profile = getProfile();
-      
+
       // Account info
-      document.getElementById('account-name').textContent = profile.name || currentUser.name || currentUser.email.split('@')[0];
-      document.getElementById('account-email').textContent = currentUser.email;
-      document.getElementById('account-avatar').src = profile.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || currentUser.name || 'User')}&background=0D8ABC&color=fff`;
-      
-      const created = new Date(currentUser.createdAt || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      const displayName = profile.name || currentUser.name || (currentUser.email ? currentUser.email.split('@')[0] : 'User');
+      document.getElementById('account-name').textContent = displayName;
+      document.getElementById('account-email').textContent = currentUser.email || '';
+      document.getElementById('account-avatar').src =
+        profile.photoURL ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D8ABC&color=fff`;
+
+      const created = new Date(currentUser.createdAt || Date.now()).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
       document.getElementById('account-created').textContent = created;
 
       document.getElementById('edit-name').value = profile.name || '';
@@ -498,7 +557,11 @@
 
       // Theme
       const theme = localStorage.getItem('app_theme') || 'auto';
-      document.querySelector(`input[name="theme"][value="${theme}"]`)?.click();
+      const themeRadio = document.querySelector(`input[name="theme"][value="${theme}"]`);
+      if (themeRadio) {
+        themeRadio.checked = true;
+      }
+      applyTheme(theme);
 
       // Learning
       const pom = JSON.parse(localStorage.getItem('pomodoro_state') || '{}');
@@ -507,6 +570,7 @@
       document.getElementById('break-duration').value = pom.breakDuration || 5;
       document.getElementById('break-value').textContent = pom.breakDuration || 5;
       document.getElementById('auto-start-break').checked = pom.autoStart || false;
+      document.getElementById('sound-enabled').checked = pom.soundEnabled !== false;
 
       // Notifications
       const notifs = profile.notifications || {};
@@ -518,52 +582,54 @@
 
       // Privacy
       const privacy = profile.privacy || {};
-      document.getElementById('privacy-profile-public').checked = privacy.profilePublic || false;
-      document.getElementById('privacy-stats-public').checked = privacy.statsPublic || false;
+      document.getElementById('privacy-profile-public').checked = !!privacy.profilePublic;
+      document.getElementById('privacy-stats-public').checked = !!privacy.statsPublic;
       document.getElementById('privacy-forum-activity').checked = privacy.forumActivity !== false;
 
       // Accessibility
       const access = profile.accessibility || {};
-      document.getElementById('access-reduce-motion').checked = access.reduceMotion || false;
-      document.getElementById('access-high-contrast').checked = access.highContrast || false;
-      document.getElementById('access-large-text').checked = access.largeText || false;
-      document.getElementById('access-dyslexia-font').checked = access.dyslexiaFont || false;
+      document.getElementById('access-reduce-motion').checked = !!access.reduceMotion;
+      document.getElementById('access-high-contrast').checked = !!access.highContrast;
+      document.getElementById('access-large-text').checked = !!access.largeText;
+      document.getElementById('access-dyslexia-font').checked = !!access.dyslexiaFont;
     }
 
     // ==================== NAVIGATION ====================
     function setupNavigation() {
-      document.querySelectorAll('.settings-nav-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const section = e.target.dataset.section;
+      const buttons = document.querySelectorAll('.settings-nav-btn');
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const section = btn.dataset.section;
           showSection(section);
-          
-          // Update active button
-          document.querySelectorAll('.settings-nav-btn').forEach(b => {
+
+          buttons.forEach((b) => {
             b.classList.remove('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300', 'font-semibold');
             b.classList.add('hover:bg-gray-100', 'dark:hover:bg-gray-700');
           });
-          e.target.classList.add('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300', 'font-semibold');
-          e.target.classList.remove('hover:bg-gray-100', 'dark:hover:bg-gray-700');
+
+          btn.classList.add('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300', 'font-semibold');
+          btn.classList.remove('hover:bg-gray-100', 'dark:hover:bg-gray-700');
         });
       });
     }
 
     function showSection(sectionName) {
-      document.querySelectorAll('.settings-section').forEach(s => s.classList.add('hidden'));
+      document.querySelectorAll('.settings-section').forEach((s) => s.classList.add('hidden'));
       document.getElementById(sectionName + '-section')?.classList.remove('hidden');
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // ==================== EVENT LISTENERS ====================
     function setupEventListeners() {
       // Theme
-      document.querySelectorAll('.theme-option').forEach(option => {
+      document.querySelectorAll('.theme-option').forEach((option) => {
         option.addEventListener('click', (e) => {
           const theme = e.currentTarget.dataset.theme;
-          document.querySelector(`input[name="theme"][value="${theme}"]`).checked = true;
+          const radio = document.querySelector(`input[name="theme"][value="${theme}"]`);
+          if (radio) radio.checked = true;
           localStorage.setItem('app_theme', theme);
+          applyTheme(theme);
           showStatus('appearance-status', '✓ Theme preference saved');
-          document.getElementById('appearance-status').classList.remove('hidden');
         });
       });
 
@@ -577,22 +643,30 @@
 
       // Save account
       document.getElementById('save-account')?.addEventListener('click', () => {
-        saveProfile({
-          name: document.getElementById('edit-name').value,
-          bio: document.getElementById('edit-bio').value,
+        const updatedProfile = saveProfile({
+          name: document.getElementById('edit-name').value.trim(),
+          bio: document.getElementById('edit-bio').value.trim(),
           field: document.getElementById('edit-field').value
         });
+
+        // Update header card
+        document.getElementById('account-name').textContent =
+          updatedProfile.name || currentUser.name || currentUser.email.split('@')[0];
+
         showStatus('account-status-msg', '✓ Account settings saved');
       });
 
       // Save learning
       document.getElementById('save-learning')?.addEventListener('click', () => {
-        localStorage.setItem('pomodoro_state', JSON.stringify({
-          duration: parseInt(document.getElementById('pomodoro-duration').value),
-          breakDuration: parseInt(document.getElementById('break-duration').value),
-          autoStart: document.getElementById('auto-start-break').checked,
-          soundEnabled: document.getElementById('sound-enabled').checked
-        }));
+        localStorage.setItem(
+          'pomodoro_state',
+          JSON.stringify({
+            duration: parseInt(document.getElementById('pomodoro-duration').value, 10),
+            breakDuration: parseInt(document.getElementById('break-duration').value, 10),
+            autoStart: document.getElementById('auto-start-break').checked,
+            soundEnabled: document.getElementById('sound-enabled').checked
+          })
+        );
         showStatus('learning-status', '✓ Learning preferences saved');
       });
 
@@ -652,9 +726,9 @@
         const profile = getProfile();
         const stats = JSON.parse(localStorage.getItem('gamification_stats') || '{}');
         let csv = 'Pathways User Export\n';
-        csv += `Name,${profile.name || 'N/A'}\n`;
-        csv += `Email,${currentUser.email}\n`;
-        csv += `Field,${profile.field || 'N/A'}\n\n`;
+        csv += `Name,${(profile.name || '').replace(/,/g, ' ')}\n`;
+        csv += `Email,${(currentUser.email || '').replace(/,/g, ' ')}\n`;
+        csv += `Field,${(profile.field || '').replace(/,/g, ' ')}\n\n`;
         csv += 'Statistics\n';
         csv += `Level,${stats.level || 1}\n`;
         csv += `XP,${stats.totalXP || 0}\n`;
@@ -685,6 +759,7 @@
           const data = JSON.parse(backup);
           localStorage.setItem('gamification_stats', JSON.stringify(data.stats || {}));
           localStorage.setItem('user_goals', JSON.stringify(data.goals || {}));
+          saveProfile(data.profile || {});
           showStatus('data-status', '✓ Backup restored');
           setTimeout(() => location.reload(), 1500);
         }
@@ -694,6 +769,7 @@
       document.getElementById('clear-session')?.addEventListener('click', () => {
         if (confirm('Clear session data? You will remain logged in.')) {
           localStorage.removeItem('user_profile');
+          localStorage.removeItem(`profile_${currentUser.uid}`);
           localStorage.removeItem('gamification_stats');
           localStorage.removeItem('user_goals');
           showStatus('data-status', '✓ Session data cleared');
@@ -705,6 +781,7 @@
         if (confirm('⚠️ Permanently delete ALL your data? This cannot be undone!')) {
           if (prompt('Type your email to confirm:') === currentUser.email) {
             localStorage.removeItem('user_profile');
+            localStorage.removeItem(`profile_${currentUser.uid}`);
             localStorage.removeItem('gamification_stats');
             localStorage.removeItem('user_goals');
             localStorage.removeItem('forum_qa');
@@ -725,15 +802,15 @@
       });
 
       document.getElementById('change-password')?.addEventListener('click', () => {
-        alert('🔐 Password changes require Firebase authentication.\n\nYou can create a new account with different credentials if needed.');
+        alert('🔐 Password changes require Firebase authentication.\n\nFor now, you can create a new account with different credentials if needed.');
       });
 
       document.getElementById('view-sessions')?.addEventListener('click', () => {
-        alert('📱 Active Sessions:\n\nCurrent Device\n' + new Date().toLocaleString() + '\n\n(Session management requires Firebase integration)');
+        alert('📱 Active Sessions\n\nCurrent device\n' + new Date().toLocaleString() + '\n\n(Multi-device session management requires Firebase integration.)');
       });
 
       document.getElementById('request-data')?.addEventListener('click', () => {
-        alert('📋 GDPR Data Request\n\nYour data is stored locally in this browser. To export all data:\n\n1. Use the "Export as JSON" button\n2. Check the download folder for your data');
+        alert('📋 GDPR Data Request\n\nYour data is stored locally in this browser.\nTo export all data, use the "Export as JSON" button on this page.');
       });
     }
 

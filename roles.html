@@ -9,23 +9,66 @@
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
   <div data-include="header"></div>
 
-  <main class="container mx-auto px-4 py-8">
-    <div class="mb-8">
+  <main id="main-content" class="container mx-auto px-4 py-8">
+    <div class="mb-6">
       <h1 class="text-4xl md:text-5xl font-bold mb-2">Explore Career Roles</h1>
-      <p class="text-lg text-gray-600 dark:text-gray-400">Choose your career path and start your learning journey</p>
+      <p class="text-lg text-gray-600 dark:text-gray-400">
+        Choose your career path and start your learning journey.
+      </p>
     </div>
 
-    <!-- Filters -->
-    <div class="mb-8 flex flex-wrap gap-2">
-      <button data-filter="all" class="filter-btn active px-4 py-2 rounded-lg font-medium bg-blue-600 text-white">All</button>
-      <button data-filter="Technology" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Technology</button>
-      <button data-filter="Healthcare" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Healthcare</button>
-      <button data-filter="Legal" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Legal</button>
-      <button data-filter="Education" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Education</button>
-      <button data-filter="Public Service" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Public Service</button>
-      <button data-filter="Design" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">Design</button>
+    <!-- Search + Filters Row -->
+    <div class="flex flex-col gap-4 mb-8 md:flex-row md:items-center md:justify-between">
+      <!-- Search box (also respects ?search= from URL) -->
+      <div class="w-full md:w-1/2">
+        <label for="role-search" class="block text-sm font-semibold mb-1">
+          Search roles
+        </label>
+        <input
+          id="role-search"
+          type="text"
+          placeholder="e.g., Software Engineer, Doctor, Designer"
+          class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm"
+        />
+        <p id="search-hint" class="mt-1 text-xs text-gray-500 dark:text-gray-400 hidden">
+          Showing results for your search.
+        </p>
+      </div>
+
+      <!-- Filters -->
+      <div class="flex flex-wrap gap-2 md:justify-end">
+        <button data-filter="all"
+          class="filter-btn active px-4 py-2 rounded-lg font-medium bg-blue-600 text-white">
+          All
+        </button>
+        <button data-filter="Technology"
+          class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">
+          Technology
+        </button>
+        <button data-filter="Healthcare"
+          class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">
+          Healthcare
+        </button>
+        <button data-filter="Legal"
+          class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">
+          Legal
+        </button>
+        <button data-filter="Education"
+          class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">
+          Education
+        </button>
+        <button data-filter="Public Service"
+          class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">
+          Public Service
+        </button>
+        <button data-filter="Design"
+          class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">
+          Design
+        </button>
+      </div>
     </div>
 
     <!-- Roles Grid -->
@@ -38,34 +81,57 @@
   <script src="/js/include.js" defer></script>
   <script src="/js/roles-data-vanilla.js"></script>
   <script>
-  let currentFilter = 'all';
-  const roles = window.ROLES_DATA || [];
-  const urlParams = new URLSearchParams(window.location.search);
-  const initialSearch = urlParams.get('search') || null;
-  const initialSuggest = urlParams.get('suggest') || null;
+    let currentFilter = 'all';
+    const roles = window.ROLES_DATA || [];
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialSearch = urlParams.get('search') || '';
+    const initialSuggest = urlParams.get('suggest') || '';
+
+    const searchInput = document.getElementById('role-search');
+    const searchHint = document.getElementById('search-hint');
+
+    if (initialSearch && searchInput) {
+      searchInput.value = initialSearch;
+      searchHint.classList.remove('hidden');
+    }
+
+    function getFilteredRoles() {
+      let filtered = roles;
+
+      // Filter by domain first
+      if (currentFilter !== 'all') {
+        filtered = filtered.filter(r => r.domain === currentFilter);
+      }
+
+      // Apply search text (from input or ?search=)
+      const q = (searchInput?.value || initialSearch || '').trim().toLowerCase();
+      if (q) {
+        filtered = filtered.filter(r =>
+          r.title.toLowerCase().includes(q) ||
+          r.slug === (initialSuggest || '').toLowerCase()
+        );
+        // If no exact slug match, keep title matches only
+        if (filtered.length === 0) {
+          filtered = roles.filter(r => r.title.toLowerCase().includes(q));
+        }
+        searchHint?.classList.remove('hidden');
+      } else {
+        searchHint?.classList.add('hidden');
+      }
+
+      return filtered;
+    }
 
     function renderRoles() {
       const grid = document.getElementById('roles-grid');
       if (!grid) return;
 
-      let filtered = currentFilter === 'all' 
-        ? roles 
-        : roles.filter(r => r.domain === currentFilter);
-
-      // If there's a search param from Pathways, prefer those matches
-      if (initialSearch) {
-        const q = initialSearch.toLowerCase();
-        filtered = roles.filter(r => r.title.toLowerCase().includes(q) || r.slug === (initialSuggest || '').toLowerCase());
-        // If no exact matches, fall back to title contains
-        if (filtered.length === 0) {
-          filtered = roles.filter(r => r.title.toLowerCase().includes(q));
-        }
-      }
-
+      const filtered = getFilteredRoles();
       grid.innerHTML = '';
 
       if (filtered.length === 0) {
-        grid.innerHTML = '<p class="col-span-full text-center text-gray-600 dark:text-gray-400 py-8">No roles found</p>';
+        grid.innerHTML = '<p class="col-span-full text-center text-gray-600 dark:text-gray-400 py-8">No roles found. Try a different filter or search term.</p>';
         return;
       }
 
@@ -73,20 +139,27 @@
         const card = document.createElement('div');
         card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-all cursor-pointer border border-gray-200 dark:border-gray-700';
         card.innerHTML = `
-          <div class="p-6">
+          <div class="p-6 h-full flex flex-col">
             <div class="text-4xl mb-3">${getRoleIcon(role.slug)}</div>
             <h3 class="text-xl font-bold mb-2">${escapeHtml(role.title)}</h3>
-            <p class="text-gray-600 dark:text-gray-400 mb-4 text-sm">${escapeHtml(role.summary)}</p>
-            <div class="flex flex-wrap gap-2 mb-4">
-              <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-xs">${escapeHtml(role.domain)}</span>
-              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">${escapeHtml(role.difficulty)}</span>
-              ${role.estMonths ? `<span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">~${role.estMonths} months</span>` : ''}
+            <p class="text-gray-600 dark:text-gray-400 mb-4 text-sm line-clamp-3">${escapeHtml(role.summary || '')}</p>
+            <div class="flex flex-wrap gap-2 mb-4 text-xs">
+              <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">${escapeHtml(role.domain || 'General')}</span>
+              <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">${escapeHtml(role.difficulty || 'Intermediate')}</span>
+              ${role.estMonths ? `<span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">~${role.estMonths} months</span>` : ''}
             </div>
-            <a href="/role.html?slug=${role.slug}" class="block w-full text-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold">
+            <a href="/role.html?slug=${encodeURIComponent(role.slug)}"
+               class="mt-auto block w-full text-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-semibold">
               Explore Role →
             </a>
           </div>
         `;
+        // Make whole card clickable but keep <a> primary
+        card.addEventListener('click', (e) => {
+          if (e.target.tagName.toLowerCase() !== 'a') {
+            window.location.href = '/role.html?slug=' + encodeURIComponent(role.slug);
+          }
+        });
         grid.appendChild(card);
       });
     }
@@ -109,61 +182,70 @@
         'database-admin': '🗄️',
         'systems-admin': '🖥️',
         'network-engineer': '🌐',
+
         // Healthcare
         'doctor': '👨‍⚕️',
         'nurse': '👩‍⚕️',
         'dentist': '🦷',
         'therapist': '🧠',
         'vet': '🐾',
-        'radiologist': '💉',
+        'radiologist': '🩻',
         'surgeon': '🔬',
         'pharmacist': '💊',
         'psychologist': '🧑‍⚕️',
         'medical-tech': '🩺',
+
         // Finance
         'accountant': '💰',
         'financial-analyst': '📈',
         'investment-banker': '🏦',
-        'trader': '�',
-        'auditor': '�',
+        'trader': '💹',
+        'auditor': '📊',
+
         // Legal
         'lawyer': '⚖️',
         'paralegal': '📜',
         'judge': '🔨',
         'legal-counsel': '👨‍⚖️',
+
         // Marketing
         'marketing-manager': '📢',
         'brand-strategist': '🎯',
         'seo-specialist': '🔍',
         'content-creator': '📝',
         'email-marketer': '💌',
+
         // Design
         'designer': '🎨',
         'ui-ux-designer': '🎨',
         'graphic-designer': '✏️',
         'motion-graphics': '🎬',
         'industrial-designer': '🏗️',
+
         // Business
         'consultant': '💼',
         'product-manager': '🎯',
-        'project-manager': '�',
+        'project-manager': '📋',
         'operations-manager': '⚙️',
         'hr-manager': '👥',
+
         // Education
         'teacher': '👨‍🏫',
         'professor': '🎓',
         'curriculum-developer': '📚',
         'instructional-designer': '📖',
+
         // Public Service
         'police-officer': '👮',
         'police': '👮',
         'firefighter': '🚒',
         'paramedic': '🚑',
         'military-officer': '⛑️',
-        // Manufacturing
+
+        // Manufacturing / Trades
         'machinist': '🔧',
         'electrician': '⚡',
-        'plumber': '🔧',
+        'plumber': '🛠️',
         'hvac-technician': '❄️',
         'welder': '🔥'
       };
@@ -172,7 +254,7 @@
 
     function escapeHtml(text) {
       const div = document.createElement('div');
-      div.textContent = text;
+      div.textContent = text ?? '';
       return div.innerHTML;
     }
 
@@ -180,15 +262,24 @@
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         currentFilter = btn.dataset.filter;
+
         document.querySelectorAll('.filter-btn').forEach(b => {
           b.classList.remove('active', 'bg-blue-600', 'text-white');
           b.classList.add('bg-gray-200', 'dark:bg-gray-700');
         });
+
         btn.classList.add('active', 'bg-blue-600', 'text-white');
         btn.classList.remove('bg-gray-200', 'dark:bg-gray-700');
         renderRoles();
       });
     });
+
+    // Search input listeners
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        renderRoles();
+      });
+    }
 
     // Initial render
     renderRoles();

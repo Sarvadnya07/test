@@ -6,10 +6,19 @@
   <title>AI Mentor - Pathways</title>
   <meta name="description" content="Ask AI questions about your learning path, get personalized advice and answers." />
   <link rel="icon" href="/favicon.ico" />
-  <link rel="stylesheet" href="/css/tailwind-input.css">
-  <link rel="stylesheet" href="/css/styles.css">
-  <script src="/js/config.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="./css/tailwind-input.css">
+  <link rel="stylesheet" href="./css/styles.css">
+
+  <!-- Scripts: CONFIG → Firebase → Gemini → Seed → Include -->
+  <script src="./js/config.js"></script>
+  <script src="./js/firebase-vanilla.js"></script>
+  <script src="./js/gemini.js"></script>
+  <script src="./js/seed-test-data.js"></script>
+  <script src="./js/include.js" defer></script>
 </head>
+
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
   <a href="#main-content" class="skip-link">Skip to main content</a>
   <div data-include="header"></div>
@@ -17,7 +26,9 @@
   <main id="main-content" class="container mx-auto px-4 py-8 max-w-6xl">
     <div class="mb-8">
       <h1 class="text-4xl font-bold mb-2">AI Career Assistant</h1>
-      <p class="text-xl text-gray-600 dark:text-gray-400">Ask about anything - career paths, skills, learning plans, and more</p>
+      <p class="text-xl text-gray-600 dark:text-gray-400">
+        Ask about anything - career paths, skills, learning plans, and more
+      </p>
     </div>
     
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -25,20 +36,38 @@
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sticky top-24">
           <h3 class="font-bold mb-4 text-lg">Quick Actions</h3>
           <div class="space-y-2 mb-6">
-            <button data-task="qna" class="w-full text-left px-4 py-2 rounded task-btn active bg-blue-600 text-white"> General Q&A</button>
-            <button data-task="plan" class="w-full text-left px-4 py-2 rounded task-btn"> 6-Week Plan</button>
-            <button data-task="explain" class="w-full text-left px-4 py-2 rounded task-btn"> Skill Explainer</button>
-            <button data-task="recommend" class="w-full text-left px-4 py-2 rounded task-btn"> Career Recommender</button>
-            <button data-task="compare" class="w-full text-left px-4 py-2 rounded task-btn"> Compare Careers</button>
+            <button data-task="qna" class="w-full text-left px-4 py-2 rounded task-btn active bg-blue-600 text-white">
+              General Q&amp;A
+            </button>
+            <button data-task="plan" class="w-full text-left px-4 py-2 rounded task-btn">
+              6-Week Plan
+            </button>
+            <button data-task="explain" class="w-full text-left px-4 py-2 rounded task-btn">
+              Skill Explainer
+            </button>
+            <button data-task="recommend" class="w-full text-left px-4 py-2 rounded task-btn">
+              Career Recommender
+            </button>
+            <button data-task="compare" class="w-full text-left px-4 py-2 rounded task-btn">
+              Compare Careers
+            </button>
           </div>
           
           <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
             <h4 class="font-semibold mb-2 text-sm">Example Questions</h4>
             <div class="space-y-2 text-sm">
-              <button class="example-btn w-full text-left px-3 py-2 text-gray-600 dark:text-gray-400 rounded text-xs">What skills for software engineer?</button>
-              <button class="example-btn w-full text-left px-3 py-2 text-gray-600 dark:text-gray-400 rounded text-xs">6-week plan for web dev</button>
-              <button class="example-btn w-full text-left px-3 py-2 text-gray-600 dark:text-gray-400 rounded text-xs">Explain JavaScript</button>
-              <button class="example-btn w-full text-left px-3 py-2 text-gray-600 dark:text-gray-400 rounded text-xs">Career paths for tech</button>
+              <button class="example-btn w-full text-left px-3 py-2 text-gray-600 dark:text-gray-400 rounded text-xs">
+                What skills for software engineer?
+              </button>
+              <button class="example-btn w-full text-left px-3 py-2 text-gray-600 dark:text-gray-400 rounded text-xs">
+                6-week plan for web dev
+              </button>
+              <button class="example-btn w-full text-left px-3 py-2 text-gray-600 dark:text-gray-400 rounded text-xs">
+                Explain JavaScript
+              </button>
+              <button class="example-btn w-full text-left px-3 py-2 text-gray-600 dark:text-gray-400 rounded text-xs">
+                Career paths for tech
+              </button>
             </div>
           </div>
         </div>
@@ -55,8 +84,18 @@
           
           <div class="border-t border-gray-200 dark:border-gray-700 p-4">
             <div class="flex gap-2">
-              <textarea id="chat-input" rows="2" class="flex-1 px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 resize-none" placeholder="Type your question here..."></textarea>
-              <button id="send-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">Send</button>
+              <textarea
+                id="chat-input"
+                rows="2"
+                class="flex-1 px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 resize-none"
+                placeholder="Type your question here..."
+              ></textarea>
+              <button
+                id="send-btn"
+                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+              >
+                Send
+              </button>
             </div>
             <div id="typing-indicator" class="hidden mt-2 text-sm text-gray-500">
               <span class="animate-pulse">AI is thinking...</span>
@@ -68,81 +107,131 @@
   </main>
 
   <div data-include="footer"></div>
-  <script src="/js/gemini.js"></script>
-  <script src="/js/seed-test-data.js"></script>
-  <script src="/js/include.js" defer></script>
+
   <script>
-  const QA_KEY = "ai_mentor_qa";
-  let currentTask = "qna";
-  let useGemini = false;
+    const QA_KEY = "ai_mentor_qa";
+    let currentTask = "qna";
+    let useGemini = false;
+    let useFirebaseBackend = false;
     
-    // Initialize Gemini API
-    if (window.GeminiAPI) {
-      window.GeminiAPI.init();
+    // Initialize on load - ensure scripts are loaded first
+    async function initializePage() {
+      // Initialize Gemini API (defensive)
+      if (window.GeminiAPI) {
+        window.GeminiAPI.init();
+      }
+
+      setupEventListeners();
+
+      // Await both async initialization functions to ensure flags are set
+      await Promise.all([
+        checkAPIStatus(),
+        checkFirebaseBackend()
+      ]);
     }
     
-    // Initialize on load
-    if (document.readyState === 'loading') {
-    document.addEventListener("DOMContentLoaded", function() {
-        setupEventListeners();
-        checkAPIStatus();
+    // Wait for DOM and scripts to load
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", function () {
+        // Small delay to ensure scripts have executed
+        setTimeout(initializePage, 200);
       });
     } else {
-      setupEventListeners();
-      checkAPIStatus();
+      setTimeout(initializePage, 200);
     }
 
     // If ?seed=1 is present, populate fallback AI history (non-destructive)
-    (function(){
+    (function () {
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('seed') === '1' && window.SeedTestData && window.SeedTestData.seedAI) {
+      if (urlParams.get("seed") === "1" && window.SeedTestData && window.SeedTestData.seedAI) {
         const seeded = window.SeedTestData.seedAI(false);
-        if (seeded) console.log('AI mentor seeded with sample Q&A');
+        if (seeded) console.log("AI mentor seeded with sample Q&A");
       }
     })();
-    
-    function checkAPIStatus() {
-      // Silent check: enable Gemini usage automatically if a key exists in localStorage.
-      if (window.GeminiAPI && window.GeminiAPI.isConfigured()) {
-        useGemini = true;
-      } else {
+
+    // --- Gemini Status Check ---
+    async function checkAPIStatus() {
+      // Small wait to ensure gemini.js finished its own init
+      await new Promise((r) => setTimeout(r, 100));
+
+      if (!window.GeminiAPI) {
+        console.warn("❌ Gemini API not loaded");
         useGemini = false;
+        return;
       }
+
+      window.GeminiAPI.init();
+      useGemini = window.GeminiAPI.isConfigured();
+
+      console.log("🤖 Gemini Ready:", useGemini, window.GeminiAPI.getStatus?.());
     }
-    
+
+    // --- Firebase Backend Check ---
+    async function checkFirebaseBackend() {
+  // Disable Firebase backend for AI (clean mode)
+  // This prevents SDK/auth errors like: "firebase.auth is not a function"
+  // and ensures only client-side Gemini is used.
+  useFirebaseBackend = false;
+
+  console.log("ℹ️ Skipping Firebase backend, using client-side Gemini only");
+}
+
+
     function setupEventListeners() {
-      document.querySelectorAll(".task-btn").forEach(btn => {
-        btn.addEventListener("click", function() {
-          currentTask = this.dataset.task;
-          document.querySelectorAll(".task-btn").forEach(b => {
-            b.classList.remove("active", "bg-blue-600", "text-white");
-            b.classList.add("hover:bg-gray-100", "dark:hover:bg-gray-700");
+      const taskButtons = document.querySelectorAll(".task-btn");
+      if (taskButtons.length === 0) {
+        console.warn("Task buttons not found");
+      } else {
+        taskButtons.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            if (this.dataset.task) {
+              currentTask = this.dataset.task;
+            }
+            document.querySelectorAll(".task-btn").forEach((b) => {
+              b.classList.remove("active", "bg-blue-600", "text-white");
+              b.classList.add("hover:bg-gray-100", "dark:hover:bg-gray-700");
+            });
+            this.classList.add("active", "bg-blue-600", "text-white");
+            this.classList.remove("hover:bg-gray-100", "dark:hover:bg-gray-700");
           });
-          this.classList.add("active", "bg-blue-600", "text-white");
-          this.classList.remove("hover:bg-gray-100", "dark:hover:bg-gray-700");
         });
-      });
+      }
       
-      document.querySelectorAll(".example-btn").forEach(btn => {
-        btn.addEventListener("click", function() {
-          const examples = {
-            "What skills for software engineer?": "What skills do I need to become a software engineer?",
-            "6-week plan for web dev": "Generate a 6-week plan to learn web development",
-            "Explain JavaScript": "Explain JavaScript basics",
-            "Career paths for tech": "Recommend career paths for technology"
-          };
-          document.getElementById("chat-input").value = examples[this.textContent] || this.textContent;
-          document.getElementById("chat-input").focus();
+      const exampleButtons = document.querySelectorAll(".example-btn");
+      if (exampleButtons.length > 0) {
+        exampleButtons.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            const examples = {
+              "What skills for software engineer?":
+                "What skills do I need to become a software engineer?",
+              "6-week plan for web dev":
+                "Generate a 6-week plan to learn web development",
+              "Explain JavaScript": "Explain JavaScript basics",
+              "Career paths for tech": "Recommend career paths for technology",
+            };
+            const chatInput = document.getElementById("chat-input");
+            if (chatInput) {
+              chatInput.value = examples[this.textContent] || this.textContent;
+              chatInput.focus();
+            }
+          });
         });
-      });
+      }
       
-      document.getElementById("send-btn").addEventListener("click", sendMessage);
-      document.getElementById("chat-input").addEventListener("keydown", function(e) {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          document.getElementById("send-btn").click();
-        }
-      });
+      const sendBtn = document.getElementById("send-btn");
+      const chatInput = document.getElementById("chat-input");
+      if (sendBtn) {
+        sendBtn.addEventListener("click", sendMessage);
+      }
+      if (chatInput) {
+        chatInput.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            const sendBtn = document.getElementById("send-btn");
+            if (sendBtn) sendBtn.click();
+          }
+        });
+      }
     }
     
     async function sendMessage() {
@@ -157,43 +246,78 @@
       document.getElementById("send-btn").disabled = true;
       
       try {
-        let response = '';
-        
-  // Try Gemini API if configured (silent, via localStorage)
-  if (useGemini && window.GeminiAPI && window.GeminiAPI.isConfigured()) {
+        let response = "";
+
+        // 1) Try Firebase backend first (if authenticated)
+        if (!response && useFirebaseBackend) {
+          try {
+            await window.loadFirebase();
+            const user = window.FirebaseAuth.getCurrentUser();
+
+            if (user) {
+              const result = await window.FirebaseFunctions.aiDispatch(
+                currentTask,
+                message,
+                {}
+              );
+
+              if (result) {
+                response = result.answer || result.text;
+                console.log("🔥 Used Firebase backend");
+              }
+            }
+          } catch (e) {
+            console.warn("Firebase backend failed:", e);
+          }
+        }
+
+        // 2) Fallback to client-side Gemini API
+        if (!response && useGemini) {
           try {
             if (currentTask === "plan") {
-              response = await window.GeminiAPI.generateLearningPlan(message);
+              response = await GeminiAPI.generateLearningPlan(message);
             } else if (currentTask === "explain") {
-              response = await window.GeminiAPI.explainSkill(message);
+              response = await GeminiAPI.explainSkill(message);
             } else if (currentTask === "recommend") {
-              response = await window.GeminiAPI.recommendCareers(message);
+              response = await GeminiAPI.recommendCareers(message);
             } else if (currentTask === "compare") {
-              const parts = message.split(' vs ');
-              if (parts.length === 2) {
-                response = await window.GeminiAPI.compare(parts[0], parts[1]);
-              } else {
-                response = await window.GeminiAPI.generateCareerAdvice(message);
-              }
+              const parts = message.split(" vs ");
+              response =
+                parts.length === 2
+                  ? await GeminiAPI.compare(parts[0], parts[1])
+                  : await GeminiAPI.generateCareerAdvice(message);
             } else {
-              response = await window.GeminiAPI.generateCareerAdvice(message);
+              response = await GeminiAPI.generateCareerAdvice(message);
             }
-          } catch (apiError) {
-            console.error('Gemini API error:', apiError);
-            response = generateFallbackResponse(message, currentTask);
+
+            console.log("🤖 Gemini response OK");
+          } catch (err) {
+            console.error("Gemini failed:", err);
           }
-        } else {
+        }
+        
+        // 3) Final fallback to local responses
+        if (!response) {
           response = generateFallbackResponse(message, currentTask);
+          console.log("ℹ️ Used local fallback response");
         }
         
         addMessage("assistant", response);
         
         const qa = JSON.parse(localStorage.getItem(QA_KEY) || "[]");
-        qa.unshift({q: message, a: response, task: currentTask, time: new Date().toISOString()});
+        qa.unshift({
+          q: message,
+          a: response,
+          task: currentTask,
+          time: new Date().toISOString(),
+        });
         localStorage.setItem(QA_KEY, JSON.stringify(qa.slice(0, 50)));
       } catch (error) {
-        addMessage("assistant", "Sorry, I encountered an error. Please try again.");
-        console.error('Error:', error);
+        addMessage(
+          "assistant",
+          "Sorry, I encountered an error. Please try again."
+        );
+        console.error("Error:", error);
       } finally {
         document.getElementById("typing-indicator").classList.add("hidden");
         document.getElementById("send-btn").disabled = false;
@@ -203,17 +327,28 @@
     
     function addMessage(role, content) {
       const messagesDiv = document.getElementById("chat-messages");
+      if (!messagesDiv) {
+        console.error("Chat messages container not found");
+        return;
+      }
       // Remove welcome message if exists
-      const welcome = messagesDiv.querySelector('.text-center');
+      const welcome = messagesDiv.querySelector(".text-center");
       if (welcome) welcome.remove();
       
       const messageDiv = document.createElement("div");
-      messageDiv.className = "flex " + (role === "user" ? "justify-end" : "justify-start");
+      messageDiv.className =
+        "flex " + (role === "user" ? "justify-end" : "justify-start");
       
       if (role === "user") {
-        messageDiv.innerHTML = '<div class="max-w-xs bg-blue-600 text-white rounded-lg px-4 py-2"><p>' + escapeHtml(content) + '</p></div>';
+        messageDiv.innerHTML =
+          '<div class="max-w-xs bg-blue-600 text-white rounded-lg px-4 py-2"><p>' +
+          escapeHtml(content) +
+          "</p></div>";
       } else {
-        messageDiv.innerHTML = '<div class="max-w-xs bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-3"><div class="whitespace-pre-line">' + escapeHtml(content) + '</div></div>';
+        messageDiv.innerHTML =
+          '<div class="max-w-xs bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-3"><div class="whitespace-pre-line">' +
+          escapeHtml(content) +
+          "</div></div>";
       }
       
       messagesDiv.appendChild(messageDiv);
@@ -224,23 +359,122 @@
       const lower = q.toLowerCase();
       
       if (task === "plan") {
-        return `6-Week Learning Plan: ${q}\n\nWeek 1: Foundations\n* Core concepts\n* Setup environment\n* First project\n\nWeek 2-3: Core Skills\n* Deep dive into fundamentals\n* Practice exercises\n* Build 2-3 projects\n\nWeek 4: Intermediate\n* Advanced topics\n* Real-world applications\n\nWeek 5: Projects\n* Build complete projects\n* Apply all skills\n\nWeek 6: Mastery\n* Refine projects\n* Explore advanced topics\n* Plan next steps\n\nRecommended: 8-10 hours/week`;
+        return `6-Week Learning Plan: ${q}
+
+Week 1: Foundations
+* Core concepts
+* Setup environment
+* First project
+
+Week 2-3: Core Skills
+* Deep dive into fundamentals
+* Practice exercises
+* Build 2-3 projects
+
+Week 4: Intermediate
+* Advanced topics
+* Real-world applications
+
+Week 5: Projects
+* Build complete projects
+* Apply all skills
+
+Week 6: Mastery
+* Refine projects
+* Explore advanced topics
+* Plan next steps
+
+Recommended: 8-10 hours/week`;
       } else if (task === "explain") {
         if (lower.includes("javascript")) {
-          return "JavaScript: Programming language for browsers/servers.\n\nKey Concepts:\n- Variables, Functions, Objects, Arrays\n- DOM manipulation\n- ES6+ features (arrow functions, promises)\n\nUsed for: Web development, APIs, React\n\nLearning Path: Basics > DOM > ES6+ > Frameworks";
+          return `JavaScript: Programming language for browsers/servers.
+
+Key Concepts:
+- Variables, Functions, Objects, Arrays
+- DOM manipulation
+- ES6+ features (arrow functions, promises)
+
+Used for: Web development, APIs, React
+
+Learning Path: Basics > DOM > ES6+ > Frameworks`;
         } else if (lower.includes("python")) {
-          return "Python: Beginner-friendly programming language.\n\nKey Concepts:\n- Variables, Loops, Functions, Lists\n- Object-oriented programming\n- Libraries (NumPy, Pandas)\n\nUsed for: Data science, Web, ML, Scripting\n\nLearning Path: Basics > Data > Functions > OOP > Libraries";
+          return `Python: Beginner-friendly programming language.
+
+Key Concepts:
+- Variables, Loops, Functions, Lists
+- Object-oriented programming
+- Libraries (NumPy, Pandas)
+
+Used for: Data science, Web, ML, Scripting
+
+Learning Path: Basics > Data > Functions > OOP > Libraries`;
         }
-        return `Explanation: ${q}\n\nKey Topics:\n* Core concepts\n* Applications\n* Best practices\n* Learning path`;
+        return `Explanation: ${q}
+
+Key Topics:
+* Core concepts
+* Applications
+* Best practices
+* Learning path`;
       } else if (task === "recommend") {
-        return "Recommended Career Paths:\n\n1. Software Engineer\n- Skills: JavaScript, Python, System Design\n- Time: 6-12 months\n- Salary: $80k-$200k+\n\n2. Data Scientist\n- Skills: Python, Statistics, ML\n- Time: 8-12 months\n- Salary: $90k-$180k+\n\n3. Full Stack Developer\n- Skills: Frontend + Backend\n- Time: 12-18 months\n- Salary: $85k-$150k+";
+        return `Recommended Career Paths:
+
+1. Software Engineer
+- Skills: JavaScript, Python, System Design
+- Time: 6-12 months
+- Salary: $80k-$200k+
+
+2. Data Scientist
+- Skills: Python, Statistics, ML
+- Time: 8-12 months
+- Salary: $90k-$180k+
+
+3. Full Stack Developer
+- Skills: Frontend + Backend
+- Time: 12-18 months
+- Salary: $85k-$150k+`;
       } else if (task === "compare") {
-        return "Comparison:\n\nKey Differences:\n* Feature differences\n* Use cases\n* Learning curve\n* Career prospects\n\nChoose based on your interests and goals.";
+        return `Comparison:
+
+Key Differences:
+* Feature differences
+* Use cases
+* Learning curve
+* Career prospects
+
+Choose based on your interests and goals.`;
       } else {
-        if (lower.includes("web")) return "Web Development Path:\nHTML > CSS > JavaScript > React > Backend\n\nTime: 3-6 months basics, 1-2 years proficiency\n\nFocus: Build projects, learn frameworks, practice daily.";
-        if (lower.includes("data")) return "Data Science Path:\nPython > Statistics > Machine Learning\n\nTime: 4-8 months to intermediate\n\nFocus: Work with real datasets, build models, learn visualization.";
-        if (lower.includes("stuck")) return "When Stuck:\n1. Break problem into smaller parts\n2. Search online resources\n3. Read documentation\n4. Ask in forums\n5. Take a break and return\n6. Pair program\n7. Review fundamentals";
-        return "Learning Tips:\n* Set clear goals\n* Find structured resources\n* Practice regularly (8-10 hrs/week)\n* Build projects\n* Join community\n* Be patient and consistent\n* Review regularly";
+        if (lower.includes("web"))
+          return `Web Development Path:
+HTML > CSS > JavaScript > React > Backend
+
+Time: 3-6 months basics, 1-2 years proficiency
+
+Focus: Build projects, learn frameworks, practice daily.`;
+        if (lower.includes("data"))
+          return `Data Science Path:
+Python > Statistics > Machine Learning
+
+Time: 4-8 months to intermediate
+
+Focus: Work with real datasets, build models, learn visualization.`;
+        if (lower.includes("stuck"))
+          return `When Stuck:
+1. Break problem into smaller parts
+2. Search online resources
+3. Read documentation
+4. Ask in forums
+5. Take a break and return
+6. Pair program
+7. Review fundamentals`;
+        return `Learning Tips:
+* Set clear goals
+* Find structured resources
+* Practice regularly (8-10 hrs/week)
+* Build projects
+* Join community
+* Be patient and consistent
+* Review regularly`;
       }
     }
     
@@ -250,9 +484,55 @@
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
-        "'": "&#039;"
+        "'": "&#039;",
       };
-      return text.replace(/[&<>"'"]/g, m => map[m]);
+      return text.replace(/[&<>"']/g, (m) => map[m]);
+    }
+    
+    // Format 6-week plan response from backend
+    function formatPlanResponse(plan) {
+      if (!plan || !plan.weeks || !Array.isArray(plan.weeks)) {
+        return "Invalid plan format";
+      }
+      
+      let formatted = `6-Week Learning Plan:\n\n`;
+      plan.weeks.forEach((week, idx) => {
+        formatted += `Week ${week.week || idx + 1}:\n`;
+        if (week.goals && week.goals.length > 0) {
+          formatted += `Goals: ${week.goals.join(", ")}\n`;
+        }
+        if (week.tasks && week.tasks.length > 0) {
+          week.tasks.forEach((task) => {
+            formatted += `- ${task.title || task.name || "Task"}`;
+            if (task.minutes) formatted += ` (${task.minutes} min)`;
+            if (task.description) formatted += `: ${task.description}`;
+            formatted += "\n";
+          });
+        }
+        formatted += "\n";
+      });
+      
+      return formatted.trim();
+    }
+    
+    // Format recommendations response from backend
+    function formatRecommendationsResponse(recommendations) {
+      if (!recommendations || !Array.isArray(recommendations)) {
+        return "No recommendations available";
+      }
+      
+      let formatted = "Recommended Career Paths:\n\n";
+      recommendations.forEach((rec, idx) => {
+        formatted += `${idx + 1}. ${rec.title || rec.career || "Career"}\n`;
+        if (rec.description) formatted += `${rec.description}\n`;
+        if (rec.skills && Array.isArray(rec.skills)) {
+          formatted += `Skills: ${rec.skills.join(", ")}\n`;
+        }
+        if (rec.salaryRange) formatted += `Salary: ${rec.salaryRange}\n`;
+        formatted += "\n";
+      });
+      
+      return formatted.trim();
     }
   </script>
 </body>

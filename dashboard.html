@@ -17,7 +17,12 @@
   <meta name="twitter:description" content="Your personalized dashboard: progress, recommendations, badges, and activity on Pathways." />
 
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"WebPage","name":"Dashboard - Pathways","description":"Your personalized dashboard: progress, recommendations, badges, and activity on Pathways."}
+  {
+    "@context":"https://schema.org",
+    "@type":"WebPage",
+    "name":"Dashboard - Pathways",
+    "description":"Your personalized dashboard: progress, recommendations, badges, and activity on Pathways."
+  }
   </script>
 
   <link rel="stylesheet" href="/css/tailwind-input.css">
@@ -26,30 +31,39 @@
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
   <a href="#main-content" class="skip-link">Skip to main content</a>
-  <!-- Header Component - Includes Profile Icon, Notifications, Theme Toggle -->
+
+  <!-- Shared header -->
   <div data-include="header"></div>
 
-  <main class="container mx-auto px-4 py-8">
-    <h1 class="text-4xl font-bold mb-8">Your Dashboard</h1>
-    
+  <main id="main-content" class="container mx-auto px-4 py-8">
+    <div class="flex items-baseline justify-between mb-4">
+      <h1 class="text-4xl font-bold">Your Dashboard</h1>
+      <p id="welcome-user" class="text-sm text-gray-600 dark:text-gray-400"></p>
+    </div>
+
+    <!-- Loading state -->
+    <div id="dashboard-loading" class="mb-6 text-sm text-gray-500 dark:text-gray-400">
+      Loading your dashboard…
+    </div>
+
     <!-- Stats -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h3 class="text-gray-600 dark:text-gray-400 mb-2">Level</h3>
-        <p id="user-level" class="text-3xl font-bold text-blue-600">1</p>
-        <p class="text-xs text-gray-500 mt-1" id="xp-progress">0 XP</p>
+        <p id="user-level" class="text-3xl font-bold text-blue-600">–</p>
+        <p class="text-xs text-gray-500 mt-1" id="xp-progress">– XP</p>
       </div>
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h3 class="text-gray-600 dark:text-gray-400 mb-2">Active Roles</h3>
-        <p id="active-roles" class="text-3xl font-bold">0</p>
+        <p id="active-roles" class="text-3xl font-bold">–</p>
       </div>
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h3 class="text-gray-600 dark:text-gray-400 mb-2">Completed Tasks</h3>
-        <p id="completed-tasks" class="text-3xl font-bold">0</p>
+        <p id="completed-tasks" class="text-3xl font-bold">–</p>
       </div>
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h3 class="text-gray-600 dark:text-gray-400 mb-2">🔥 Streak</h3>
-        <p id="streak" class="text-3xl font-bold text-orange-600">0 days</p>
+        <p id="streak" class="text-3xl font-bold text-orange-600">–</p>
       </div>
     </div>
     
@@ -91,104 +105,175 @@
   <script src="/js/include.js"></script>
   <script type="module">
     import { db } from '/js/firebase.js';
-    import { collection, query, where, getDocs } from 'firebase/firestore';
-    import { getRoleProgress, calculateStreak, getProgressTimeline } from '/js/progress.js';
+    import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+    import { getRoleProgress, getProgressTimeline } from '/js/progress.js';
     import { getRecommendedRoles } from '/js/recommendations.js';
     import { getUserStats } from '/js/gamification.js';
     
     // Wait for SessionManager to be ready
     function waitForSession() {
       return new Promise((resolve) => {
-        if (typeof sessionManager !== 'undefined') {
-          resolve();
-        } else {
-          setTimeout(() => waitForSession().then(resolve), 100);
-        }
+        const check = () => {
+          if (typeof sessionManager !== 'undefined') {
+            resolve();
+          } else {
+            setTimeout(check, 100);
+          }
+        };
+        check();
       });
     }
 
     async function initDashboard() {
-      await waitForSession();
-      
-      const user = sessionManager.getUser();
-      if (!user) {
-        window.location.href = '/auth.html';
-        return;
-      }
-      
-      
-      // Load progress
-      const progressSnap = await getDocs(query(collection(db, 'progress'), where('uid', '==', user.uid)));
-      const allProgress = [];
-      progressSnap.forEach(doc => allProgress.push(doc.data()));
-      
-      const completed = allProgress.filter(p => p.completed).length;
-      document.getElementById('completed-tasks').textContent = completed;
-      
-      // Get unique roles
-      const roles = [...new Set(allProgress.map(p => p.roleSlug))];
-      document.getElementById('active-roles').textContent = roles.length;
-      
-      // Load gamification stats
-      const stats = await getUserStats();
-      document.getElementById('user-level').textContent = stats.level;
-      document.getElementById('xp-progress').textContent = `${stats.xp} XP`;
-      document.getElementById('streak').textContent = `${stats.streak} ${stats.streak === 1 ? 'day' : 'days'}`;
-      
-      // Load progress timeline
-      const timeline = await getProgressTimeline(30);
-      renderTimeline(timeline);
-      
-      // Load recommendations
-      const recommendations = await getRecommendedRoles();
-      renderRecommendations(recommendations);
-      
-      // Load badges
-      const badgesSnap = await getDocs(query(collection(db, 'userBadges'), where('uid', '==', user.uid)));
-      const badgeIds = [];
-      badgesSnap.forEach(doc => badgeIds.push(doc.data().badgeId));
-      
-      if (badgeIds.length > 0) {
-        const { doc, getDoc } = await import('firebase/firestore');
-        const badgeDocs = await Promise.all(badgeIds.map(id => getDoc(doc(db, 'badges', id))));
-        const container = document.getElementById('badges-container');
-        badgeDocs.forEach(badgeDoc => {
-          if (badgeDoc.exists()) {
-            const badge = badgeDoc.data();
-            const div = document.createElement('div');
-            div.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-4 text-center';
-            div.innerHTML = `<div class="text-4xl mb-2">🏆</div><p class="font-semibold">${badge.title}</p>`;
-            container.appendChild(div);
-          }
-        });
-      } else {
-        document.getElementById('badges-container').innerHTML = '<p class="text-gray-600 dark:text-gray-400">No badges yet. Complete tasks to earn badges!</p>';
-      }
-      
-      // Load role progress
-      const { doc, getDoc } = await import('firebase/firestore');
-      const progressContainer = document.getElementById('progress-container');
-      for (const roleSlug of roles.slice(0, 5)) {
-        const progress = await getRoleProgress(roleSlug);
-        const roleDoc = await getDoc(doc(db, 'roles', roleSlug));
-        const roleTitle = roleDoc.exists() ? roleDoc.data().title : roleSlug;
+      const loadingEl = document.getElementById('dashboard-loading');
+      const welcomeEl = document.getElementById('welcome-user');
+
+      try {
+        await waitForSession();
         
-        const div = document.createElement('div');
-        div.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-6';
-        const completedCount = progress.filter(p => p.completed).length;
-        const percentage = progress.length > 0 ? (completedCount / progress.length) * 100 : 0;
-        div.innerHTML = `
-          <div class="flex items-center justify-between mb-2">
-            <h3 class="text-xl font-bold">${roleTitle}</h3>
-            <a href="/role.html?slug=${roleSlug}" class="text-blue-600 dark:text-blue-400 hover:underline text-sm">View →</a>
-          </div>
-          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
-            <div class="bg-blue-600 h-2 rounded-full transition-all" style="width: ${percentage}%"></div>
-          </div>
-          <p class="text-sm text-gray-600 dark:text-gray-400">${completedCount} of ${progress.length} tasks completed</p>
-        `;
-        progressContainer.appendChild(div);
+        const user = sessionManager.getUser();
+        if (!user) {
+          window.location.href = '/auth.html';
+          return;
+        }
+
+        if (welcomeEl) {
+          const name = user.name || user.displayName || (user.email ? user.email.split('@')[0] : 'Learner');
+          welcomeEl.textContent = `Hi, ${name} 👋`;
+        }
+
+        // Load progress
+        let allProgress = [];
+        try {
+          const progressSnap = await getDocs(
+            query(collection(db, 'progress'), where('uid', '==', user.uid))
+          );
+          progressSnap.forEach(d => allProgress.push(d.data()));
+        } catch (err) {
+          console.warn('Error loading progress from Firestore:', err);
+          allProgress = []; // fallback empty
+        }
+        
+        const completed = allProgress.filter(p => p.completed).length;
+        document.getElementById('completed-tasks').textContent = completed;
+
+        // Unique roles
+        const roles = [...new Set(allProgress.map(p => p.roleSlug).filter(Boolean))];
+        document.getElementById('active-roles').textContent = roles.length;
+
+        // Gamification stats
+        try {
+          const stats = await getUserStats();
+          document.getElementById('user-level').textContent = stats.level ?? 1;
+          document.getElementById('xp-progress').textContent = `${stats.xp ?? 0} XP`;
+          const streakVal = stats.streak ?? 0;
+          document.getElementById('streak').textContent = `${streakVal} ${streakVal === 1 ? 'day' : 'days'}`;
+        } catch (err) {
+          console.warn('Error loading gamification stats:', err);
+          document.getElementById('user-level').textContent = '1';
+          document.getElementById('xp-progress').textContent = '0 XP';
+          document.getElementById('streak').textContent = '0 days';
+        }
+
+        // Progress timeline
+        try {
+          const timeline = await getProgressTimeline(30);
+          renderTimeline(timeline);
+        } catch (err) {
+          console.warn('Error loading timeline:', err);
+          renderTimeline({});
+        }
+
+        // Recommendations
+        try {
+          const recommendations = await getRecommendedRoles();
+          renderRecommendations(recommendations || []);
+        } catch (err) {
+          console.warn('Error loading recommendations:', err);
+          renderRecommendations([]);
+        }
+
+        // Badges
+        try {
+          const badgesSnap = await getDocs(
+            query(collection(db, 'userBadges'), where('uid', '==', user.uid))
+          );
+          const badgeIds = [];
+          badgesSnap.forEach(d => badgeIds.push(d.data().badgeId));
+
+          const container = document.getElementById('badges-container');
+
+          if (badgeIds.length > 0) {
+            const badgeDocs = await Promise.all(
+              badgeIds.map(id => getDoc(doc(db, 'badges', id)))
+            );
+            container.innerHTML = '';
+            badgeDocs.forEach(badgeDoc => {
+              if (badgeDoc.exists()) {
+                const badge = badgeDoc.data();
+                const div = document.createElement('div');
+                div.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-4 text-center';
+                div.innerHTML = `
+                  <div class="text-4xl mb-2">${badge.emoji || '🏆'}</div>
+                  <p class="font-semibold">${badge.title}</p>
+                  ${badge.description ? `<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${badge.description}</p>` : ''}
+                `;
+                container.appendChild(div);
+              }
+            });
+          } else {
+            container.innerHTML = '<p class="text-gray-600 dark:text-gray-400">No badges yet. Complete tasks to earn badges!</p>';
+          }
+        } catch (err) {
+          console.warn('Error loading badges:', err);
+          document.getElementById('badges-container').innerHTML =
+            '<p class="text-gray-600 dark:text-gray-400">Unable to load badges right now.</p>';
+        }
+
+        // Role progress cards
+        try {
+          const progressContainer = document.getElementById('progress-container');
+          progressContainer.innerHTML = '';
+
+          if (roles.length === 0) {
+            progressContainer.innerHTML =
+              '<p class="text-gray-600 dark:text-gray-400">You haven\'t started any roles yet. Visit the Pathways page to begin!</p>';
+          } else {
+            for (const roleSlug of roles.slice(0, 5)) {
+              const progress = await getRoleProgress(roleSlug);
+              const roleDoc = await getDoc(doc(db, 'roles', roleSlug));
+              const roleTitle = roleDoc.exists() ? roleDoc.data().title : roleSlug;
+
+              const div = document.createElement('div');
+              div.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-6';
+              const completedCount = progress.filter(p => p.completed).length;
+              const percentage = progress.length > 0 ? (completedCount / progress.length) * 100 : 0;
+              div.innerHTML = `
+                <div class="flex items-center justify-between mb-2">
+                  <h3 class="text-xl font-bold">${roleTitle}</h3>
+                  <a href="/role.html?slug=${roleSlug}" class="text-blue-600 dark:text-blue-400 hover:underline text-sm">View →</a>
+                </div>
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
+                  <div class="bg-blue-600 h-2 rounded-full transition-all" style="width: ${percentage}%;"></div>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  ${completedCount} of ${progress.length} tasks completed
+                </p>
+              `;
+              progressContainer.appendChild(div);
+            }
+          }
+        } catch (err) {
+          console.warn('Error loading role progress:', err);
+          document.getElementById('progress-container').innerHTML =
+            '<p class="text-gray-600 dark:text-gray-400">Unable to load progress right now.</p>';
+        }
+
+      } finally {
+        const loadingEl2 = document.getElementById('dashboard-loading');
+        if (loadingEl2) loadingEl2.style.display = 'none';
       }
+    }
     
     function renderTimeline(timeline) {
       const container = document.getElementById('timeline-chart');
@@ -202,11 +287,12 @@
         days.push(date.toDateString());
       }
       
-      const maxTasks = Math.max(...Object.values(timeline), 1);
+      const values = Object.values(timeline || {});
+      const maxTasks = values.length ? Math.max(...values, 1) : 1;
       
       days.forEach(day => {
-        const count = timeline[day] || 0;
-        const height = maxTasks > 0 ? (count / maxTasks) * 100 : 0;
+        const count = (timeline && timeline[day]) || 0;
+        const height = (count / maxTasks) * 100;
         const date = new Date(day);
         const dayLabel = date.getDate();
         
@@ -214,7 +300,7 @@
         bar.className = 'flex-1 flex flex-col items-center';
         bar.innerHTML = `
           <div class="w-full bg-blue-600 rounded-t hover:bg-blue-700 transition cursor-pointer" 
-               style="height: ${height}%" 
+               style="height: ${height}%;" 
                title="${day}: ${count} task${count !== 1 ? 's' : ''}">
           </div>
           <span class="text-xs text-gray-600 dark:text-gray-400 mt-1">${dayLabel}</span>
@@ -227,7 +313,7 @@
       const container = document.getElementById('recommendations-container');
       container.innerHTML = '';
       
-      if (recommendations.length === 0) {
+      if (!recommendations || recommendations.length === 0) {
         container.innerHTML = '<p class="text-gray-600 dark:text-gray-400">Complete some tasks to get personalized recommendations!</p>';
         return;
       }
@@ -237,13 +323,19 @@
         card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition';
         card.innerHTML = `
           <a href="/role.html?slug=${role.slug}" class="block">
-            ${role.coverImage ? `<img src="${role.coverImage}" alt="${role.title}" class="w-full h-32 object-cover" loading="lazy">` : '<div class="w-full h-32 bg-gradient-to-br from-blue-400 to-purple-500"></div>'}
+            ${role.coverImage
+              ? `<img src="${role.coverImage}" alt="${role.title}" class="w-full h-32 object-cover" loading="lazy">`
+              : '<div class="w-full h-32 bg-gradient-to-br from-blue-400 to-purple-500"></div>'}
             <div class="p-4">
               <h3 class="font-bold text-lg mb-1">${role.title}</h3>
               <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">${role.summary || ''}</p>
               <div class="flex gap-2 flex-wrap">
-                <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">${role.domain || 'General'}</span>
-                <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">${role.difficulty || 'Intermediate'}</span>
+                <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">
+                  ${role.domain || 'General'}
+                </span>
+                <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded">
+                  ${role.difficulty || 'Intermediate'}
+                </span>
               </div>
             </div>
           </a>
@@ -257,4 +349,3 @@
   </script>
 </body>
 </html>
-

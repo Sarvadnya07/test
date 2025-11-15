@@ -3,7 +3,6 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getStorage } from "firebase/storage";
-import { getAnalytics } from "firebase/analytics";
 
 // Firebase configuration - Replace with your actual config from Firebase Console
 const firebaseConfig = {
@@ -22,7 +21,24 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const functions = getFunctions(app);
 export const storage = getStorage(app);
-export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+// Analytics is optional and may be blocked by browser extensions (adblockers).
+// We avoid a static import so adblockers don't block the whole module graph.
+export let analytics = null;
+
+// Call this to initialize analytics when desired. It uses a dynamic import and
+// fails gracefully if the resource is blocked.
+export async function initAnalytics() {
+  if (typeof window === 'undefined') return null;
+  try {
+    const mod = await import('firebase/analytics');
+    analytics = mod.getAnalytics(app);
+    return analytics;
+  } catch (e) {
+    console.warn('Analytics not available or blocked by client:', e && e.message ? e.message : e);
+    analytics = null;
+    return null;
+  }
+}
 
 // Google Auth Provider
 export const googleProvider = new GoogleAuthProvider();
